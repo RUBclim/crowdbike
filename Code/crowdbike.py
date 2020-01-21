@@ -4,7 +4,7 @@ Program <crowdbike.py> to read and record GPS data, air temperature and humidity
 using Adafruit's Ultimate GPS and a DHT22 temperature sensor while riding
 on a bike.
 
-First establisht at:
+First established at:
   University of Freiburg
   Environmental Meteology
   Version 1.2
@@ -23,17 +23,20 @@ written by Dan Mandle http://dan.mandle.me September 2012 License: GPL 2.0
 
 Buttons:
   Record:  Start recording in append mode to logfile, but only if gps has fix
+  PM-Sensor: Switch On/Off the pm sensor or deactivate it when no one is connected
   Stop:  Stop recording (Pause)
   Exit:  exit program
 """
 import numpy as np
 import os
-import Adafruit_DHT
+import adafruit_dht
+import board
 import threading
+import datetime
 from   gps     import gps, WATCH_ENABLE
 from   tkinter import Tk, mainloop, Label, Button, Scale, NORMAL, DISABLED, W, E, HORIZONTAL
 from   time    import gmtime, strftime
-from   FUN     import get_ip, read_pm
+from   FUN     import get_ip, read_dht22, pm_sensor
 
 # __user parameters__
 raspberryid = "00" # number of your pi
@@ -46,19 +49,18 @@ temperature_cal_a0 = 0.00000 # enter the calibration coefficient offset for temp
 vappress_cal_a1    = 1.00000 # enter the calibration coefficient slope for vapour pressure
 vappress_cal_a0    = 0.00000 # enter the calibration coefficient offset for vapour pressure
 
-
 window_title = "Crowdbike" + raspberryid
-logfile_path = "/home/pi/Desktop/"
+logfile_path = "/home/pi/Dokumente/crowdbike/"
+if not os.path.exists(logfile_path):
+  os.makedirs(logfile_path)
 
-# construct file name 
 logfile = logfile_path+raspberryid + "-" + studentname + "-" + strftime("%Y-%m-%d-%H-%M-%S.csv")
 
 # __global variables
 font_size     = 24
 gpsd          = None
 recording     = False
-pm_status    = False
-# sampling rate - minimum number of seconds between samplings
+pm_status     = True
 sampling_rate = 5 
 
 class GpsPoller(threading.Thread):
@@ -77,8 +79,9 @@ class GpsPoller(threading.Thread):
 counter      = 0
 gpsp         = GpsPoller() # create thread
 gpsp.start()
-dht22_pin    = 4 # pin for DHT22 Data
-dht22_sensor = Adafruit_DHT.DHT22
+dht22_sensor = adafruit_dht.DHT22(board.D4)
+nova_pm = pm_sensor(dev='/dev/ttyUSB0')
+              
 
 # __functions__
 def exit_program():
@@ -109,10 +112,18 @@ def set_pm_status(value):
     global pm_status
     if value == '1':
         pm_status = True
-        pm_slider['troughcolor'] = 'green'
+        pm_slider['troughcolor'] = '#20ff20'
+        try:
+          nova_pm.sensor_wake()
+        except:
+          pass
     else:
         pm_status = False
-        pm_slider['troughcolor'] = 'red'
+        pm_slider['troughcolor'] = '#c10000'
+        try:
+          nova_pm.sensor_sleep()
+        except:
+          pass
 
 def start_counting(label):
   counter = 0
@@ -122,9 +133,16 @@ def start_counting(label):
     computer_time = strftime("%Y-%m-%d %H:%M:%S")
 
     # get sensor readings from DHT-sensor
-    dht22_humidity, dht22_temperature = Adafruit_DHT.read_retry(dht22_sensor, dht22_pin)
-
-    # calculate temperature with sensor calibration values
+    try:
+      readings = read_dht22(dht22_sensor)
+    except:
+      dht22_humidity = np.nan
+      dht22_temperature = np.nan
+      
+    dht22_humidity = readings['humidity']
+    dht22_temperature = readings['temperature']
+    
+    # calculate temperature with sensor calibration values TODO: Ckeck if everything is correct or all of this is actually needed
     dht22_temperature_raw      = round(dht22_temperature, 5)
     dht22_temperature_calib    = round(dht22_temperature * temperature_cal_a1 + temperature_cal_a0, 3)
     dht22_temperature          = dht22_temperature_calib
@@ -139,9 +157,9 @@ def start_counting(label):
     dht22_humidity_raw         = round(dht22_humidity, 5)
     dht22_humidity             = round(100 * (dht22_vappress_calib/saturation_vappress_calib), 5)
 
-    # read pm-sensor
+    # read pm-sensor takes max 1 sec
     if pm_status == True:
-      pm    = read_pm('/dev/ttyUSB0')
+      pm    = nova_pm.read_pm()
       pm2_5 = pm['PM2_5']
       pm10  = pm['PM10']
     else:
@@ -152,12 +170,13 @@ def start_counting(label):
     if dht22_humidity > 100:
       dht22_humidity = 100
 
+    # Get GPS position
     gps_time      = gpsd.utc
     gps_altitude  = gpsd.fix.altitude
     gps_latitude  = gpsd.fix.latitude
     gps_longitude = gpsd.fix.longitude
     f_mode        = int(gpsd.fix.mode) # store number of sats
-    has_fix       = False #assume no fix
+    has_fix       = False # assume no fix
 
     if f_mode == 2:
       value_counter.config(bg="orange")
@@ -216,12 +235,12 @@ def start_counting(label):
 #define widgets 
 master = Tk()
 master.title(window_title)
-master.attributes('-fullscreen', True)
+#master.attributes('-fullscreen', True)
 name1 = Label(master, text=" Name", fg="blue", font=('Helvetica', font_size)).grid(row=0, column=0, sticky=W)
 name2 = Label(master, text=studentname+"'s Crowdbike", fg="blue", font=('Helvetica', font_size)).grid(row=0, column=1, sticky=W, columnspan=2)
-ip1 = Label(master, text=" IP", fg="blue", font=('Helvetica', font_size)).grid(row=2, column=0, sticky=W)
-ip2 = Label(master, text= str('IP: ' + get_ip()), fg="blue", font=('Helvetica', font_size)).grid(row=1, column=2, sticky=E, columnspan=2)
-pm = Label(master, text=' PM-Sensor', fg="blue", font=('Helvetica', font_size)).grid(row=1, column=0, sticky=W, columnspan=2)
+ip1   = Label(master, text=" IP", fg="blue", font=('Helvetica', font_size)).grid(row=2, column=0, sticky=W)
+ip2   = Label(master, text= str('IP: ' + get_ip()), fg="blue", font=('Helvetica', font_size)).grid(row=1, column=2, sticky=E, columnspan=2)
+pm    = Label(master, text=' PM-Sensor', fg="blue", font=('Helvetica', font_size)).grid(row=1, column=0, sticky=W, columnspan=2)
 
 #define labels
 label_counter = Label(master, text=" Counter", font=('Helvetica', font_size))
@@ -305,10 +324,10 @@ b4 = Button(master, text='Exit', width=7, state=NORMAL, command=exit_program)
 b4.grid(row=14, column=2, sticky=W)
 
 # slider
-pm_slider = Scale(orient=HORIZONTAL, length=80, to=1, label='', showvalue= False, sliderlength=40, troughcolor='red', width=30, command=set_pm_status)
+pm_slider = Scale(orient=HORIZONTAL, length=80, to=1, label='', showvalue= False, sliderlength=40, troughcolor='#20ff20', width=30, command=set_pm_status)
+pm_slider.set(1) # since the default at programm start is 'on'
 pm_slider.grid(row=1, column=1, sticky=W)
 
 recording = True
 record_data()
-#wait in mainloop
 mainloop()
