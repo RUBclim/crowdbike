@@ -1,5 +1,9 @@
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
+### First established at University of Freiburg, Enviromental Meteorology by [Andreas Christen](https://github.com/achristen)
+
+- The original documentation and code  can be found [here](https://github.com/achristen/Meteobike)
+
 ## Benötigtes Material
 1. Raspberry Pi Zero W mit Raspbian (bereits vorinstalliert)
 1. Temperatur- und Feuchte Sensor (Adafruit DHT22)
@@ -12,7 +16,7 @@
 1. Gehäuse und Tasche zur Montage am Fahrrad
 
 ## Benötigte Software/Hardware zur Einrichtung
-1. Laptop mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download.html))
+1. Laptop mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download.html)) oder VNC-Viewer (Download [hier](https://www.realvnc.com/de/connect/download/viewer/))
 1. WLAN-Netzwerk mit Zugang zum Internet
 1. Smartphone mit VNC-Viewer (Download über Smartphone [Android](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=de) oder [iOS](https://apps.apple.com/de/app/vnc-viewer-remote-desktop/id352019548))
 1. Adapter Mini-HDMI zu HDMI
@@ -28,11 +32,11 @@
 1. Anschließen der Powerbank an den Raspberry Pi an den Eingang `PWR IN`
 1. Monitor einschalten
 1. Raspberry pi sollte nun booten
-1. Falls nötig anmelden als Benutzer: `pi` mit Passwort: `nachtragen`
+1. Falls nötig anmelden als Benutzer: `pi` mit Passwort: `siehe PPP`
 
 ### Herstellen einer Netzwerkverbindung
 1. Falls nötig WLAN am Raspberry Pi aktivieren (oben rechts)
-1. Verbinden mit Netzwerk SSID `nachtragen` und Passwort `nachschauen`
+1. Verbinden mit Netzwerk SSID `siehe PPP` und Passwort `siehe PPP`
 1. Netzwerkverbindung zum Smartphone vorbereiten
     1. Hotspot am Smartphone aktivieren, SSID und Passwort nachschauen
     1. Netzwerk am Raspberry Pi hinzufügen
@@ -43,13 +47,13 @@
 1. Verbinden des Laptops mit gleichem WLAN-Netzwerk wie Raspberry Pi (Mobiler Hotspot oder anderes WLNA-Netzwerk)
 1. Starten von MobaXterm am Laptop
 1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `<IP-Adresse des Raspberry Pi's>` &rarr; Specify username: `pi` &rarr; port: `22` &rarr; OK
-1. Passwort eingeben: `nachtragen`
+1. Passwort eingeben: `siehe PPP`
 
 ## Installieren der Software
 ### Kurztipp: Navigation im Linux-Terminal
 - Automatisches Ergänzen des Ausdrucks oder Pfads im Terminal immer mit der `TAB-Taste`
 - Bestätigen von Befehlen immer mit `Enter`. Wenn erfolgreich, keine Rückgabe, ansonsten erscheint ein Error
-- Verzeichnis wechseln `cd <Verzeichnis Name>` (im Stammverzeichnis `'/'` mit `cd /Verzeichnis-Name`)
+- Verzeichnis wechseln `cd <Verzeichnis Name>` (im Stammverzeichnis `'/'` mit `cd /<Verzeichnis-Name>`)
 - Ordnerinhalt anzeigen `ls` oder `ls -l` (als Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
@@ -110,7 +114,7 @@ TODO:
 # m h  dom mon dow   command
 @reboot sudo gpsd /dev/ttyS0 -F /var/run/gpsd.sock
 ```
-- Speichern mit `Strg + o`
+- Speichern mit `Strg + s`
 - Schließen mit `Strg + x`
 - Raspberry Pi neustarten mit `sudo reboot`
 
@@ -193,7 +197,7 @@ class GpsPoller(threading.Thread):
 ## Erstes Starten der Logger-Software
 1. Navigieren zum Skript durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
 1. Ausführen durch `python3 crowdbike.py` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben
->![GUI](../Documentation/crowdbike_GUI.jpg)
+>![GUI](/Documentation/crowdbike_GUI.jpg)
 ### Hinweise:
 - Sollten aktuell keine Werte vorhanden sein, werden sie als `nan` angezeigt und der **'Counter'** ist rot hinterlegt. Ist alles in Ordnung ist dieser grün hinterlegt.
     - Dies kann der Fall sein:
