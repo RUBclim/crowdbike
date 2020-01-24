@@ -84,11 +84,40 @@
 
 ## Anschluss der Sensoren
 ### Temperatur- und Feuchte-Sensor
-TODO:
+1. Kabel wie folgt verbinden
+
+|Sensor|Pi|Kabelfarbe|
+|:---:|:---:|:---:|
+|+|PIN 1 (3,3 V+)|rot|
+|-|PIN 9 (GND)|schwarz|
+|out|PIN 7 (GPCLK0)| gelb|
+### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen**
+![Anschluss dht22](/Documentation/pi_dht22.png)
 ### GPS
-TODO:
+1. Kabel wie folgt verbinden
+
+|GPS|Pi|Kabelfarbe|
+|:---:|:---:|:---:|
+|VIN|PIN 4 (5V+)|schwarz|
+GND|PIN 6 (GND)|weiß|
+|TX|PIN 10 (RXD)| violett|
+|RX|PIN 8 (TXD)| grau|
+### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des GPS oder des Raspberry-Pi führen**
+![Anschluss gps](/Documentation/pi_gps.png)
 ### PM-Sensor
-TODO:
+1. Micor-USB auf USB Adapter an den Micor-USB-Port `USB`  anschließen
+1. An die USB-A-Buchse den UART-USB-Adapter anschließen
+1. Am UART-Adapter den mittleren Pin mit dem äußeren Pin (5V) brücken
+1. Kabel wie folgt mit PM-Sensor verbinden
+
+|PM-Sensor|UART-Adapter|Kabelfarbe|
+|:---:|:---:|:---:|
+|VIN|VCCI0|rot|
+GND|GND|schwarz|
+|TX|RXD| violett|
+|RX|TXD| grau|
+### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des PM-Sensors oder des Raspberry-Pi führen**
+![Anschluss pm](/Documentation/pi_pm.png)
 ## Sensoren in Betrieb nehmen
 ### GPS einrichten
 - Folgende Befehle müssen nacheinander ausgeführt werden
