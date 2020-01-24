@@ -6,7 +6,7 @@
 
 ## Benötigtes Material
 1. Raspberry Pi Zero W mit Raspbian (bereits vorinstalliert)
-1. Temperatur- und Feuchte Sensor (Adafruit DHT22)
+1. Temperatur- und Feuchte-Sensor (Adafruit DHT22)
 1. GPS Modul - Adafruit Ultimate Breakout
 1. Nova PM-Sensor (optional)
 1. UART zu USB Adapter (5V) zum Anschluss des PM-Sensors
@@ -44,7 +44,7 @@
 >Die Verbindung zu Monitor und Tastatur kann nun getrennt werden
 
 ## Herstellen einer Verbindung vom Laptop via SSH
-1. Verbinden des Laptops mit gleichem WLAN-Netzwerk wie Raspberry Pi (Mobiler Hotspot oder anderes WLNA-Netzwerk)
+1. Verbinden des Laptops mit gleichem WLAN-Netzwerk wie Raspberry Pi (Mobiler Hotspot oder anderes WLAN-Netzwerk)
 1. Starten von MobaXterm am Laptop
 1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `<IP-Adresse des Raspberry Pi's>` &rarr; Specify username: `pi` &rarr; port: `22` &rarr; OK
 1. Passwort eingeben: `siehe PPP`
@@ -54,7 +54,7 @@
 - Automatisches Ergänzen des Ausdrucks oder Pfads im Terminal immer mit der `TAB-Taste`
 - Bestätigen von Befehlen immer mit `Enter`. Wenn erfolgreich, keine Rückgabe, ansonsten erscheint ein Error
 - Verzeichnis wechseln `cd <Verzeichnis Name>` (im Stammverzeichnis `'/'` mit `cd /<Verzeichnis-Name>`)
-- Ordnerinhalt anzeigen `ls` oder `ls -l` (als Liste)
+- Ordnerinhalt anzeigen `ls` oder `ls -l` (-l für Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
 ### Für die Sensoren benötigte Programme herunterladen und installieren
@@ -76,7 +76,7 @@
     - `cd Dokumente`
     - `mkdir crowdbike`
 - Benötigte Dateien von Github herunterladen 
-- Crowdbike GUI: `git clone https://git.io/Jvkhr`
+- Crowdbike GUI: `git clone https://git.io/Jvkhr --depth 1`
 
 - Raspberry Pi ausschalten mit
     - `sudo shutdown -P now`
@@ -84,6 +84,7 @@
 
 ## Anschluss der Sensoren
 ### Temperatur- und Feuchte-Sensor
+#### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen. Deshalb vor dem Start erneut prüfen.**
 1. Kabel wie folgt verbinden
 
 |Sensor|Pi|Kabelfarbe|
@@ -91,9 +92,10 @@
 |+|PIN 1 (3,3 V+)|rot|
 |-|PIN 9 (GND)|schwarz|
 |out|PIN 7 (GPCLK0)| gelb|
-### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen**
+
 ![Anschluss dht22](/Documentation/pi_dht22.png)
 ### GPS
+#### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen. Deshalb vor dem Start erneut prüfen.**
 1. Kabel wie folgt verbinden
 
 |GPS|Pi|Kabelfarbe|
@@ -102,10 +104,11 @@
 GND|PIN 6 (GND)|weiß|
 |TX|PIN 10 (RXD)| violett|
 |RX|PIN 8 (TXD)| grau|
-### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des GPS oder des Raspberry-Pi führen**
+
 ![Anschluss gps](/Documentation/pi_gps.png)
 ### PM-Sensor
-1. Micor-USB auf USB Adapter an den Micor-USB-Port `USB`  anschließen
+#### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen. Deshalb vor dem Start erneut prüfen.**
+1. Micro-USB auf USB Adapter an den Micro-USB-Port `USB`  anschließen
 1. An die USB-A-Buchse den UART-USB-Adapter anschließen
 1. Am UART-Adapter den mittleren Pin mit dem äußeren Pin (5V) brücken
 1. Kabel wie folgt mit PM-Sensor verbinden
@@ -116,7 +119,7 @@ GND|PIN 6 (GND)|weiß|
 GND|GND|schwarz|
 |TX|RXD| violett|
 |RX|TXD| grau|
-### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des PM-Sensors oder des Raspberry-Pi führen**
+
 ![Anschluss pm](/Documentation/pi_pm.png)
 ## Sensoren in Betrieb nehmen
 ### GPS einrichten
@@ -150,7 +153,7 @@ GND|GND|schwarz|
 ## Erste Tests der Sensoren (optional)
 ### GPS
 - Testen des GPS durch Eingabe `cgps -s`
-    - **Hinweis:** Um Werte zu erhalten muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnet LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden
+    - **Hinweis:** Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
 
 ### Temperatur- und Feuchtesensor
 1. Starten von Python 3 durch Eingabe von `python3`
@@ -172,7 +175,7 @@ for i in range(10):
 ### PM-Sensor
 1. Navigieren in Ordner durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
 1. Starten von Python 3 durch Eingabe von `python3`
-1. Eingabe von folgenden Zeilen. Nach Jeder Zeile Bestätigung mit `Enter`
+1. Eingabe von folgenden Zeilen. Nach jeder Zeile Bestätigung mit `Enter`
 ```python
 from   FUN   import pm_sensor
 
@@ -186,9 +189,9 @@ for i in range(10):
 ## Anpassen/Personalisieren der Logger-Software
 Es müssen im Folgenden noch einige kleinere Anpassungen am Skript der Logger-Software vorgenommen werden
 - Navigieren zum Skript durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
-- Bearbeiten durch `nano -c crowdbike.py` durch `-c` werden nun im unteren Bereich die aktuelle Zeilennummer angezeigt, in der sich der Cursor gerade befindet
-- Anpassung in Zeile `finale_Zeile eintragen` hier `raspberryid =` eurer Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
-- In Zeile `finale_Zeile eintragen` bei `studentname = `euren Namen eingeben. Möglichst ohne Leerzeichen und Sonderzeichen (ß, ä, ö, ü)
+- Bearbeiten durch `nano -c crowdbike.py` durch `-c` werden nun im unteren Bereich die aktuelle Zeilennummer angezeigt, in der sich der Cursor gerade befindet.
+- Anpassung in Zeile `42` hier `raspberryid =` eurer Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
+- In Zeile `43` bei `studentname = `euren Namen eingeben. Möglichst ohne Leerzeichen und Sonderzeichen (ß, ä, ö, ü).
 ```python
 [...]
 from   FUN     import get_ip, read_dht22, pm_sensor
@@ -200,8 +203,7 @@ studentname = "Unknown_User"
 # __calibration params__
 [...]
 ```
-- In Zeile `finale_Zeile eintragen` muss nun der Dateipfad eingestellt werden, an dem die Logs gespeichert werden sollen. Z.B. so: `logfile_path = '/home/pi/Dokumente/crowdbike/'`. **Hinweis:** auf exakte Positionen von `/` und `''` achten!
-[...]
+- In Zeile `53` muss nun der Dateipfad eingestellt werden, an dem die Logs gespeichert werden sollen. Z. B. so: `logfile_path = '/home/pi/Dokumente/crowdbike/'`. **Hinweis:** auf exakte Positionen von `/` und `''` achten!
 ```python
 [...]
 vappress_cal_a0    = 0.00000 # enter the calibration coefficient offset for vapour pressure
@@ -212,7 +214,7 @@ if not os.path.exists(logfile_path):
   os.makedirs(logfile_path)
 [...]
 ```
-- Bei Bedarf kann noch die Log-Rate geändert werden. In Zeile `finale_Zeile eintragen` muss dafür `sampling_rate = ` geändert werden.
+- Bei Bedarf kann noch die Log-Rate geändert werden. In Zeile `64` muss dafür `sampling_rate = ` geändert werden.
 ```python
 [...]
 recording     = False
@@ -225,19 +227,20 @@ class GpsPoller(threading.Thread):
 ```
 ## Erstes Starten der Logger-Software
 1. Navigieren zum Skript durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
-1. Ausführen durch `python3 crowdbike.py` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben
+1. Ausführen durch `python3 crowdbike.py` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben.
 >![GUI](/Documentation/crowdbike_GUI.jpg)
 ### Hinweise:
-- Sollten aktuell keine Werte vorhanden sein, werden sie als `nan` angezeigt und der **'Counter'** ist rot hinterlegt. Ist alles in Ordnung ist dieser grün hinterlegt.
+- Sollten aktuell keine Werte vorhanden sein, werden sie als `nan` angezeigt und der **'Counter'** ist rot hinterlegt.
     - Dies kann der Fall sein:
-        - Wenn das GPS (noch) keinen Empfang hat
+        - Wenn das GPS (noch) keinen Empfang hat,
         - Wenn der PM-Sensor nicht angeschlossen oder richtig verbunden ist
+    -  Ist alles in Ordnung ist dieser grün hinterlegt.
 - Sobald das Programm gestartet wurde, werden Daten aufgezeichnet
 - Die Momentanwerte werden angezeigt und aktualisieren sich automatisch
-- Der Switch **'PM-Sensor'** schaltet die Abfrage des Feinstaubsensors Ein bzw. Aus und versetzt ihn, falls angeschlossen in einen Schlafmodus.
-    - Ist kein PM-Sensor angeschlossen, sollte der Schalter ausgeschaltet (rot) sein, sodass das Programm nicht bei jeder Abfrage vergeblich versucht dem Sensor abzufragen
-- Die Aufzeichnung der Daten kann durch Drücken des **'Stop'** Buttons beendet werden
-- Das Programm verlassen und die Aufzeichnung beenden kann man über den **'Exit'** Button
+- Der Switch **'PM-Sensor'** schaltet die Abfrage des Feinstaubsensors ein bzw. aus und versetzt ihn, falls angeschlossen in einen Schlafmodus.
+    - Ist kein PM-Sensor angeschlossen, sollte der Schalter ausgeschaltet (rot) sein, sodass das Programm nicht bei jeder Abfrage vergeblich versucht, den Sensor abzufragen.
+- Die Aufzeichnung der Daten kann durch drücken des **'Stop'** Buttons beendet werden
+- Das Programm verlassen und die Aufzeichnung beenden kann man über den **'Exit'** Button.
 
 ## Am Smartphone nutzen
 1. Hotspot einschalten, Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärken WLAN-Netzwerke vorhanden sind.
