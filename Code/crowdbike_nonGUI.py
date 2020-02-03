@@ -23,7 +23,7 @@ Using the class GpsPoller
 written by Dan Mandle http://dan.mandle.me September 2012 License: GPL 2.0
 """
 import numpy as np
-import pandas as pd
+import csv
 import os
 import time
 import adafruit_dht
@@ -31,8 +31,8 @@ import board
 import threading
 import datetime
 import json
-from   gps     import gps, WATCH_ENABLE
-from   FUN     import get_ip, read_dht22, pm_sensor
+from   gps import gps, WATCH_ENABLE
+from   FUN import get_ip, read_dht22, pm_sensor
 
 # __load confing file__
 with open('config.json', 'r') as config:
@@ -52,14 +52,17 @@ vappress_cal_a0    = 0.00000 # enter the calibration coefficient offset for vapo
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
   os.makedirs(logfile_path)
-logfile = logfile_path + raspberryid + "-" + studentname + "-" + time.strftime("%Y-%m-%d.csv")
+logfile = logfile_path + raspberryid + "-" + studentname + "-" + time.strftime("%Y-%m-%d_%H%M%S.csv")
 
 # initialze datframe to append to
 columnnames = ['ID','Record','Raspberry_Time','GPS_Time','Altitude','Latitude','Longitude','Temperature','TemperatureRaw','RelHumidity','RelHumidityRaw','VapourPressure','VapourPressureRaw','PM10','PM2.5']
-df = pd.DataFrame(columns=columnnames)
-# check if file is already there
+
+# check if file is already there  #TODO: Think if it makes sense to hava a daily file or not right now it is always False
 if not os.path.exists(logfile):
-  df.to_csv(logfile, index=False)
+  f = open(logfile, 'a', newline='')
+  writer = csv.DictWriter(f, columnnames)
+  writer.writeheader()
+  f.close()
 
 # __global variables___
 gpsd          = None
@@ -83,10 +86,13 @@ gpsp         = GpsPoller() # create thread
 gpsp.start()
 dht22_sensor = adafruit_dht.DHT22(board.D4)
 nova_pm = pm_sensor(dev='/dev/ttyUSB0')
-counter = 0
+counter = 1
 
 while True:
   now = datetime.datetime.utcnow()
+  f = open(logfile, 'a', newline='')
+  writer = csv.DictWriter(f, columnnames)
+
   # get sensor readings from DHT-sensor
   try:
     readings = read_dht22(dht22_sensor)
@@ -134,7 +140,7 @@ while True:
   has_fix       = False # assume no fix
 
   # build readings
-  readings = pd.DataFrame([{
+  readings = {
     'ID': raspberryid,
     'Record': counter,
     'Raspberry_Time': now.strftime('%Y-%m-%d %H:%M:%S'),
@@ -149,11 +155,12 @@ while True:
     'VapourPressure': dht22_vappress,
     'VapourPressureRaw': dht22_vappress_raw,
     'PM10': pm10,
-    'PM2.5': pm2_5,
-    }])
-
-  # __readings to file___
-  readings.to_csv(logfile, mode='a', header=False, index=False)
+    'PM2.5': pm2_5
+    }
+  
+  # append to csv file 
+  writer.writerow(readings)
+  f.close()
 
   finish = datetime.datetime.utcnow()
   runtime = finish - now
