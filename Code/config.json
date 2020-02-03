@@ -1,0 +1,9 @@
+{
+    "user": {
+        "studentname":   "insert_username",
+        "bike_nr":       "01",
+        "logfile_path": "/home/pi/Dokumente/crowdbike/data",
+        "pm_sensor": true,
+        "sampling_rate": 5
+    }
+}
