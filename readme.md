@@ -16,7 +16,7 @@
 1. Gehäuse und Tasche zur Montage am Fahrrad
 
 ## Benötigte Software/Hardware zur Einrichtung
-1. Laptop mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download.html)) oder VNC-Viewer (Download [hier](https://www.realvnc.com/de/connect/download/viewer/))
+1. Laptop/Computer mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download.html)) oder VNC-Viewer (Download [hier](https://www.realvnc.com/de/connect/download/viewer/))
 1. WLAN-Netzwerk mit Zugang zum Internet
 1. Smartphone mit VNC-Viewer (Download über Smartphone [Android](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=de) oder [iOS](https://apps.apple.com/de/app/vnc-viewer-remote-desktop/id352019548))
 1. Adapter Mini-HDMI zu HDMI
@@ -41,12 +41,13 @@
     1. Hotspot am Smartphone aktivieren, SSID und Passwort nachschauen
     1. Netzwerk am Raspberry Pi hinzufügen
     1. Verbindung herstellen. Wenn erfolgreich, zunächst wieder trennen und mit erster Verbindung fortfahren
+1. Raspberry Pi kann angeschaltet (mit der Powerbak verbunden) bleiben!
 >Die Verbindung zu Monitor und Tastatur kann nun getrennt werden
 
 ## Herstellen einer Verbindung vom Laptop via SSH
 1. Verbinden des Laptops mit gleichem WLAN-Netzwerk wie Raspberry Pi (Mobiler Hotspot oder anderes WLAN-Netzwerk)
-1. Starten von MobaXterm am Laptop
-1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `<IP-Adresse des Raspberry Pi's>` &rarr; Specify username: `pi` &rarr; port: `22` &rarr; OK
+1. Starten von MobaXterm am Laptop/Computer
+1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `<Hostname des Raspberry Pi's>` z.B. `crowdbike13` &rarr; Specify username: `pi` &rarr; port: `22` &rarr; OK
 1. Passwort eingeben: `siehe PPP`
 
 ## Installieren der Software
@@ -57,10 +58,12 @@
 - Ordnerinhalt anzeigen `ls` oder `ls -l` (-l für Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
+- Letzte eingebenen Befehle wiederaufrufen mit &uarr; und &darr; (Pfeiltasten rauf/runter)
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 - Installationen unter Linux meist mit `sudo apt-get install <Programm-Name>`
 - Installieren folgender Programme mit obiger Syntax
-    - `build-essentials`
+- Alle Rückfragen wie `"Es werden zusätzlich 10MB Plattenspeicher genutzt"` mit `J`+`Enter` bestätigen 
+    - `build-essential`
     - `python-dev` 
     - `python-openssl`
     - `git`
@@ -69,16 +72,31 @@
     - `python-gps`
     - `libgpiod2`
 - Installieren der Python Library für den Temperatursensor
-    - `pip3 install adafruit-circuitpython-dht`
+    - `sudo pip3 install adafruit-circuitpython-dht`
     - `pip3 install board`
+    - `pip3 install gps`
+    - `pip3 install retry`
+    - `pip3 install json`
 
 - Ordner für Crowdbike-Projekt erstellen
     - `cd Dokumente`
     - `mkdir crowdbike`
+    - `cd crowdbike`
 - Benötigte Dateien von Github herunterladen 
-- Crowdbike GUI: `git clone https://git.io/Jvkhr --depth 1`
+    - Crowdbike Software: `git clone https://theendlessriver13/Meteobike --depth 1`
+- Serielle Schnittstelle Aktivieren
+    - `sudo raspi-config`
+    - mit Pfeiltasten zu "Interfacing Options" navigieren und mit `Enter` bestätigen
+    - Zu "P6 Serial" navigieren &rarr; `Enter`
+    "Would you like to a login shell to be accessible over serial?" hier `<No>` auswählen
+    - "Would you like the serial port hardware to be enabled?" hier <Yes>` auswählen
+    - "The serial login shell is disabled"
+    - "The serial interface is enabled"
+    - Mit `<Ok>` bestätigen
+    - Mit `<Finish>` beenden
+    - "Would you like to reboot now?" mit `<yes>` bestätigen
 
-- Raspberry Pi ausschalten mit
+- Nach dem reboot Raspberry Pi ausschalten um Sensoren anzuschließen
     - `sudo shutdown -P now`
     - Warten bis grüne LED nicht mehr leuchtet, dann Stromversorgung trennen
 
@@ -110,7 +128,7 @@ GND|PIN 6 (GND)|weiß|
 #### **Achtung! Ein Falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen. Deshalb vor dem Start erneut prüfen.**
 1. Micro-USB auf USB Adapter an den Micro-USB-Port `USB`  anschließen
 1. An die USB-A-Buchse den UART-USB-Adapter anschließen
-1. Am UART-Adapter den mittleren Pin mit dem äußeren Pin (5V) brücken
+1. Am UART-Adapter den mittleren Pin mit dem äußeren Pin (5V) brücken (sieh Abb.)
 1. Kabel wie folgt mit PM-Sensor verbinden
 
 |PM-Sensor|UART-Adapter|Kabelfarbe|
@@ -122,6 +140,8 @@ GND|GND|schwarz|
 
 ![Anschluss pm](/Documentation/pi_pm.png)
 ## Sensoren in Betrieb nehmen
+- Raspberry Pi wieder mit der Powerbank verbinden
+- Wieder Verbindung über SSH herstellen (siehe oben)
 ### GPS einrichten
 - Folgende Befehle müssen nacheinander ausgeführt werden
 1. `sudo systemctl stop serial-getty@ttyS0.service`
@@ -154,10 +174,14 @@ GND|GND|schwarz|
 ### GPS
 - Testen des GPS durch Eingabe `cgps -s`
     - **Hinweis:** Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
+    - Abbruch der Anzeige durch Drücken von `Strg + c`
 
 ### Temperatur- und Feuchtesensor
-1. Starten von Python 3 durch Eingabe von `python3`
-1. Eingabe von folgenden Zeilen. Nach Jeder Zeile Bestätigung mit `Enter`
+1. In Verzeichnis Dokumente navigieren `cd /home/pi/Dokumente/crowdbike`
+1. Anlegen eines Testscripts für Temperatur- und Feuchtesensor
+1. Eingabe von `nano temp_hum_test.py`
+1. Kopieren oder abtippen des unten stehenden Codes
+1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
 ```python
 import adafruit_dht
 import board
@@ -169,13 +193,15 @@ for i in range(10):
     hum = dht22_sensor.humidity
     print(temp, hum)
 ```
-- **Hinweis:** Einrückungen durch `TAB` am Anfang der Zeile beachten und letzte Zeile durch nochmaliges Drücken von `Enter` bestätigen.
-- Abbruch durch `Strg + c` und Eingabe von `exit()`
+- **Hinweis:** Einrückungen durch `TAB` am Anfang der Zeile beachten
+- Starten des Scripts durch Eingabe von `python3 temp_hum_test.py`
 
 ### PM-Sensor
-1. Navigieren in Ordner durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
-1. Starten von Python 3 durch Eingabe von `python3`
-1. Eingabe von folgenden Zeilen. Nach jeder Zeile Bestätigung mit `Enter`
+1. Navigieren in Ordner durch `cd /home/pi/Dokumente/crowdbike`
+1. Anlegen eines Testscripts für den PM-Sensor
+1. Eingabe von `pm_test.py`
+1. Kopieren oder abtippen des unten stehenden Codes
+1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
 ```python
 from   FUN   import pm_sensor
 
@@ -183,11 +209,11 @@ for i in range(10):
     nova_sensor = pm_sensor(dev='/dev/ttyUSB0')
     print(nova_sensor.read_pm())
 ```
-- **Hinweis:** Einrückungen durch `TAB` am Anfang der Zeile beachten und letzte Zeile durch nochmaliges Drücken von `Enter` bestätigen.
-- Abbruch durch `Strg + c` und Eingabe von `exit()`
-
+- **Hinweis:** Einrückungen durch `TAB` am Anfang der Zeile beachten
+- Starten des Scripts durch Eingabe von `python3 pm_test.py`
 ## Anpassen/Personalisieren der Logger-Software
-Es müssen im Folgenden noch einige kleinere Anpassungen am Skript der Logger-Software vorgenommen werden
+Es müssen im Folgenden noch einige kleinere Anpassungen am Skript der Logger-Software vorgenommen werden\
+### **Hinweis: Für die "non_GUI-Version" erfolgen die Einstellungen im `config.json` File.** siehe [hier](/Documentation/non_gui_setup.md)
 - Navigieren zum Skript durch `cd /home/pi/Dokumente/crowdbike/Crowdbike/Code`
 - Bearbeiten durch `nano -c crowdbike.py` durch `-c` werden nun im unteren Bereich die aktuelle Zeilennummer angezeigt, in der sich der Cursor gerade befindet.
 - Anpassung in Zeile `42` hier `raspberryid =` eurer Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
