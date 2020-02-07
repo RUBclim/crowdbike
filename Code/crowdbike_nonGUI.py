@@ -31,11 +31,13 @@ import board
 import threading
 import datetime
 import json
+import sys
 from   gps import gps, WATCH_ENABLE
 from   FUN import get_ip, read_dht22, pm_sensor
 
 # __load confing file__
-with open('config.json', 'r') as config:
+config_path = sys.argv[1]
+with open(config_path, 'r') as config:
   config = json.load(config)
 
 # __user parameters__
@@ -157,7 +159,7 @@ while True:
     'PM10': pm10,
     'PM2.5': pm2_5
     }
-  
+
   # append to csv file 
   writer.writerow(readings)
   f.close()
