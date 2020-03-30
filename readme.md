@@ -62,9 +62,9 @@
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 - Installationen unter Linux meist mit `sudo apt-get install <Programm-Name>`
 - Installieren folgender Programme mit obiger Syntax
-- Alle Rückfragen wie `"Es werden zusätzlich 10MB Plattenspeicher genutzt"` mit `J`+`Enter` bestätigen 
+- Alle Rückfragen wie `"Es werden zusätzlich 10MB Plattenspeicher genutzt"` mit `J`+`Enter` bestätigen
     - `build-essential`
-    - `python-dev` 
+    - `python-dev`
     - `python-openssl`
     - `git`
     - `gpsd`
@@ -82,7 +82,7 @@
     - `cd Dokumente`
     - `mkdir crowdbike`
     - `cd crowdbike`
-- Benötigte Dateien von Github herunterladen 
+- Benötigte Dateien von Github herunterladen
     - Crowdbike Software: `git clone https://theendlessriver13/Meteobike --depth 1`
 - Serielle Schnittstelle Aktivieren
     - `sudo raspi-config`
@@ -245,7 +245,7 @@ if not os.path.exists(logfile_path):
 [...]
 recording     = False
 pm_status     = True
-sampling_rate = 5 
+sampling_rate = 5
 
 class GpsPoller(threading.Thread):
   def __init__(self):
@@ -272,7 +272,7 @@ class GpsPoller(threading.Thread):
 1. Hotspot einschalten, Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärken WLAN-Netzwerke vorhanden sind.
 1. VNC-Viewer am Smartphone starten (kein Registrierung notwendig)
 1. Per **+** eine Verbindung hinzufügen
-1. Bei `Address` die IP-Adresse z.B. `192.168.1.111` oder den Hostname z.B. (`crowdbike1`) eingeben 
+1. Bei `Address` die IP-Adresse z.B. `192.168.1.111` oder den Hostname z.B. (`crowdbike1`) eingeben
 1. Namen der Verbindung festlegen z.B. 'crowdbike_1'
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
 
@@ -286,5 +286,3 @@ TODO:
 TODO:
 ## Quellen:
 **Andreas Christen (2018):** Meteobike - Mapping urban heat islands with bikes. [GitHub](https://github.com/achristen/Meteobike/blob/master/readme.md). [19.01.2020].
-
-
