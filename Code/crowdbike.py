@@ -30,6 +30,7 @@ Buttons:
     Stop:  Stop recording (Pause)
     Exit:  exit program
 """
+import json
 import os
 import threading
 from time import strftime
@@ -54,8 +55,11 @@ from gps import gps
 from gps import WATCH_ENABLE
 
 # __user parameters__
-raspberryid = '00'  # number of your pi
-studentname = 'Unknown_User'
+with open('config.json', 'r') as config:
+    config = json.load(config)
+
+raspberryid = config['user']['bike_nr']  # number of your pi
+studentname = config['user']['studentname']
 
 # __calibration params__
 # enter the calibration coefficient slope for temperature
@@ -68,21 +72,21 @@ vappress_cal_a1    = 1.00000
 vappress_cal_a0    = 0.00000
 
 window_title = 'Crowdbike' + raspberryid
-logfile_path = '/home/pi/Dokumente/crowdbike/'
+logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
     os.makedirs(logfile_path)
 
 logfile = (
     logfile_path + raspberryid + '-' +
-    studentname + '-' + strftime('%Y-%m-%d-%H-%M-%S.csv')
+    studentname + '-' + strftime('%Y-%m-%d_%H%M%S.csv')
 )
 
 # __global variables
 font_size     = 24
 gpsd          = None
 recording     = False
-pm_status     = True
-sampling_rate = 5
+pm_status     = config['user']['pm_sensor']
+sampling_rate = config['user']['sampling_rate']
 
 
 class GpsPoller(threading.Thread):
@@ -121,7 +125,7 @@ cnames = [
     'VapourPressureRaw',
     'PM10',
     'PM2.5',
-    ]
+]
 
 
 # __functions__
@@ -322,56 +326,81 @@ master.title(window_title)
 # master.attributes('-fullscreen', True)
 name1 = Label(
     master, text=' Name', fg='blue',
-    font=('Helvetica', font_size)).grid(row=0, column=0, sticky=W)
+    font=('Helvetica', font_size),
+).grid(row=0, column=0, sticky=W)
 name2 = Label(
     master, text=studentname + "'s Crowdbike", fg='blue',
-    font=('Helvetica', font_size)).grid(row=0, column=1, sticky=W,
-                                        columnspan=2)
+    font=('Helvetica', font_size),
+).grid(
+        row=0, column=1, sticky=W,
+        columnspan=2,
+)
 ip1 = Label(
     master, text=' IP', fg='blue',
-    font=('Helvetica', font_size)).grid(row=2, column=0, sticky=W)
+    font=('Helvetica', font_size),
+).grid(row=2, column=0, sticky=W)
 ip2 = Label(
     master, text=str('IP: ' + get_ip()), fg='blue',
-    font=('Helvetica', font_size)).grid(row=1, column=2, sticky=E,
-                                        columnspan=2)
+    font=('Helvetica', font_size),
+).grid(
+        row=1, column=2, sticky=E,
+        columnspan=2,
+)
 pm = Label(
     master, text=' PM-Sensor', fg='blue',
-    font=('Helvetica', font_size)).grid(row=1, column=0, sticky=W,
-                                        columnspan=2)
+    font=('Helvetica', font_size),
+).grid(
+        row=1, column=0, sticky=W,
+        columnspan=2,
+)
 
 # define labels
-label_counter = Label(master, text=' Counter',
-                      font=('Helvetica', font_size))
+label_counter = Label(
+    master, text=' Counter',
+    font=('Helvetica', font_size),
+)
 label_counter.grid(row=2, column=0, sticky=W)
 
 label_ctime = Label(master, text=' Time', font=('Helvetica', font_size))
 label_ctime.grid(row=3, column=0, sticky=W)
 
-label_altitude = Label(master, text=' Altitude',
-                       font=('Helvetica', font_size))
+label_altitude = Label(
+    master, text=' Altitude',
+    font=('Helvetica', font_size),
+)
 label_altitude.grid(row=4, column=0, sticky=W)
 
-label_latitude = Label(master, text=' Latitude',
-                       font=('Helvetica', font_size))
+label_latitude = Label(
+    master, text=' Latitude',
+    font=('Helvetica', font_size),
+)
 label_latitude.grid(row=5, column=0, sticky=W)
 
-label_longitude = Label(master, text=' Longitude',
-                        font=('Helvetica', font_size))
+label_longitude = Label(
+    master, text=' Longitude',
+    font=('Helvetica', font_size),
+)
 label_longitude.grid(row=6, column=0, sticky=W)
 
 label_time = Label(master, text=' GPS Time', font=('Helvetica', font_size))
 label_time.grid(row=7, column=0, sticky=W)
 
-label_temperature = Label(master, text=' Temperature',
-                          font=('Helvetica', font_size))
+label_temperature = Label(
+    master, text=' Temperature',
+    font=('Helvetica', font_size),
+)
 label_temperature.grid(row=8, column=0, sticky=W)
 
-label_humidity = Label(master, text=' Rel. Humidity',
-                       font=('Helvetica', font_size))
+label_humidity = Label(
+    master, text=' Rel. Humidity',
+    font=('Helvetica', font_size),
+)
 label_humidity.grid(row=9, column=0, sticky=W)
 
-label_vappress = Label(master, text=' Vap. Pressure   ',
-                       font=('Helvetica', font_size))
+label_vappress = Label(
+    master, text=' Vap. Pressure   ',
+    font=('Helvetica', font_size),
+)
 label_vappress.grid(row=10, column=0, sticky=W)
 
 # labels for pm sensor
@@ -382,39 +411,55 @@ label_pm2_5 = Label(master, text=' PM 2.5 ', font=('Helvetica', font_size))
 label_pm2_5.grid(row=12, column=0, sticky=W)
 
 # define values (constructed also as labels, text will be modified in count)
-value_counter = Label(master, text=' Counter', bg='red',
-                      font=('Helvetica', font_size))
+value_counter = Label(
+    master, text=' Counter', bg='red',
+    font=('Helvetica', font_size),
+)
 value_counter.grid(row=2, column=1, sticky=W, columnspan=2)
 
 value_ctime = Label(master, text=' Time', font=('Helvetica', font_size))
 value_ctime.grid(row=3, column=1, sticky=W, columnspan=2)
 
-value_altitude = Label(master, text=' Altitude',
-                       font=('Helvetica', font_size))
+value_altitude = Label(
+    master, text=' Altitude',
+    font=('Helvetica', font_size),
+)
 value_altitude.grid(row=4, column=1, sticky=W, columnspan=2)
 
-value_latitude = Label(master, text=' Latitude',
-                       font=('Helvetica', font_size))
+value_latitude = Label(
+    master, text=' Latitude',
+    font=('Helvetica', font_size),
+)
 value_latitude.grid(row=5, column=1, sticky=W, columnspan=2)
 
-value_longitude = Label(master, text=' Longitude',
-                        font=('Helvetica', font_size))
+value_longitude = Label(
+    master, text=' Longitude',
+    font=('Helvetica', font_size),
+)
 value_longitude.grid(row=6, column=1, sticky=W, columnspan=2)
 
-value_time = Label(master, text='GPS Time ---------------',
-                   font=('Helvetica', font_size))
+value_time = Label(
+    master, text='GPS Time ---------------',
+    font=('Helvetica', font_size),
+)
 value_time.grid(row=7, column=1, sticky=W, columnspan=2)
 
-value_temperature = Label(master, text=' Temperature',
-                          font=('Helvetica', font_size))
+value_temperature = Label(
+    master, text=' Temperature',
+    font=('Helvetica', font_size),
+)
 value_temperature.grid(row=8, column=1, sticky=W, columnspan=2)
 
-value_humidity = Label(master, text=' Rel. Humidity',
-                       font=('Helvetica', font_size))
+value_humidity = Label(
+    master, text=' Rel. Humidity',
+    font=('Helvetica', font_size),
+)
 value_humidity.grid(row=9, column=1, sticky=W, columnspan=2)
 
-value_vappress = Label(master, text=' Vap. Pressure ',
-                       font=('Helvetica', font_size))
+value_vappress = Label(
+    master, text=' Vap. Pressure ',
+    font=('Helvetica', font_size),
+)
 value_vappress.grid(row=10, column=1, sticky=W, columnspan=2)
 
 value_pm10 = Label(master, text=' PM 10 ', font=('Helvetica', font_size))
@@ -426,8 +471,10 @@ value_pm2_5.grid(row=12, column=1, sticky=W, columnspan=2)
 start_counting(value_counter)
 
 # define buttons
-b1 = Button(master, text='Record', width=7, state=DISABLED,
-            command=record_data)
+b1 = Button(
+    master, text='Record', width=7, state=DISABLED,
+    command=record_data,
+)
 b1.grid(row=14, column=0, sticky=W)
 
 b2 = Button(master, text='Stop', width=7, state=DISABLED, command=stop_data)
@@ -437,9 +484,11 @@ b4 = Button(master, text='Exit', width=7, state=NORMAL, command=exit_program)
 b4.grid(row=14, column=2, sticky=W)
 
 # slider
-pm_slider = Scale(orient=HORIZONTAL, length=80, to=1, label='',
-                  showvalue=False, sliderlength=40, troughcolor='#20ff20',
-                  width=30, command=set_pm_status)
+pm_slider = Scale(
+    orient=HORIZONTAL, length=80, to=1, label='',
+    showvalue=False, sliderlength=40, troughcolor='#20ff20',
+    width=30, command=set_pm_status,
+)
 pm_slider.set(1)  # since the default at programm start is 'on'
 pm_slider.grid(row=1, column=1, sticky=W)
 

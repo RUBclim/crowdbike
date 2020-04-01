@@ -82,7 +82,7 @@ columnnames = [
     'VapourPressureRaw',
     'PM10',
     'PM2.5',
-    ]
+]
 
 # check if file is already there
 # TODO: Think if it makes sense to hava a daily file or not

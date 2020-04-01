@@ -5,5 +5,10 @@
         "logfile_path": "/home/pi/Dokumente/crowdbike/data/",
         "pm_sensor": false,
         "sampling_rate": 5
+    },
+    "cloud": {
+        "folder_token": "abcde1234",
+        "passwd": "my_password",
+        "base_url": "https://example.nextcloud.de"
     }
 }
