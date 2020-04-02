@@ -48,15 +48,17 @@ with open(config_path, 'r') as config:
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
 
+with open('calibration.json', 'r') as calib:
+    calib = json.load(calib)
 # __calibration params__
 # enter the calibration coefficient slope for temperature
-temperature_cal_a1 = 1.00100
+temperature_cal_a1 = calib['temp_cal_a1']
 # enter the calibration coefficient offset for temperature
-temperature_cal_a0 = 0.00000
+temperature_cal_a0 = calib['temp_cal_a0']
 # enter the calibration coefficient slope for vapour pressure
-vappress_cal_a1    = 1.00000
+vappress_cal_a1    = calib['vappress_cal_a1']
 # enter the calibration coefficient offset for vapour pressure
-vappress_cal_a0    = 0.00000
+vappress_cal_a0    = calib['vappress_cal_a0']
 
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
