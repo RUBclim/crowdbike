@@ -486,10 +486,15 @@ b4.grid(row=14, column=2, sticky=W)
 # slider
 pm_slider = Scale(
     orient=HORIZONTAL, length=80, to=1, label='',
-    showvalue=False, sliderlength=40, troughcolor='#20ff20',
+    showvalue=False, sliderlength=40, troughcolor=None,
     width=30, command=set_pm_status,
 )
-pm_slider.set(1)  # since the default at programm start is 'on'
+if pm_status:
+    pm_slider['troughcolor'] = '#20ff20'
+else:
+    pm_slider['troughcolor'] = '#c10000'
+
+pm_slider.set(int(pm_status))
 pm_slider.grid(row=1, column=1, sticky=W)
 
 recording = True
