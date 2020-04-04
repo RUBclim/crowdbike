@@ -14,7 +14,7 @@ First established at:
     Modified by Andreas Christen Apr 2018
     https://github.com/achristen/Meteobike
 
-Modified Jan 2019:
+Modified Mar 2020:
     Ruhr-University Bochum
     Urban Climatology Group
     Jonas Kittner
@@ -78,10 +78,8 @@ logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
     os.makedirs(logfile_path)
 
-logfile = (
-    logfile_path + raspberryid + '-' +
-    studentname + '-' + strftime('%Y-%m-%d_%H%M%S.csv')
-)
+logfile_name = f'{raspberryid}_{studentname}_{strftime("%Y-%m-%d_%H%M%S")}.csv'
+logfile = os.path.join(logfile_path, logfile_name)
 
 # __global variables
 font_size     = 24
@@ -92,14 +90,14 @@ sampling_rate = config['user']['sampling_rate']
 
 
 class GpsPoller(threading.Thread):
-    def __init__(self):
+    def __init__(self) -> None:
         threading.Thread.__init__(self)
         global gpsd
         gpsd = gps(mode=WATCH_ENABLE)
         self.current_value = None
         self.running = True
 
-    def run(self):
+    def run(self) -> None:
         global gpsd
         while gpsp.running:
             gpsd.next()
@@ -119,6 +117,7 @@ cnames = [
     'Altitude',
     'Latitude',
     'Longitude',
+    'Speed',
     'Temperature',
     'TemperatureRaw',
     'RelHumidity',
@@ -131,12 +130,12 @@ cnames = [
 
 
 # __functions__
-def exit_program():
+def exit_program() -> None:
     master.destroy()
     exit()  # TODO: Exit does not work properly
 
 
-def record_data():
+def record_data() -> None:
     global recording
     recording = True
     b2.config(state=NORMAL)
@@ -152,7 +151,7 @@ def record_data():
         f0.close()
 
 
-def stop_data():
+def stop_data() -> None:
     global recording
     recording = False
     b1.config(state=NORMAL)
@@ -160,7 +159,7 @@ def stop_data():
 
 
 # tkinter button slider function
-def set_pm_status(value):
+def set_pm_status(value: str) -> None:
     global pm_slider
     global pm_status
     if value == '1':
@@ -179,7 +178,7 @@ def set_pm_status(value):
             pass
 
 
-def start_counting(label):
+def start_counting(label: Label) -> None:
     counter = 0
 
     def count():
@@ -199,13 +198,13 @@ def start_counting(label):
 
         # calculate temperature with sensor calibration values
         # TODO: Ckeck if everything is correct or all of this is needed
-        dht22_temperature_raw      = round(dht22_temperature, 5)
-        dht22_temperature_calib    = round(
+        dht22_temperature_raw = round(dht22_temperature, 5)
+        dht22_temperature_calib = round(
             dht22_temperature *
             temperature_cal_a1 +
             temperature_cal_a0, 3,
         )
-        dht22_temperature          = dht22_temperature_calib
+        dht22_temperature = dht22_temperature_calib
 
         saturation_vappress_ucalib = (
                                       0.6113 * np.exp((2501000.0 / 461.5) *
@@ -265,6 +264,7 @@ def start_counting(label):
         gps_altitude  = gpsd.fix.altitude
         gps_latitude  = gpsd.fix.latitude
         gps_longitude = gpsd.fix.longitude
+        gps_speed     = gpsd.fix.speed / 1.852  # convert to kph
         f_mode        = int(gpsd.fix.mode)  # store number of sats
         has_fix       = False  # assume no fix
 
@@ -278,9 +278,10 @@ def start_counting(label):
 
         # __format value display in gui__
         value_ctime.config(text=computer_time)
-        value_altitude.config(text='{0:.3f} m'.format(gps_altitude))
-        value_latitude.config(text='{0:.6f} N'.format(gps_latitude))
-        value_longitude.config(text='{0:.6f} E'.format(gps_longitude))
+        value_altitude.config(text='{0:.3f} m ASL'.format(gps_altitude))
+        value_latitude.config(text='{0:.6f} °N'.format(gps_latitude))
+        value_longitude.config(text='{0:.6f} °E'.format(gps_longitude))
+        value_speed.config(text='{0:.1f} km/h'.format(gps_speed))
         value_time.config(text=gps_time)
         value_temperature.config(text='{0:.1f} °C'.format(dht22_temperature))
         value_humidity.config(text='{0:.1f} %'.format(dht22_humidity))
@@ -305,6 +306,7 @@ def start_counting(label):
             f0.write('{0:.3f}'.format(gps_altitude) + ',')
             f0.write('{0:.6f}'.format(gps_latitude) + ',')
             f0.write('{0:.6f}'.format(gps_longitude) + ',')
+            f0.write('{0:.1f}'.format(gps_speed) + ',')
 
             f0.write(str(dht22_temperature) + ',')
             f0.write(str(dht22_temperature_raw) + ',')
@@ -384,33 +386,36 @@ label_longitude = Label(
 )
 label_longitude.grid(row=6, column=0, sticky=W)
 
+label_speed = Label(master, text=' Speed', font=('Helvetica', font_size))
+label_speed.grid(row=7, column=0, sticky=W)
+
 label_time = Label(master, text=' GPS Time', font=('Helvetica', font_size))
-label_time.grid(row=7, column=0, sticky=W)
+label_time.grid(row=8, column=0, sticky=W)
 
 label_temperature = Label(
     master, text=' Temperature',
     font=('Helvetica', font_size),
 )
-label_temperature.grid(row=8, column=0, sticky=W)
+label_temperature.grid(row=9, column=0, sticky=W)
 
 label_humidity = Label(
     master, text=' Rel. Humidity',
     font=('Helvetica', font_size),
 )
-label_humidity.grid(row=9, column=0, sticky=W)
+label_humidity.grid(row=10, column=0, sticky=W)
 
 label_vappress = Label(
     master, text=' Vap. Pressure   ',
     font=('Helvetica', font_size),
 )
-label_vappress.grid(row=10, column=0, sticky=W)
+label_vappress.grid(row=11, column=0, sticky=W)
 
 # labels for pm sensor
 label_pm10 = Label(master, text=' PM 10 ', font=('Helvetica', font_size))
-label_pm10.grid(row=11, column=0, sticky=W)
+label_pm10.grid(row=12, column=0, sticky=W)
 
 label_pm2_5 = Label(master, text=' PM 2.5 ', font=('Helvetica', font_size))
-label_pm2_5.grid(row=12, column=0, sticky=W)
+label_pm2_5.grid(row=13, column=0, sticky=W)
 
 # define values (constructed also as labels, text will be modified in count)
 value_counter = Label(
@@ -440,34 +445,41 @@ value_longitude = Label(
 )
 value_longitude.grid(row=6, column=1, sticky=W, columnspan=2)
 
+value_speed = Label(
+    master, text=' Speed',
+    font=('Helvetica', font_size),
+)
+
+value_speed.grid(row=7, column=1, sticky=W, columnspan=2)
+
 value_time = Label(
     master, text='GPS Time ---------------',
     font=('Helvetica', font_size),
 )
-value_time.grid(row=7, column=1, sticky=W, columnspan=2)
+value_time.grid(row=8, column=1, sticky=W, columnspan=2)
 
 value_temperature = Label(
     master, text=' Temperature',
     font=('Helvetica', font_size),
 )
-value_temperature.grid(row=8, column=1, sticky=W, columnspan=2)
+value_temperature.grid(row=9, column=1, sticky=W, columnspan=2)
 
 value_humidity = Label(
     master, text=' Rel. Humidity',
     font=('Helvetica', font_size),
 )
-value_humidity.grid(row=9, column=1, sticky=W, columnspan=2)
+value_humidity.grid(row=10, column=1, sticky=W, columnspan=2)
 
 value_vappress = Label(
     master, text=' Vap. Pressure ',
     font=('Helvetica', font_size),
 )
-value_vappress.grid(row=10, column=1, sticky=W, columnspan=2)
+value_vappress.grid(row=11, column=1, sticky=W, columnspan=2)
 
 value_pm10 = Label(master, text=' PM 10 ', font=('Helvetica', font_size))
-value_pm10.grid(row=11, column=1, sticky=W, columnspan=2)
+value_pm10.grid(row=12, column=1, sticky=W, columnspan=2)
 value_pm2_5 = Label(master, text=' PM 2.5 ', font=('Helvetica', font_size))
-value_pm2_5.grid(row=12, column=1, sticky=W, columnspan=2)
+value_pm2_5.grid(row=13, column=1, sticky=W, columnspan=2)
 
 # initialize value_counter
 start_counting(value_counter)
@@ -477,13 +489,13 @@ b1 = Button(
     master, text='Record', width=7, state=DISABLED,
     command=record_data,
 )
-b1.grid(row=14, column=0, sticky=W)
+b1.grid(row=15, column=0, sticky=W)
 
 b2 = Button(master, text='Stop', width=7, state=DISABLED, command=stop_data)
-b2.grid(row=14, column=1, sticky=W)
+b2.grid(row=15, column=1, sticky=W)
 
 b4 = Button(master, text='Exit', width=7, state=NORMAL, command=exit_program)
-b4.grid(row=14, column=2, sticky=W)
+b4.grid(row=15, column=2, sticky=W)
 
 # slider
 pm_slider = Scale(

@@ -13,7 +13,7 @@ First established at:
     Modified by Andreas Christen Apr 2018
     https://github.com/achristen/Meteobike
 
-Modified Jan 2019:
+Modified Mar 2020:
     Ruhr-University Bochum
     Urban Climatology Group
     Jonas Kittner
@@ -27,7 +27,6 @@ import csv
 import datetime
 import json
 import os
-import sys
 import threading
 import time
 
@@ -40,8 +39,7 @@ from gps import gps
 from gps import WATCH_ENABLE
 
 # __load confing file__
-config_path = sys.argv[1]
-with open(config_path, 'r') as config:
+with open('config.json', 'r') as config:
     config = json.load(config)
 
 # __user parameters__
@@ -63,10 +61,9 @@ vappress_cal_a0    = calib['vappress_cal_a0']
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
     os.makedirs(logfile_path)
-logfile = (
-    logfile_path + raspberryid + '-' +
-    studentname + '-' + time.strftime('%Y-%m-%d_%H%M%S.csv')
-)
+logfile_name = f'{raspberryid}_{studentname}_{time.strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa 501
+logfile = os.path.join(logfile_path, logfile_name)
+
 
 columnnames = [
     'ID',
@@ -76,6 +73,7 @@ columnnames = [
     'Altitude',
     'Latitude',
     'Longitude',
+    'Speed',
     'Temperature',
     'TemperatureRaw',
     'RelHumidity',
@@ -87,8 +85,6 @@ columnnames = [
 ]
 
 # check if file is already there
-# TODO: Think if it makes sense to hava a daily file or not
-# right now it is always False
 if not os.path.exists(logfile):
     f = open(logfile, 'a', newline='')
     writer = csv.DictWriter(f, columnnames)
@@ -102,14 +98,14 @@ sampling_rate = config['user']['sampling_rate']
 
 
 class GpsPoller(threading.Thread):
-    def __init__(self):
+    def __init__(self) -> None:
         threading.Thread.__init__(self)
         global gpsd
         gpsd = gps(mode=WATCH_ENABLE)
         self.current_value = None
         self.running = True
 
-    def run(self):
+    def run(self) -> None:
         global gpsd
         while gpsp.running:
             gpsd.next()
@@ -139,13 +135,13 @@ while True:
     # calculate temperature with sensor calibration values
     # TODO: Ckeck if everything is correct or all of this is actually needed
 
-    dht22_temperature_raw      = round(dht22_temperature, 5)
-    dht22_temperature_calib    = round(
+    dht22_temperature_raw = round(dht22_temperature, 5)
+    dht22_temperature_calib = round(
         dht22_temperature *
         temperature_cal_a1 +
         temperature_cal_a0, 3,
     )
-    dht22_temperature          = dht22_temperature_calib
+    dht22_temperature = dht22_temperature_calib
 
     saturation_vappress_ucalib = (
                                     0.6113 * np.exp((2501000.0 / 461.5) *
@@ -177,10 +173,10 @@ while True:
         vappress_cal_a1 +
         vappress_cal_a0, 3,
     )
-    dht22_vappress       = dht22_vappress_calib
+    dht22_vappress = dht22_vappress_calib
 
-    dht22_humidity_raw   = round(dht22_humidity, 5)
-    dht22_humidity       = round(
+    dht22_humidity_raw = round(dht22_humidity, 5)
+    dht22_humidity = round(
         100 * (
             dht22_vappress_calib /
             saturation_vappress_calib
@@ -205,6 +201,7 @@ while True:
     gps_altitude  = gpsd.fix.altitude
     gps_latitude  = gpsd.fix.latitude
     gps_longitude = gpsd.fix.longitude
+    gps_speed     = gpsd.fix.speed / 1.852  # convert to kph
     f_mode        = int(gpsd.fix.mode)  # store number of sats
     has_fix       = False  # assume no fix
 
@@ -217,6 +214,7 @@ while True:
         'Altitude': gps_altitude,
         'Latitude': gps_latitude,
         'Longitude': gps_longitude,
+        'Speed': gps_speed,
         'Temperature': dht22_temperature,
         'TemperatureRaw': dht22_temperature_raw,
         'RelHumidity': dht22_humidity,
