@@ -69,9 +69,9 @@ temperature_cal_a1 = calib['temp_cal_a1']
 # enter the calibration coefficient offset for temperature
 temperature_cal_a0 = calib['temp_cal_a0']
 # enter the calibration coefficient slope for vapour pressure
-vappress_cal_a1    = calib['vappress_cal_a1']
+vappress_cal_a1 = calib['vappress_cal_a1']
 # enter the calibration coefficient offset for vapour pressure
-vappress_cal_a0    = calib['vappress_cal_a0']
+vappress_cal_a0 = calib['vappress_cal_a0']
 
 window_title = 'Crowdbike' + raspberryid
 logfile_path = config['user']['logfile_path']
@@ -82,10 +82,10 @@ logfile_name = f'{raspberryid}_{studentname}_{strftime("%Y-%m-%d_%H%M%S")}.csv'
 logfile = os.path.join(logfile_path, logfile_name)
 
 # __global variables
-font_size     = 24
-gpsd          = None
-recording     = False
-pm_status     = config['user']['pm_sensor']
+font_size = 24
+gpsd = None
+recording = False
+pm_status = config['user']['pm_sensor']
 sampling_rate = config['user']['sampling_rate']
 
 
@@ -218,7 +218,7 @@ def start_counting(label: Label) -> None:
                                                           )
                                                       )))
         )
-        saturation_vappress_calib  = (
+        saturation_vappress_calib = (
                                       0.6113 * np.exp((2501000.0 / 461.5) *
                                                       ((1.0 / 273.15) -
                                                       (
@@ -228,20 +228,19 @@ def start_counting(label: Label) -> None:
                                                           )
                                                       )))
         )
-        dht22_vappress       = (
-                                (dht22_humidity / 100.0) *
-                                saturation_vappress_ucalib
+        dht22_vappress = (
+            (dht22_humidity / 100.0) * saturation_vappress_ucalib
         )
-        dht22_vappress_raw   = round(dht22_vappress, 3)
+        dht22_vappress_raw = round(dht22_vappress, 3)
         dht22_vappress_calib = round(
             dht22_vappress *
             vappress_cal_a1 +
             vappress_cal_a0, 3,
         )
-        dht22_vappress       = dht22_vappress_calib
+        dht22_vappress = dht22_vappress_calib
 
-        dht22_humidity_raw   = round(dht22_humidity, 5)
-        dht22_humidity       = round(
+        dht22_humidity_raw = round(dht22_humidity, 5)
+        dht22_humidity = round(
             100 * (
                 dht22_vappress_calib /
                 saturation_vappress_calib
@@ -250,25 +249,25 @@ def start_counting(label: Label) -> None:
 
         # read pm-sensor takes max 1 sec
         if pm_status is True:
-            pm    = nova_pm.read_pm()
+            pm = nova_pm.read_pm()
             pm2_5 = pm['PM2_5']
-            pm10  = pm['PM10']
+            pm10 = pm['PM10']
         else:
             pm2_5 = np.nan
-            pm10  = np.nan
+            pm10 = np.nan
 
         # correct humidity reading TODO: seems kinda bad style to hardcode this
         if dht22_humidity > 100:
             dht22_humidity = 100
 
         # Get GPS position
-        gps_time      = gpsd.utc
-        gps_altitude  = gpsd.fix.altitude
-        gps_latitude  = gpsd.fix.latitude
+        gps_time = gpsd.utc
+        gps_altitude = gpsd.fix.altitude
+        gps_latitude = gpsd.fix.latitude
         gps_longitude = gpsd.fix.longitude
-        gps_speed     = gpsd.fix.speed / 1.852  # convert to kph
-        f_mode        = int(gpsd.fix.mode)  # store number of sats
-        has_fix       = False  # assume no fix
+        gps_speed = gpsd.fix.speed / 1.852  # convert to kph
+        f_mode = int(gpsd.fix.mode)  # store number of sats
+        has_fix = False  # assume no fix
 
         if f_mode == 2:
             value_counter.config(bg='orange')
@@ -330,18 +329,18 @@ def start_counting(label: Label) -> None:
 master = Tk()
 master.title(window_title)
 # master.attributes('-fullscreen', True)
-name1 = Label(
+Label(
     master, text=' Name', fg='blue',
     font=('Helvetica', font_size),
 ).grid(row=0, column=0, sticky=W)
-name2 = Label(
+Label(
     master, text=studentname + "'s Crowdbike", fg='blue',
     font=('Helvetica', font_size),
 ).grid(
         row=0, column=1, sticky=W,
         columnspan=2,
 )
-ip1 = Label(
+Label(
     master, text=' IP', fg='blue',
     font=('Helvetica', font_size),
 ).grid(row=2, column=0, sticky=W)
@@ -352,7 +351,7 @@ ip2 = Label(
         row=1, column=2, sticky=E,
         columnspan=2,
 )
-pm = Label(
+Label(
     master, text=' PM-Sensor', fg='blue',
     font=('Helvetica', font_size),
 ).grid(

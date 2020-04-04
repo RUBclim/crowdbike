@@ -135,7 +135,7 @@ class pm_sensor:
 
 
 @retry(tries=5)
-def read_dht22(sensor: adafruit_dht.DHT22)  -> dict:
+def read_dht22(sensor: adafruit_dht.DHT22) -> dict:
     temp = sensor.temperature
     hum = sensor.humidity
     if temp is None:

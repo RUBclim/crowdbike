@@ -54,9 +54,9 @@ temperature_cal_a1 = calib['temp_cal_a1']
 # enter the calibration coefficient offset for temperature
 temperature_cal_a0 = calib['temp_cal_a0']
 # enter the calibration coefficient slope for vapour pressure
-vappress_cal_a1    = calib['vappress_cal_a1']
+vappress_cal_a1 = calib['vappress_cal_a1']
 # enter the calibration coefficient offset for vapour pressure
-vappress_cal_a0    = calib['vappress_cal_a0']
+vappress_cal_a0 = calib['vappress_cal_a0']
 
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
@@ -92,8 +92,8 @@ if not os.path.exists(logfile):
     f.close()
 
 # __global variables___
-gpsd          = None
-pm_status     = config['user']['pm_sensor']
+gpsd = None
+pm_status = config['user']['pm_sensor']
 sampling_rate = config['user']['sampling_rate']
 
 
@@ -153,7 +153,7 @@ while True:
                                                         )
                                                     )))
     )
-    saturation_vappress_calib  = (
+    saturation_vappress_calib = (
                                     0.6113 * np.exp((2501000.0 / 461.5) *
                                                     ((1.0 / 273.15) -
                                                     (
@@ -163,11 +163,8 @@ while True:
                                                         )
                                                     )))
     )
-    dht22_vappress       = (
-                            (dht22_humidity / 100.0) *
-                            saturation_vappress_ucalib
-    )
-    dht22_vappress_raw   = round(dht22_vappress, 3)
+    dht22_vappress = ((dht22_humidity / 100.0) * saturation_vappress_ucalib)
+    dht22_vappress_raw = round(dht22_vappress, 3)
     dht22_vappress_calib = round(
         dht22_vappress *
         vappress_cal_a1 +
@@ -185,25 +182,25 @@ while True:
 
     # read pm-sensor takes max 1 sec
     if pm_status is True:
-        pm    = nova_pm.read_pm()
+        pm = nova_pm.read_pm()
         pm2_5 = pm['PM2_5']
-        pm10  = pm['PM10']
+        pm10 = pm['PM10']
     else:
         pm2_5 = np.nan
-        pm10  = np.nan
+        pm10 = np.nan
 
     # correct humidity reading TODO: seems kinda bad style to hardcode this
     if dht22_humidity > 100:
         dht22_humidity = 100
 
     # Get GPS position
-    gps_time      = gpsd.utc
-    gps_altitude  = gpsd.fix.altitude
-    gps_latitude  = gpsd.fix.latitude
+    gps_time = gpsd.utc
+    gps_altitude = gpsd.fix.altitude
+    gps_latitude = gpsd.fix.latitude
     gps_longitude = gpsd.fix.longitude
-    gps_speed     = gpsd.fix.speed / 1.852  # convert to kph
-    f_mode        = int(gpsd.fix.mode)  # store number of sats
-    has_fix       = False  # assume no fix
+    gps_speed = gpsd.fix.speed / 1.852  # convert to kph
+    f_mode = int(gpsd.fix.mode)  # store number of sats
+    has_fix = False  # assume no fix
 
     # build readings
     readings = {
