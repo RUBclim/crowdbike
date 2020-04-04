@@ -132,7 +132,9 @@ cnames = [
 # __functions__
 def exit_program() -> None:
     master.destroy()
-    exit()  # TODO: Exit does not work properly
+    gpsp.running = False
+    gpsp.join()
+    exit(0)
 
 
 def record_data() -> None:
