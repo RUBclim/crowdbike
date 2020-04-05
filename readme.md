@@ -230,10 +230,10 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Öffnen des files durch Eingabe von `nano config.json` und Bestätigen durch `Enter`
 ```json
 {
-    "user": { TODO:
+    "user": {
         "studentname": "insert_username",
         "bike_nr": "01",
-        "logfile_path": "/home/pi/crowdbike/data/",
+        "logfile_path": "/home/pi/crowdbike/logs/",
         "pm_sensor": false,
         "sampling_rate": 5
     },
@@ -243,6 +243,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
         "base_url": "https://example.nextcloud.de"
     }
 }
+
 ```
 - Bei `studentname = `euren Namen eingeben. Ohne Leerzeichen und Umlaute. Der Name muss in doppelten Anführungszeichen stehen z.B. `"vorname_nachname"`. Komma am Ende beachten!
 - Anpassung bei `bike_nr =` eure Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
@@ -268,12 +269,23 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Das Programm verlassen und die Aufzeichnung beenden kann man über den **'Exit'** Button.
 
 ## Am Smartphone nutzen
-1. Hotspot einschalten, der Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärkeren WLAN-Netzwerke vorhanden sind.
-1. VNC-Viewer am Smartphone starten (kein Registrierung notwendig!)
+1. Um das Programm am Smartphone einfacher starten zu können, müssen wir noch eine Art Verknüpfung erstellen
+    1. Navigieren auf den Desktop mit `cd ~/Desktop/`
+    1. Erstellen eine neuen Datei mit `nano start_crowdbike.sh`
+    1. In die Datei folgendes schreiben:
+        ```sh
+        python3 ~/crowdbike/Code/crowdbike.py
+        ```
+    1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
+    1. Nun muss das kleine Programm noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x start_crowdbike.sh` und Bestätigen mit `Enter`.
+1. Hotspot am Smartphone einschalten, der Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärkeren WLAN-Netzwerke vorhanden sind.
+1. VNC-Viewer am Smartphone starten (es ist **keine** Registrierung notwendig!)
 1. Per **+** eine Verbindung hinzufügen
-1. Bei `Address` die IP-Adresse z.B. `192.168.2.143` oder den Hostname z.B. (`crowdbike6`) eingeben
-1. Namen der Verbindung festlegen z.B. 'crowdbike_6'
+1. Bei `Address` den Hostname z.B. (`crowdbike6`) eingeben sollte das nicht funktionieren, kann man in den Smartphoneeinstellungen unter Hotspot die verbundenen Geräte anzeigen und bei einem Klick auf `crowdbike1` kann die IP-Adresse angezeigt werden. Notiert diese und gebt diese statt dem Hostname ein. Sollte die in VNC-Viewer erstellte Verbindung beim nächsten mal nicht funktionieren, kann es sein, dass das Smartphone dem Raspberry Pi eine andere IP-Adresse zugewiesen hat. Kontrolliert dies wie oben beschrieben und versucht es erneut.
+
+1. Namen der Verbindung festlegen z.B. `'crowdbike6'`
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
+1. Auf dem Desktop sollte sich jetzt das Skript befinden, das wir eben erstellt haben. Mit einem Doppelklick und eine Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
 
 ## Variante ohne GUI nutzen
 TODO:
