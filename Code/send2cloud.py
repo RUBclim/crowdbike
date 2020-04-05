@@ -4,11 +4,16 @@ import os
 import subprocess
 
 parser = argparse.ArgumentParser()
-parser.add_argument('config_path', help='path to "config.json" file', type=str)
 parser.add_argument('-v', help='increase verbosity', action='store_true')
 args = parser.parse_args()
 
-with open(args.config_path, 'r') as config:
+# __load config files__
+with open(
+    os.path.join(
+        os.path.dirname(__file__),
+        'config.json',
+    ), 'r',
+) as config:
     config = json.load(config)
 
 log_dir = config['user']['logfile_path']

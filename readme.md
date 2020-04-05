@@ -181,7 +181,7 @@ GND|GND|schwarz|
 - Testen des GPS durch Eingabe `cgps -s`
     - **Hinweis:** Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
     - Hier ist es meist nötig, den Raspberry Pi bei geöffneten Fenster auf die Fensterbank zu legen
-    - Abbruch der Anzeige der GPS-Daten durch Drücken von `Strg + c`
+    - Abbruch der Anzeige der GPS-Daten durch Drücken von `q` oder `Strg + c`
 
 ### Temperatur- und Feuchtesensor
 1. In Verzeichnis crowdbike navigieren `cd /home/pi/crowdbike`
@@ -304,6 +304,12 @@ TODO:
 - Beim folgenden Neustart sollte das Skript nun automatisch starten
 - Ob das Skript läuft kann durch Navigieren zu `~/crwodbike/logs` und aufrufen von `tail -f my_logfilename.csv` geprüft werden.
 - Das Beobachten wieder mit `Strg + c` abbrechen
+### Nutzungshinweise zur `nonGUI` Version
+- Es muss sich darauf verlassen werden, dass das Programm ordnungsgemäß gestartet ist. Es besteht natürlich immer die Möglichkeit dass es aufgrund eines Fehlers zu keiner Datenaufzeichnung gekommen ist.
+- Die Kontrolle ob das Programm tatsächlich ordnungsgemäß läfut, kann z.B. unter Android mit einer Verbindung per `SSH` mithilfe der App [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh&hl=de) durchgeführt werden.
+- Hier kann dann wie oben beschrieben das log-File beobachtet werden.
+- Das Abbrechen der Datenaufzeichnung kann schonungslos durch trennen der Stromversorgung erreicht werden (nicht empfohlen) es kann zur Beschädigung des OS führen.
+- Korrekt beendet wird es durch ausführen von `bash ~/crowdbike/Code/stop_nonGUI.sh`
 ## Sensor-Kalibrierung
 TODO:
 - Die Kalibrierung der Sensoren kann im File `~/crowdbike/Code/calibration.json` eingetragen werden.

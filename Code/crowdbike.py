@@ -54,23 +54,30 @@ from FUN import read_dht22
 from gps import gps
 from gps import WATCH_ENABLE
 
-# __user parameters__
-with open('config.json', 'r') as config:
+# __load config files__
+with open(
+    os.path.join(
+        os.path.dirname(__file__),
+        'config.json',
+    ), 'r',
+) as config:
     config = json.load(config)
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
 
-with open('calibration.json', 'r') as calib:
+with open(
+    os.path.join(
+        os.path.dirname(__file__),
+        'calibration.json',
+    ), 'r',
+) as calib:
     calib = json.load(calib)
+
 # __calibration params__
-# enter the calibration coefficient slope for temperature
 temperature_cal_a1 = calib['temp_cal_a1']
-# enter the calibration coefficient offset for temperature
 temperature_cal_a0 = calib['temp_cal_a0']
-# enter the calibration coefficient slope for vapour pressure
 vappress_cal_a1 = calib['vappress_cal_a1']
-# enter the calibration coefficient offset for vapour pressure
 vappress_cal_a0 = calib['vappress_cal_a0']
 
 window_title = 'Crowdbike' + raspberryid
@@ -344,7 +351,7 @@ Label(
     master, text=' IP', fg='blue',
     font=('Helvetica', font_size),
 ).grid(row=2, column=0, sticky=W)
-ip2 = Label(
+Label(
     master, text=str('IP: ' + get_ip()), fg='blue',
     font=('Helvetica', font_size),
 ).grid(
