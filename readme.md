@@ -5,7 +5,7 @@
 - The original documentation and code  can be found [here](https://github.com/achristen/Meteobike)
 
 ## Benötigtes Material
-1. Raspberry Pi Zero W mit Raspbian (bereits vorinstalliert)
+1. Raspberry Pi Zero W
 1. Temperatur- und Feuchte-Sensor (Adafruit DHT22)
 1. GPS Modul - Adafruit Ultimate Breakout
 1. Nova PM-Sensor (optional)
@@ -17,48 +17,102 @@
 
 ## Benötigte Software/Hardware zur Einrichtung
 1. Laptop/Computer mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download-home-edition.html) Installer Edition oder Portable Edition)
+1. Raspberry Pi Imager um das Operating System zu installieren. Download hier für:
+    - [Windows](https://downloads.raspberrypi.org/imager/imager.exe)
+    - [macOS](https://downloads.raspberrypi.org/imager/imager.dmg)
+    - [Ubuntu](https://downloads.raspberrypi.org/imager/imager_amd64.deb)
 1. WLAN-Netzwerk mit Zugang zum Internet
 1. Smartphone mit VNC-Viewer (Download über Smartphone [Android](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=de) oder [iOS](https://apps.apple.com/de/app/vnc-viewer-remote-desktop/id352019548))
-1. Adapter Mini-HDMI zu HDMI
-1. USB-Hub mit Micro-USB-Anschluss
-1. Tastatur
-1. Maus
 
 ## Einrichtung des Raspberry Pi - Erstmalige Verwendung
 
-### Anschluss der Peripherie
-1. Anschließen an Monitor via HDMI und Adapter
-1. Anschließen des USB-Hubs mit Maus und Tastatur an den Eingang des Raspberry Pi auf der Platine bezeichnet mit `USB`
+### Systemsetup
+1. Operating System Image herunterladen
+1. Die MicroSD-Karte mit Adapter in den Computer einlegen.
+1. Raspberry Pi Imager starten
+1. Bei `CHOOSE OS` das eben heruntergeladene Image auswählen.
+1. Bei `CHOOSE SD CARD` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
+1. Mit `WRITE` den Schreibvorgang starten.
+1. Wenn der Schreibvorgang nach einiger Zeit abgeschlossen ist, SD-Karte noch nicht entnehmen, sondern das Laufwerk `boot` im Explorer öffnen.
+1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphonebildschirm passend ist.
+    ```bash
+    # uncomment to force a console size. By default it will be display's size minus
+    # overscan.
+    framebuffer_width=720
+    framebuffer_height=1280
+    ```
+#### WLAN Konfiguration
+1. Eine neue Datei mit dem exakten Namen `wpa_supplicant.conf` anlegen
+    1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; Namen eingeben (darauf achten, dass kein .txt mehr am Ende steht!))
+    1. Eventuell müssen in Windows erst die Dateinamenerweiterungen aktiviert werden. Dies geschieht über Ansicht und dann einen Haken bei Dateinamenerweiterungen setzen.
+1. Bei der Frage "Wollen Sie die Dateinamenerweiterung ändern, wird die Datei möglicherweise unbrauchbar" mit `Ja` bestätigen.
+1. Nun mit Rechtsklick &rarr; Öffnen mit den Editor auswählen
+1. Es müssen nun Folgende Einträge eingefügt werden:
+    ```bash
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
+    country=DE
+
+    network={
+        ssid="Name eures Heim-WLANs"
+        psk="Passwort eures Heim-WLANs"
+    }
+
+    network={
+        ssid="Name eures Smartphone-Hotspots"
+        psk="Passwort eures Smartphone-Hotspots"
+    }
+    ```
+1. Darauf achten, dass Name und Passwort in `" "` stehen!
+1. Es dürfen keine Leerzeichen die `=` umgeben!
+
+### Starten des Raspberry Pi
 1. Anschließen der Powerbank an den Raspberry Pi an den Eingang `PWR IN`
-1. Monitor einschalten
-1. Raspberry pi sollte nun booten
-1. Falls nötig anmelden als Benutzer: `pi` mit Passwort: `siehe PPP`
+1. Raspberry pi sollte nun booten (grüne LED blinkt)
 
-### Herstellen einer Netzwerkverbindung
-1. Falls nötig WLAN am Raspberry Pi aktivieren (oben rechts im Bild)
-1. Verbinden mit lokalem WLAN Netzwerk (Hiwneis der Raspberry Pi zero unterstützt nur 2,4 Ghz)
-1. Netzwerkverbindung zum Smartphone vorbereiten
-    1. Hotspot am Smartphone aktivieren, SSID (Name des WLAN_Netzwerks) und Passwort nachschauen
-    1. Netzwerk am Raspberry Pi hinzufügen (wie zuvor)
-    1. Verbindung herstellen. Wenn erfolgreich, zunächst wieder trennen und mit erster Verbindung fortfahren
-1. Raspberry Pi kann angeschaltet (mit der Powerbak verbunden) bleiben!
->Die Verbindung zu Monitor und Tastatur kann aber nun erstmal getrennt werden
-
-## Herstellen einer Verbindung vom Laptop via SSH
-1. Verbinden des Laptops mit gleichem WLAN-Netzwerk wie Raspberry Pi (Mobiler Hotspot oder anderes WLAN-Netzwerk)
+## Herstellen einer Verbindung vom Laptop/Computer via SSH
+1. Verbinden des Laptops/Computers mit dem gleichem WLAN-Netzwerk wie der Raspberry Pi &rarr; Heim-WLAN wie zuvor eingestellt.
 1. Starten von MobaXterm am Laptop/Computer
-1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `<Hostname des Raspberry Pi's>` z.B. `crowdbike13` &rarr; Specify username: `pi` &rarr; port: `22` &rarr; OK
+1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `crowdbike
+1. Specify username: `pi`
+1. port: `22` &rarr; OK
 1. Passwort eingeben: `siehe PPP`
 
 ## Installieren der Software
 ### Kurztipp: Navigation im Linux-Terminal
 - Automatisches Ergänzen des Ausdrucks oder Pfads im Terminal immer mit der `TAB-Taste`
 - Bestätigen von Befehlen immer mit `Enter`. Wenn erfolgreich, keine Rückgabe, ansonsten erscheint eine Error-Mitteilung anhand derer festgestellt werden kann, was nicht funktioniert hat.
-- Verzeichnis wechseln `cd Verzeichnis Name` (im Stammverzeichnis `'/'` mit `cd /Verzeichnis-Name`)
+- Verzeichnis/Ordner wechseln `cd Verzeichnis Name` (im Stammverzeichnis `'/'` mit `cd /Verzeichnis-Name`)
 - Ordnerinhalt anzeigen `ls` oder `ls -l` (-l für Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
 - Letzte eingebenen Befehle wiederaufrufen mit &uarr; und &darr; (Pfeiltasten rauf/runter)
+
+### Einrichtung des Betriebssystems abschließen
+- Hostnamen setzen
+    1. Eingabe von `sudo raspi-config`
+    1. mit Pfeiltasten zu "Network Options" navigieren und mit `Enter` bestätigen
+    1. Zu "Hostname" navigieren &rarr; `Enter` &rarr; Hinweis mit `<Ok>` bestätigen
+    1. Nun den Namen zu `crowdbike13` (Die euch zugewiesene Nummer) ändern
+    1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Ok>` zu springen)
+
+
+- Serielle Schnittstelle aktivieren
+    1. mit Pfeiltasten zu "Interfacing Options" navigieren und mit `Enter` bestätigen
+    1. Zu "P6 Serial" navigieren &rarr; `Enter`
+    "Would you like to a login shell to be accessible over serial?" hier `<No>` auswählen
+    1. "Would you like the serial port hardware to be enabled?" hier `<Yes>` auswählen
+    1. "The serial login shell is disabled"
+    1. "The serial interface is enabled"
+    1. Mit `<Ok>` bestätigen
+    1. Mit `<Finish>` beenden (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Finish>` zu springen)
+    1. "Would you like to reboot now?" mit `<yes>` bestätigen
+
+- Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer via SSH) beschrieben.
+- Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
+- Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
+    - `sudo shutdown -P now`
+    - Warten bis grüne LED nicht mehr leuchtet, dann Stromversorgung (Powerbank) trennen
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 - Installationen unter Linux meist mit `sudo apt-get install Programm-Name`
 - Installieren folgender Programme mit obiger Syntax
@@ -78,22 +132,7 @@
 
 - Benötigte Dateien von Github herunterladen
     - Prüfen ob man sich im home-Verzeichnis befindet durch Eingaben von `cd ~` und Bestätigen mit `Enter`
-    - Crowdbike Software: `git clone https://theendlessriver13/Meteobike --depth=1`
-- Serielle Schnittstelle aktivieren
-    - `sudo raspi-config`
-    - mit Pfeiltasten zu "Interfacing Options" navigieren und mit `Enter` bestätigen
-    - Zu "P6 Serial" navigieren &rarr; `Enter`
-    "Would you like to a login shell to be accessible over serial?" hier `<No>` auswählen
-    - "Would you like the serial port hardware to be enabled?" hier `<Yes>` auswählen
-    - "The serial login shell is disabled"
-    - "The serial interface is enabled"
-    - Mit `<Ok>` bestätigen
-    - Mit `<Finish>` beenden (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Finish>` zu springen)
-    - "Would you like to reboot now?" mit `<yes>` bestätigen
-
-- Nach dem reboot Raspberry Pi erneut ausschalten, um Sensoren anzuschließen
-    - `sudo shutdown -P now`
-    - Warten bis grüne LED nicht mehr leuchtet, dann Stromversorgung (Powerbank) trennen
+    - Crowdbike Software: `git clone https://theendlessriver13/Meteobike --depth=1 crowdbike`
 
 ## Anschluss der Sensoren
 ### Temperatur- und Feuchte-Sensor
@@ -184,7 +223,7 @@ GND|GND|schwarz|
     - Abbruch der Anzeige der GPS-Daten durch Drücken von `q` oder `Strg + c`
 
 ### Temperatur- und Feuchtesensor
-1. In Verzeichnis crowdbike navigieren `cd /home/pi/crowdbike`
+1. In Verzeichnis crowdbike navigieren `cd ~/crowdbike`
 1. Anlegen eines Testscripts für Temperatur- und Feuchtesensor
 1. Eingabe von `nano temp_hum_test.py`
 1. Kopieren (Einfügen in den Editor erfolgt durch `Rechtsklick`) oder abtippen des unten stehenden Codes
@@ -210,7 +249,7 @@ for i in range(10):
 - Es ist Möglich, dass zunächst `None None` als Ausgabe erscheint. Sollte das der Fall sein, einfach erneut probieren und Verkabelung prüfen.
 
 ### PM-Sensor (optional)
-1. Navigieren in Ordner durch `cd /home/pi/crowdbike`
+1. Navigieren in Ordner durch `cd ~/crowdbike`
 1. Anlegen eines Testscripts für den PM-Sensor
 1. Eingabe von `nano pm_test.py`
 1. Kopieren oder abtippen des unten stehenden Codes
@@ -226,7 +265,7 @@ for i in range(10):
 - Starten des Scripts durch Eingabe von `python3 pm_test.py`
 ## Anpassen/Personalisieren der Logger-Software
 Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um die Software zu personalisieren und einzurichten
-- Navigieren zum config-file durch `cd /home/pi/crowdbike/Code`
+- Navigieren zum config-file durch `cd ~/crowdbike/Code`
 - Öffnen des files durch Eingabe von `nano config.json` und Bestätigen durch `Enter`
 ```json
 {
@@ -271,7 +310,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 ## Am Smartphone nutzen
 1. Um das Programm am Smartphone einfacher starten zu können, müssen wir noch eine Art Verknüpfung erstellen
     1. Navigieren auf den Desktop mit `cd ~/Desktop/`
-    1. Erstellen eine neuen Datei mit `nano start_crowdbike.sh`
+    1. Erstellen einer neuen Datei mit `nano start_crowdbike.sh`
     1. In die Datei folgendes schreiben:
         ```sh
         python3 ~/crowdbike/Code/crowdbike.py
@@ -322,6 +361,11 @@ TODO:
 - Hier kann dann wie oben beschrieben das log-File beobachtet werden.
 - Das Abbrechen der Datenaufzeichnung kann schonungslos durch trennen der Stromversorgung erreicht werden (nicht empfohlen) es kann zur Beschädigung des OS führen.
 - Korrekt beendet wird es durch ausführen von `bash ~/crowdbike/Code/stop_nonGUI.sh`
+## Updates
+- Um evtl. Updates und Bugfixes herunterzuladen muss folgendes ausgeführt werden:
+1. Navigieren in den Ornder durch `cd ~/crowdbike/Code`
+1. Ausführen von `git fetch`
+1. Ausführen von `git checkout origin/master crowdbike.py` oder eben des Files für das eine neue Version verfügbar ist.
 ## Sensor-Kalibrierung
 TODO:
 - Die Kalibrierung der Sensoren kann im File `~/crowdbike/Code/calibration.json` eingetragen werden.
