@@ -13,31 +13,28 @@ First established at:
     Modified by Andreas Christen Apr 2018
     https://github.com/achristen/Meteobike
 
-Modified Mar 2020:
+Modified Apr 2020:
     Ruhr-University Bochum
     Urban Climatology Group
     Jonas Kittner
     added a nova PM-sensor to the kit
     made a non-GUI version to run in background
-
-Using the class GpsPoller
-written by Dan Mandle http://dan.mandle.me September 2012 License: GPL 2.0
+    reworked all internals - using adafruit blinka circuitpython library
 """
 import csv
 import datetime
 import json
 import os
 import signal
-import threading
 import time
 
 import adafruit_dht
 import board
 import numpy as np
+from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
-from gps import gps
-from gps import WATCH_ENABLE
+
 
 # __load config files__
 with open(
@@ -68,7 +65,7 @@ vappress_cal_a0 = calib['vappress_cal_a0']
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
     os.makedirs(logfile_path)
-logfile_name = f'{raspberryid}_{studentname}_{time.strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa 501
+logfile_name = f'{raspberryid}_{studentname}_{datetime.datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa E501
 logfile = os.path.join(logfile_path, logfile_name)
 
 
@@ -99,7 +96,6 @@ if not os.path.exists(logfile):
     f.close()
 
 # __global variables___
-gpsd = None
 counter = 1
 pm_status = config['user']['pm_sensor']
 sampling_rate = config['user']['sampling_rate']
@@ -108,6 +104,7 @@ sampling_rate = config['user']['sampling_rate']
 def exit_program(signum, frame) -> None:
     global f
     gpsp.running = False
+    gpsp.stop()
     gpsp.join()
     try:
         f.close()
@@ -117,21 +114,7 @@ def exit_program(signum, frame) -> None:
     exit(0)
 
 
-class GpsPoller(threading.Thread):
-    def __init__(self) -> None:
-        threading.Thread.__init__(self)
-        global gpsd
-        gpsd = gps(mode=WATCH_ENABLE)
-        self.current_value = None
-        self.running = True
-
-    def run(self) -> None:
-        global gpsd
-        while gpsp.running:
-            gpsd.next()
-
-
-gpsp = GpsPoller()
+gpsp = GPS()
 gpsp.start()
 dht22_sensor = adafruit_dht.DHT22(board.D4)
 nova_pm = pm_sensor(dev='/dev/ttyUSB0')
@@ -220,11 +203,12 @@ def main() -> None:
             dht22_humidity = 100
 
         # Get GPS position
-        gps_time = gpsd.utc
-        gps_altitude = gpsd.fix.altitude
-        gps_latitude = gpsd.fix.latitude
-        gps_longitude = gpsd.fix.longitude
-        gps_speed = gpsd.fix.speed / 1.852  # convert to kph
+        gps_time = gpsp.timestamp
+        gps_altitude = gpsp.alt
+        gps_latitude = gpsp.latitude
+        gps_longitude = gpsp.longitude
+        gps_speed = round(gpsp.speed * 1.852, 2)
+        # convert to kph
         # f_mode = int(gpsd.fix.mode)  # store number of sats
         # has_fix = False  # assume no fix
 

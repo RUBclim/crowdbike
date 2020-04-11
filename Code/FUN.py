@@ -1,6 +1,9 @@
 import socket
+import threading
+import time
 
 import adafruit_dht
+import adafruit_gps
 import serial
 from numpy import nan
 from retry import retry
@@ -143,3 +146,66 @@ def read_dht22(sensor: adafruit_dht.DHT22) -> dict:
     if hum is None:
         hum = nan
     return {'temperature': temp, 'humidity': hum}
+
+
+class GPS(threading.Thread):
+    '''Class for reading the adafruit gps'''
+    def __init__(self) -> None:
+        threading.Thread.__init__(self)
+        self.uart = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=10)
+        self.gps = adafruit_gps.GPS(self.uart, debug=False)
+        self.gps.send_command(b'PMTK314,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0')
+        self.gps.send_command(b'PMTK220,1000')
+        self.running = True
+
+        self.has_fix = None
+        self.latitude = None
+        self.longitude = None
+        self.satellites = None
+        self.timestamp = None
+        self.alt = None
+        self.speed = None
+
+    def run(self) -> None:
+        '''start thread and get values'''
+        while self.running:
+            try:
+                self.gps.update()
+                self.has_fix = self.gps.has_fix
+                if self.gps.satellites is not None:
+                    self.satellites = self.gps.satellites
+                else:
+                    self.satellites = nan
+
+                if self.gps.latitude is not None:
+                    self.latitude = self.gps.latitude
+                else:
+                    self.latitude = nan
+
+                if self.gps.longitude is not None:
+                    self.longitude = self.gps.longitude
+                else:
+                    self.longitude = nan
+
+                if self.gps.altitude_m is not None:
+                    self.alt = self.gps.altitude_m
+                else:
+                    self.alt = nan
+
+                if self.gps.speed_knots is not None:
+                    self.speed = self.gps.speed_knots
+                else:
+                    self.speed = nan
+
+                if self.gps.timestamp_utc is not None:
+                    self.timestamp = time.strftime(
+                        '%Y-%m-%d %H:%M:%S',
+                        self.gps.timestamp_utc,
+                    )
+                time.sleep(.1)
+            except Exception:
+                continue
+
+    def stop(self) -> None:
+        '''close uart port when terminating'''
+        self.uart.close()

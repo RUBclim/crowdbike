@@ -14,14 +14,13 @@ First established at:
     Modified by Andreas Christen Apr 2018
     https://github.com/achristen/Meteobike
 
-Modified Mar 2020:
+Modified Apr 2020:
     Ruhr-University Bochum
     Urban Climatology Group
     Jonas Kittner
     added a nova PM-sensor to the kit
-
-Using the class GpsPoller
-written by Dan Mandle http://dan.mandle.me September 2012 License: GPL 2.0
+    made a non-GUI version to run in background
+    reworked all internals - using adafruit blinka circuitpython library
 
 Buttons:
     Record:  Start recording in append mode to logfile, but only if gps has fix
@@ -32,8 +31,7 @@ Buttons:
 """
 import json
 import os
-import threading
-from time import strftime
+from datetime import datetime
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
@@ -49,11 +47,9 @@ import adafruit_dht
 import board
 import numpy as np
 from FUN import get_ip
+from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
-from gps import gps
-from gps import WATCH_ENABLE
-
 # __load config files__
 with open(
     os.path.join(
@@ -85,34 +81,18 @@ logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
     os.makedirs(logfile_path)
 
-logfile_name = f'{raspberryid}_{studentname}_{strftime("%Y-%m-%d_%H%M%S")}.csv'
+logfile_name = f'{raspberryid}_{studentname}_{datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa E501
 logfile = os.path.join(logfile_path, logfile_name)
 
 # __global variables
 font_size = 24
-gpsd = None
 recording = False
 pm_status = config['user']['pm_sensor']
 sampling_rate = config['user']['sampling_rate']
 
-
-class GpsPoller(threading.Thread):
-    def __init__(self) -> None:
-        threading.Thread.__init__(self)
-        global gpsd
-        gpsd = gps(mode=WATCH_ENABLE)
-        self.current_value = None
-        self.running = True
-
-    def run(self) -> None:
-        global gpsd
-        while gpsp.running:
-            gpsd.next()
-
-
 # main program
 counter = 0
-gpsp = GpsPoller()
+gpsp = GPS()
 gpsp.start()
 dht22_sensor = adafruit_dht.DHT22(board.D4)
 nova_pm = pm_sensor(dev='/dev/ttyUSB0')
@@ -140,6 +120,7 @@ cnames = [
 def exit_program() -> None:
     master.destroy()
     gpsp.running = False
+    gpsp.stop()
     gpsp.join()
     exit(0)
 
@@ -193,7 +174,7 @@ def start_counting(label: Label) -> None:
     def count():
         global counter
         counter += 1
-        computer_time = strftime('%Y-%m-%d %H:%M:%S')
+        computer_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
         # get sensor readings from DHT-sensor
         try:
@@ -268,12 +249,13 @@ def start_counting(label: Label) -> None:
             dht22_humidity = 100
 
         # Get GPS position
-        gps_time = gpsd.utc
-        gps_altitude = gpsd.fix.altitude
-        gps_latitude = gpsd.fix.latitude
-        gps_longitude = gpsd.fix.longitude
-        gps_speed = gpsd.fix.speed / 1.852  # convert to kph
-        f_mode = int(gpsd.fix.mode)  # store number of sats
+        gps_time = gpsp.timestamp
+        gps_altitude = gpsp.alt
+        gps_latitude = gpsp.latitude
+        gps_longitude = gpsp.longitude
+        gps_speed = round(gpsp.speed * 1.852, 2)
+
+        f_mode = int(gpsp.satellites)  # store number of sats
         has_fix = False  # assume no fix
 
         if f_mode == 2:
