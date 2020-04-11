@@ -27,13 +27,13 @@
 ## Einrichtung des Raspberry Pi - Erstmalige Verwendung
 
 ### Systemsetup
-1. Operating System Image herunterladen
+1. Operating System Image herunterladen und entpacken
 1. Die MicroSD-Karte mit Adapter in den Computer einlegen.
 1. Raspberry Pi Imager starten
-1. Bei `CHOOSE OS` das eben heruntergeladene Image auswählen.
+1. Bei `CHOOSE OS` &rarr; `Use custom` das eben heruntergeladene Image auswählen.
 1. Bei `CHOOSE SD CARD` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
 1. Mit `WRITE` den Schreibvorgang starten.
-1. Wenn der Schreibvorgang nach einiger Zeit abgeschlossen ist, SD-Karte noch nicht entnehmen, sondern das Laufwerk `boot` im Explorer öffnen.
+1. Wenn der Schreib- und Verifyvorgang nach einiger Zeit abgeschlossen ist, SD-Karte kurz entnehmen und wieder einstecken. Dann das Laufwerk `boot` im Explorer öffnen.
 1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphonebildschirm passend ist.
     ```bash
     # uncomment to force a console size. By default it will be display's size minus
@@ -43,7 +43,7 @@
     ```
 #### WLAN Konfiguration
 1. Eine neue Datei mit dem exakten Namen `wpa_supplicant.conf` anlegen
-    1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; Namen eingeben (darauf achten, dass kein .txt mehr am Ende steht!))
+    1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein .txt mehr am Ende steht!))
     1. Eventuell müssen in Windows erst die Dateinamenerweiterungen aktiviert werden. Dies geschieht über Ansicht und dann einen Haken bei Dateinamenerweiterungen setzen.
 1. Bei der Frage "Wollen Sie die Dateinamenerweiterung ändern, wird die Datei möglicherweise unbrauchbar" mit `Ja` bestätigen.
 1. Nun mit Rechtsklick &rarr; Öffnen mit den Editor auswählen
@@ -63,17 +63,18 @@
         psk="Passwort eures Smartphone-Hotspots"
     }
     ```
-1. Darauf achten, dass Name und Passwort in `" "` stehen!
-1. Es dürfen keine Leerzeichen die `=` umgeben!
+1. Darauf achten, dass Name und Passwort in `""` stehen!
+1. Es dürfen keine Leerzeichen das `=` umgeben!
 
 ### Starten des Raspberry Pi
 1. Anschließen der Powerbank an den Raspberry Pi an den Eingang `PWR IN`
 1. Raspberry pi sollte nun booten (grüne LED blinkt)
+1. Ca. eine Minute warten
 
 ## Herstellen einer Verbindung vom Laptop/Computer via SSH
 1. Verbinden des Laptops/Computers mit dem gleichem WLAN-Netzwerk wie der Raspberry Pi &rarr; Heim-WLAN wie zuvor eingestellt.
 1. Starten von MobaXterm am Laptop/Computer
-1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `crowdbike
+1. Session &rarr; SSH &rarr; Basic SSH settings &rarr; Remote host: `crowdbike`
 1. Specify username: `pi`
 1. port: `22` &rarr; OK
 1. Passwort eingeben: `siehe PPP`
@@ -91,22 +92,23 @@
 ### Einrichtung des Betriebssystems abschließen
 - Hostnamen setzen
     1. Eingabe von `sudo raspi-config`
-    1. mit Pfeiltasten zu "Network Options" navigieren und mit `Enter` bestätigen
+    1. mit Pfeiltasten zu "2 Network Options" navigieren und mit `Enter` bestätigen
     1. Zu "Hostname" navigieren &rarr; `Enter` &rarr; Hinweis mit `<Ok>` bestätigen
     1. Nun den Namen zu `crowdbike13` (Die euch zugewiesene Nummer) ändern
     1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Ok>` zu springen)
 
 
 - Serielle Schnittstelle aktivieren
-    1. mit Pfeiltasten zu "Interfacing Options" navigieren und mit `Enter` bestätigen
+    1. mit Pfeiltasten zu "5 Interfacing Options" navigieren und mit `Enter` bestätigen
     1. Zu "P6 Serial" navigieren &rarr; `Enter`
-    "Would you like to a login shell to be accessible over serial?" hier `<No>` auswählen
+    "Would you like to a login shell to be accessible over serial?" hier `<Nein>` auswählen
     1. "Would you like the serial port hardware to be enabled?" hier `<Yes>` auswählen
     1. "The serial login shell is disabled"
     1. "The serial interface is enabled"
     1. Mit `<Ok>` bestätigen
     1. Mit `<Finish>` beenden (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Finish>` zu springen)
     1. "Would you like to reboot now?" mit `<yes>` bestätigen
+    1. Ca. 1-2 Minuten warten
 
 - Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer via SSH) beschrieben.
 - Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
@@ -117,22 +119,16 @@
 - Installationen unter Linux meist mit `sudo apt-get install Programm-Name`
 - Installieren folgender Programme mit obiger Syntax
 - Alle Rückfragen wie `"Es werden zusätzlich 10MB Plattenspeicher genutzt"` mit `J`+`Enter` bestätigen
-    - `build-essential`
-    - `python-dev`
-    - `python-openssl`
-    - `git`
-    - `gpsd`
-    - `gpsd-clients`
-    - `python-gps`
+
     - `libgpiod2`
-- Installieren der Python Library für den Temperatursensor
+- Installieren der Python Libraries
+    - `sudo pip3 install adafruit-circuitpython-gps`
     - `sudo pip3 install adafruit-circuitpython-dht`
-    - `pip3 install gps`
     - `pip3 install retry`
 
 - Benötigte Dateien von Github herunterladen
     - Prüfen ob man sich im home-Verzeichnis befindet durch Eingaben von `cd ~` und Bestätigen mit `Enter`
-    - Crowdbike Software: `git clone https://theendlessriver13/Meteobike --depth=1 crowdbike`
+    - Crowdbike Software: `git clone https://github.com/theendlessriver13/Meteobike --depth=1 crowdbike`
 
 ## Anschluss der Sensoren
 ### Temperatur- und Feuchte-Sensor
@@ -176,51 +172,54 @@ GND|GND|schwarz|
 ## Sensoren in Betrieb nehmen
 - Raspberry Pi wieder mit der Powerbank verbinden und warten bis dieser gebootet hat
 - Wieder Verbindung über SSH mit MobaXterm herstellen (siehe oben)
-### GPS einrichten
-- Folgende Befehle müssen nacheinander ausgeführt werden
-1. `sudo systemctl stop serial-getty@ttyS0.service`
-1. `sudo systemctl disable serial-getty@ttyS0.service`
-1. `sudo systemctl stop gpsd.socket`
-1. `sudo systemctl disable gpsd.socket`
-- Autostart Befehl für GPS hinzufügen
-1. Eingabe von: `crontab -e`
-1. Falls nach einem Texteditor gefragt wird `nano` auswählen (durch Eingabe von entsprechender Zahl und Bestätigen mit `Enter`)
-    ```bash
-    pi@crowdbike6:~ $ crontab -e
-    no crontab for pi - using an empty one
-
-    Select an editor.  To change later, run 'select-editor'.
-    1. /bin/nano        <---- easiest
-    2. /usr/bin/vim.tiny
-    3. /bin/ed
-
-    Choose 1-3 [1]:
-    ```
-1. Navigation im Texteditor ist nur mit &uarr; &darr; &larr; &rarr; (Pfeiltasten) möglich
-1. Nun letzte Zeile mit folgendem Ausdruck exakt ergänzen
-    - `@reboot sudo gpsd /dev/ttyS0 -F /var/run/gpsd.sock`
->Das File sollte nun so aussehen
-```sh
-[...]
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-#
-# For more information see the manual pages of crontab(5) and cron(8)
-#
-# m h  dom mon dow   command
-@reboot sudo gpsd /dev/ttyS0 -F /var/run/gpsd.sock
-```
-- Speichern mit `Strg + s` oder `Strg + o` und `Enter`
-- Schließen des Editors mit `Strg + x`
-- Raspberry Pi neustarten mit `sudo reboot`
 
 ## Erste Tests der Sensoren (optional)
 ### GPS
-- Testen des GPS durch Eingabe `cgps -s`
-    - **Hinweis:** Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
+1. In Verzeichnis crowdbike navigieren `cd ~/crowdbike`
+1. Anlegen eines Testscripts für das GPS
+1. Eingabe von `nano gps_test.py`
+1. Kopieren (Einfügen in den Editor erfolgt durch `Rechtsklick`) oder abtippen des unten stehenden Codes
+1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
+    ```python
+    import time
+    from Code.FUN import GPS
+
+
+    # initialize GPS
+    my_gps = GPS()
+
+    # start GPS
+    my_gps.start()
+
+    # get a reading every second, 10 times
+    for i in range(10):
+        try:
+            print(' GPS readings '.center(79, '*'))
+            print(f'Time UTC: {my_gps.timestamp}')
+            print(f'Latitude: {my_gps.latitude}')
+            print(f'Longitude: {my_gps.longitude}')
+            print(f'Altitude: {my_gps.alt}')
+            time.sleep(1)
+        except Exception:
+            time.sleep(1)
+            pass
+
+    # stop requests
+    my_gps.running = False
+
+    # close uart port
+    my_gps.stop()
+
+    # stop thread
+    my_gps.join()
+    ```
+    - **Hinweis:**
+    - Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten! Keine
+    Mischung beider! Es führt zwangsläufig zu einem Sytax-Error!
+    - Starten des Scripts durch Eingabe von `python3 gps_test.py`
+    - Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
     - Hier ist es meist nötig, den Raspberry Pi bei geöffneten Fenster auf die Fensterbank zu legen
-    - Abbruch der Anzeige der GPS-Daten durch Drücken von `q` oder `Strg + c`
+    - Ggf. das Testskript mehrfach starten
 
 ### Temperatur- und Feuchtesensor
 1. In Verzeichnis crowdbike navigieren `cd ~/crowdbike`
@@ -228,22 +227,25 @@ GND|GND|schwarz|
 1. Eingabe von `nano temp_hum_test.py`
 1. Kopieren (Einfügen in den Editor erfolgt durch `Rechtsklick`) oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
-```python
-import adafruit_dht
-import board
-import time
+    ```python
+    import adafruit_dht
+    import board
+    import time
 
-dht22_sensor = adafruit_dht.DHT22(board.D4)
+    # initialize sensor
+    dht22_sensor = adafruit_dht.DHT22(board.D4)
 
-for i in range(10):
-    try:
-        temp = dht22_sensor.temperature
-        hum = dht22_sensor.humidity
-        print(temp, hum)
+    # get a reading every second, 10 times
+    for i in range(10):
+        try:
+            temp = dht22_sensor.temperature
+            hum = dht22_sensor.humidity
+            print(temp, hum)
+            time.sleep(1)
+        except Exception:
         time.sleep(1)
-    except Exception:
-       pass
-```
+        pass
+    ```
 - **Hinweis:** Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten! Keine Mischung beider! Es führt zwangsläufig zu einem Sytax-Error!
 - Starten des Scripts durch Eingabe von `python3 temp_hum_test.py`
 - Es ist Möglich, dass zunächst `None None` als Ausgabe erscheint. Sollte das der Fall sein, einfach erneut probieren und Verkabelung prüfen.
@@ -254,13 +256,17 @@ for i in range(10):
 1. Eingabe von `nano pm_test.py`
 1. Kopieren oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
-```python
-from FUN import pm_sensor
+    ```python
+    from Code.FUN import pm_sensor
 
-for i in range(10):
+
+    # initialize sensor
     nova_sensor = pm_sensor(dev='/dev/ttyUSB0')
-    print(nova_sensor.read_pm())
-```
+
+    # get a reading every second, 10 times
+    for i in range(10):
+        print(nova_sensor.read_pm())
+    ```
 - **Hinweis:** Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten
 - Starten des Scripts durch Eingabe von `python3 pm_test.py`
 ## Anpassen/Personalisieren der Logger-Software
@@ -316,15 +322,15 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
         python3 ~/crowdbike/Code/crowdbike.py
         ```
     1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
-    1. Nun muss das kleine Programm noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x start_crowdbike.sh` und Bestätigen mit `Enter`.
+    1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x start_crowdbike.sh` und Bestätigen mit `Enter`.
 1. Hotspot am Smartphone einschalten, der Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärkeren WLAN-Netzwerke vorhanden sind.
 1. VNC-Viewer am Smartphone starten (es ist **keine** Registrierung notwendig!)
 1. Per **+** eine Verbindung hinzufügen
-1. Bei `Address` den Hostname z.B. (`crowdbike6`) eingeben sollte das nicht funktionieren, kann man in den Smartphoneeinstellungen unter Hotspot die verbundenen Geräte anzeigen und bei einem Klick auf `crowdbike1` kann die IP-Adresse angezeigt werden. Notiert diese und gebt diese statt dem Hostname ein. Sollte die in VNC-Viewer erstellte Verbindung beim nächsten mal nicht funktionieren, kann es sein, dass das Smartphone dem Raspberry Pi eine andere IP-Adresse zugewiesen hat. Kontrolliert dies wie oben beschrieben und versucht es erneut.
+1. Bei `Address` den Hostname z.B. (`crowdbike6`) eingeben sollte das nicht funktionieren, kann man in den Smartphoneeinstellungen unter Hotspot die verbundenen Geräte anzeigen lassen und bei einem Klick auf `crowdbike1` kann die IP-Adresse angezeigt werden. Notiert diese und gebt diese statt dem Hostname ein. Sollte die in VNC-Viewer erstellte Verbindung beim nächsten mal nicht funktionieren, kann es sein, dass das Smartphone dem Raspberry Pi eine andere IP-Adresse zugewiesen hat. Kontrolliert dies wie oben beschrieben und versucht es erneut.
 
-1. Namen der Verbindung festlegen z.B. `'crowdbike6'`
+1. Namen der Verbindung festlegen z.B. `'crowdbike1'`
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
-1. Auf dem Desktop sollte sich jetzt das Skript befinden, das wir eben erstellt haben. Mit einem Doppelklick und eine Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
+1. Auf dem Desktop sollte sich jetzt das Skript sochtbar sein, das wir eben erstellt haben. Mit einem Doppelklick und einem Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
 
 ## Variante ohne GUI nutzen
 TODO:
@@ -335,28 +341,27 @@ TODO:
 - Eingabe von `crontab -e`
 - Unten folgendes ergänzen: `@reboot sleep 10 && python3 /home/pi/crowdbike/Code/crowdbike_nonGUI.py >> /home/pi/crowdbike_nonGUI.log 2>&1` (alles in eine Zeile!)
 #### Erklärung:
-- `sleep 10` stellt sicher, dass die Software nach `gps.sock` gestartet wird
+- `sleep 10` stellt sicher, dass die Software erst gestartetn wird wenn der raspberry pi vollständig gebootet hat
 - `python3` besagt dass das File danach mit Python 3 gestartet werden soll
 - `/home/pi/crowdbike/Code/crowdbike_nonGUI.py` ist der absolute Pfad zum Skript
 - TODO: bash wrapper schreiben
 - `>> /home/pi/crowdbike.log 2>&1` schreibt evtl. auftretende Error-Meldungen in das angegeben log-File. Sollten Probleme auftreten, ist dies die erste Anlaufstelle!
-```sh
-[...]
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-#
-# For more information see the manual pages of crontab(5) and cron(8)
-#
-# m h  dom mon dow   command
-@reboot sudo gpsd /dev/ttyS0 -F /var/run/gpsd.sock
-@reboot sleep 10 && python3 /home/pi/crowdbike/Code/crowdbike_nonGUI.py >> /home/pi/crowdbike_nonGUI.log 2>&1
-```
+    ```sh
+    [...]
+    # For example, you can run a backup of all your user accounts
+    # at 5 a.m every week with:
+    # 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
+    #
+    # For more information see the manual pages of crontab(5) and cron(8)
+    #
+    # m h  dom mon dow   command
+    @reboot sleep 10 && python3 /home/pi/crowdbike/Code/crowdbike_nonGUI.py >> /home/pi/crowdbike_nonGUI.log 2>&1
+    ```
 - Beim folgenden Neustart sollte das Skript nun automatisch starten
 - Ob das Skript läuft kann durch Navigieren zu `~/crwodbike/logs` und aufrufen von `tail -f my_logfilename.csv` geprüft werden.
 - Das Beobachten wieder mit `Strg + c` abbrechen
 ### Nutzungshinweise zur `nonGUI` Version
-- Es muss sich darauf verlassen werden, dass das Programm ordnungsgemäß gestartet ist. Es besteht natürlich immer die Möglichkeit dass es aufgrund eines Fehlers zu keiner Datenaufzeichnung gekommen ist.
+- Es muss sich darauf verlassen werden, dass das Programm ordnungsgemäß gestartet ist. Es besteht die Möglichkeit dass es aufgrund eines Fehlers zu keiner Datenaufzeichnung gekommen ist.
 - Die Kontrolle ob das Programm tatsächlich ordnungsgemäß läfut, kann z.B. unter Android mit einer Verbindung per `SSH` mithilfe der App [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh&hl=de) durchgeführt werden.
 - Hier kann dann wie oben beschrieben das log-File beobachtet werden.
 - Das Abbrechen der Datenaufzeichnung kann schonungslos durch trennen der Stromversorgung erreicht werden (nicht empfohlen) es kann zur Beschädigung des OS führen.
