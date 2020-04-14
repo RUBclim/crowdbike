@@ -1,3 +1,4 @@
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
 ### First established at University of Freiburg, Enviromental Meteorology by [Andreas Christen](https://github.com/achristen)
@@ -27,7 +28,7 @@
 ## Einrichtung des Raspberry Pi - Erstmalige Verwendung
 
 ### Systemsetup
-1. Operating System Image herunterladen und entpacken
+1. Operating System Image herunterladen und entpacken (Link siehe PPP)
 1. Die MicroSD-Karte mit Adapter in den Computer einlegen.
 1. Raspberry Pi Imager starten
 1. Bei `CHOOSE OS` &rarr; `Use custom` das eben heruntergeladene Image auswählen.
@@ -333,18 +334,28 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 1. Auf dem Desktop sollte sich jetzt das Skript sochtbar sein, das wir eben erstellt haben. Mit einem Doppelklick und einem Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
 
 ## Variante ohne GUI nutzen
-TODO:
 1. Die Variante ohne GUI befindet sich in `~/crowdbike/Code/crowdbike_nonGUI.py`
 1. Es sind keine neuen Einstellungen notwendig, da die Anwendung auf die gleichen config-files zugreift.
 
-### Automatischer Start beim Einschalten des Raspberry Pi für die `nonGUI`-Variante einrichten
+### Manueller start
+- für den manuellen Start kann wie schon für die GUI-Version geschehen ein Start-Skript geschrieben werden
+    1. Das Skript wieder auf dem Desktop anlegen `cd ~/Desktop/`
+    1. Erstellen der Datei durch `nano start_nonGUI_crowdbike.sh`
+    1. In die Datei folgendes schreiben (Erklärung siehe unten):
+        ```sh
+        python3 ~/crowdbike/Code/crowdbike_nonGUI.py >> ~/crowdbike_nonGUI.log 2>&1
+        ```
+    1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
+    1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x nano start_nonGUI_crowdbike.sh` und Bestätigen mit `Enter`.
+
+
+### Automatischer Start beim Einschalten des Raspberry Pi für die `nonGUI`-Variante einrichten (optional)
 - Eingabe von `crontab -e`
 - Unten folgendes ergänzen: `@reboot sleep 10 && python3 /home/pi/crowdbike/Code/crowdbike_nonGUI.py >> /home/pi/crowdbike_nonGUI.log 2>&1` (alles in eine Zeile!)
 #### Erklärung:
 - `sleep 10` stellt sicher, dass die Software erst gestartetn wird wenn der raspberry pi vollständig gebootet hat
 - `python3` besagt dass das File danach mit Python 3 gestartet werden soll
 - `/home/pi/crowdbike/Code/crowdbike_nonGUI.py` ist der absolute Pfad zum Skript
-- TODO: bash wrapper schreiben
 - `>> /home/pi/crowdbike.log 2>&1` schreibt evtl. auftretende Error-Meldungen in das angegeben log-File. Sollten Probleme auftreten, ist dies die erste Anlaufstelle!
     ```sh
     [...]
@@ -372,7 +383,6 @@ TODO:
 1. Ausführen von `git fetch`
 1. Ausführen von `git checkout origin/master crowdbike.py` oder eben des Files für das eine neue Version verfügbar ist.
 ## Sensor-Kalibrierung
-TODO:
 - Die Kalibrierung der Sensoren kann im File `~/crowdbike/Code/calibration.json` eingetragen werden.
     ```json
     {
@@ -382,10 +392,10 @@ TODO:
         "vappress_cal_a0": 0.00000
     }
     ```
-- Vorheriger Test
-## Zusammenbau des Systems mit Gehäuse, Tasche und Strahlungsschutz
-TODO:
-## Analyse/Darstellung im GIS
-TODO:
+## Upload der Daten
+- Um die gemessenen Werte zu sammeln, gibt es ein kleines Skript, das die Daten in einen geteilten Ordner einer Nextcloud hochlädt
+- Bei Ausführen von `python3 ~/crowdbike/Code/send2cloud.py` wird der gesamte Inhalt des zuvor definierten log-Ordners zur Cloud gesendet
+- Vorraussetung dafür ist, dass die Angaben in `config.json` richtig sind
+- Bei Problemen kann durch `python3 ~/crowdbike/Code/send2cloud.py -v` die vebosity erhöht werden.
 ## Quellen:
 **Andreas Christen (2018):** Meteobike - Mapping urban heat islands with bikes. [GitHub](https://github.com/achristen/Meteobike/blob/master/readme.md). [19.01.2020].

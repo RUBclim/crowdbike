@@ -187,7 +187,6 @@ def start_counting(label: Label) -> None:
         dht22_temperature = readings['temperature']
 
         # calculate temperature with sensor calibration values
-        # TODO: Ckeck if everything is correct or all of this is needed
         dht22_temperature_raw = round(dht22_temperature, 5)
         dht22_temperature_calib = round(
             dht22_temperature *
@@ -244,7 +243,6 @@ def start_counting(label: Label) -> None:
             pm2_5 = np.nan
             pm10 = np.nan
 
-        # correct humidity reading TODO: seems kinda bad style to hardcode this
         if dht22_humidity > 100:
             dht22_humidity = 100
 
