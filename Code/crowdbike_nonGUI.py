@@ -130,7 +130,7 @@ def main() -> None:
         # get sensor readings from DHT-sensor
         try:
             readings = read_dht22(dht22_sensor)
-        except:
+        except Exception:
             dht22_humidity = np.nan
             dht22_temperature = np.nan
 

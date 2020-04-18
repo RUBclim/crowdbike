@@ -157,14 +157,14 @@ def set_pm_status(value: str) -> None:
         pm_slider['troughcolor'] = '#20ff20'
         try:
             nova_pm.sensor_wake()
-        except:
+        except Exception:
             pass
     else:
         pm_status = False
         pm_slider['troughcolor'] = '#c10000'
         try:
             nova_pm.sensor_sleep()
-        except:
+        except Exception:
             pass
 
 
@@ -179,7 +179,7 @@ def start_counting(label: Label) -> None:
         # get sensor readings from DHT-sensor
         try:
             readings = read_dht22(dht22_sensor)
-        except:
+        except Exception:
             dht22_humidity = np.nan
             dht22_temperature = np.nan
 

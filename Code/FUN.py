@@ -15,7 +15,7 @@ def get_ip() -> str:
         # doesn't even have to be reachable
         s.connect(('10.255.255.255', 1))
         IP = s.getsockname()[0]
-    except:
+    except Exception:
         IP = '127.0.0.1'
     finally:
         s.close()
@@ -61,7 +61,7 @@ class pm_sensor:
 
             ser.close()
             return(measures)
-        except:
+        except Exception:
             measures = {'PM10': nan, 'PM2_5': nan}
             return measures
 
