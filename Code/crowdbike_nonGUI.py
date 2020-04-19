@@ -211,22 +211,22 @@ def main() -> None:
 
         # build readings
         readings = {
-            'ID': raspberryid,
-            'Record': counter,
-            'Raspberry_Time': now.strftime('%Y-%m-%d %H:%M:%S'),
-            'GPS_Time': gps_time,
-            'Altitude': gps_altitude,
-            'Latitude': gps_latitude,
-            'Longitude': gps_longitude,
-            'Speed': gps_speed,
-            'Temperature': dht22_temperature,
-            'TemperatureRaw': dht22_temperature_raw,
-            'RelHumidity': dht22_humidity,
-            'RelHumidityRaw': dht22_humidity_raw,
-            'VapourPressure': dht22_vappress,
-            'VapourPressureRaw': dht22_vappress_raw,
-            'PM10': pm10,
-            'PM2.5': pm2_5,
+            'id': raspberryid,
+            'record': counter,
+            'raspberry_time': now.strftime('%Y-%m-%d %H:%M:%S'),
+            'gps_time': gps_time,
+            'altitude': gps_altitude,
+            'latitude': gps_latitude,
+            'longitude': gps_longitude,
+            'speed': gps_speed,
+            'temperature': dht22_temperature,
+            'temperature_raw': dht22_temperature_raw,
+            'rel_humidity': dht22_humidity,
+            'rel_humidity_raw': dht22_humidity_raw,
+            'vapour_pressure': dht22_vappress,
+            'vapour_pressure_raw': dht22_vappress_raw,
+            'pm10': pm10,
+            'pm2_5': pm2_5,
         }
 
         # append to csv file
