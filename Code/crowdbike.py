@@ -97,22 +97,22 @@ gpsp.start()
 dht22_sensor = adafruit_dht.DHT22(board.D4)
 nova_pm = pm_sensor(dev='/dev/ttyUSB0')
 cnames = [
-    'ID',
-    'Record',
-    'Raspberry_Time',
-    'GPS_Time',
-    'Altitude',
-    'Latitude',
-    'Longitude',
-    'Speed',
-    'Temperature',
-    'TemperatureRaw',
-    'RelHumidity',
-    'RelHumidityRaw',
-    'VapourPressure',
-    'VapourPressureRaw',
-    'PM10',
-    'PM2.5',
+    'id',
+    'record',
+    'raspberry_time',
+    'gps_time',
+    'altitude',
+    'latitude',
+    'longitude',
+    'speed',
+    'temperature',
+    'temperature_raw',
+    'rel_humidity',
+    'rel_humidity_raw',
+    'vapour_pressure',
+    'vapour_pressure_raw',
+    'pm10',
+    'pm2_5',
 ]
 
 
