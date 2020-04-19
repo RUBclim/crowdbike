@@ -343,7 +343,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     1. Erstellen der Datei durch `nano start_nonGUI_crowdbike.sh`
     1. In die Datei folgendes schreiben (Erklärung siehe unten):
         ```sh
-        python3 ~/crowdbike/Code/crowdbike_nonGUI.py >> ~/crowdbike_nonGUI.log 2>&1
+        python3 ~/crowdbike/Code/crowdbike_nonGUI.py & >> ~/crowdbike_nonGUI.log 2>&1
         ```
     1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
     1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x nano start_nonGUI_crowdbike.sh` und Bestätigen mit `Enter`.
@@ -394,6 +394,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     ```
 ## Upload der Daten
 - Um die gemessenen Werte zu sammeln, gibt es ein kleines Skript, das die Daten in einen geteilten Ordner einer Nextcloud hochlädt
+- Das Skript sollte nur ausgeführt werden, wenn parallel kein crowdbike Prozess läuft (GUI oder nonGUI Variante)
 - Bei Ausführen von `python3 ~/crowdbike/Code/send2cloud.py` wird der gesamte Inhalt des zuvor definierten log-Ordners zur Cloud gesendet
 - Vorraussetung dafür ist, dass die Angaben in `config.json` richtig sind
 - Bei Problemen kann durch `python3 ~/crowdbike/Code/send2cloud.py -v` die vebosity erhöht werden.
