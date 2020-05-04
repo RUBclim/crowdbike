@@ -4,8 +4,15 @@ import os
 import shutil
 import subprocess
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-v', help='increase verbosity', action='store_true')
+parser = argparse.ArgumentParser(
+    prog='send2cloud',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+)
+parser.add_argument(
+    '-v', '--verbose',
+    help='increase verbosity',
+    action='store_true',
+)
 args = parser.parse_args()
 
 # __load config files__
@@ -35,7 +42,7 @@ for element in os.listdir(log_dir):
         break
 
 # pass verbose to curl or not?
-if args.v:
+if args.verbose:
     first_args = '-vT'
 else:
     first_args = '-T'
@@ -46,7 +53,7 @@ if files_present:
             print(f'uploading: {log} to the cloud')
             curl_call = f'curl {first_args} {os.path.join(log_dir, log)} -u {folder_token}:{passwd} -H X-Requested-With:XMLHttpRequest {base_url}/public.php/webdav/{log}'  # noqa E501
             curl_call = curl_call.split(' ')
-            if args.v:
+            if args.verbose:
                 subprocess.check_output(curl_call)
             else:
                 subprocess.call(curl_call)
