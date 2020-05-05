@@ -124,114 +124,115 @@ def main() -> None:
     global counter
     while True:
         now = datetime.datetime.utcnow()
-        f = open(logfile, 'a', newline='')
-        writer = csv.DictWriter(f, columnnames)
+        if gpsp.has_fix:
+            f = open(logfile, 'a', newline='')
+            writer = csv.DictWriter(f, columnnames)
 
-        # get sensor readings from DHT-sensor
-        try:
-            readings = read_dht22(dht22_sensor)
-        except Exception:
-            dht22_humidity = np.nan
-            dht22_temperature = np.nan
+            # get sensor readings from DHT-sensor
+            try:
+                readings = read_dht22(dht22_sensor)
+            except Exception:
+                dht22_humidity = np.nan
+                dht22_temperature = np.nan
 
-        dht22_humidity = readings['humidity']
-        dht22_temperature = readings['temperature']
+            dht22_humidity = readings['humidity']
+            dht22_temperature = readings['temperature']
 
-        # calculate temperature with sensor calibration values
+            # calculate temperature with sensor calibration values
 
-        dht22_temperature_raw = round(dht22_temperature, 5)
-        dht22_temperature_calib = round(
-            dht22_temperature *
-            temperature_cal_a1 +
-            temperature_cal_a0, 3,
-        )
-        dht22_temperature = dht22_temperature_calib
+            dht22_temperature_raw = round(dht22_temperature, 5)
+            dht22_temperature_calib = round(
+                dht22_temperature *
+                temperature_cal_a1 +
+                temperature_cal_a0, 3,
+            )
+            dht22_temperature = dht22_temperature_calib
 
-        saturation_vappress_ucalib = (
-                                        0.6113 * np.exp((2501000.0 / 461.5) *
-                                                        ((1.0 / 273.15) -
-                                                        (
-                                                            1.0 / (
-                                                                dht22_temperature_raw +  # noqa 501
-                                                                273.15
-                                                            )
-                                                        )))
-        )
-        saturation_vappress_calib = (
-                                        0.6113 * np.exp((2501000.0 / 461.5) *
-                                                        ((1.0 / 273.15) -
-                                                        (
-                                                            1.0 / (
-                                                                dht22_temperature_calib +  # noqa 501
-                                                                273.15
-                                                            )
-                                                        )))
-        )
-        dht22_vappress = (
-            (dht22_humidity / 100.0) *
-            saturation_vappress_ucalib
-        )
-        dht22_vappress_raw = round(dht22_vappress, 3)
-        dht22_vappress_calib = round(
-            dht22_vappress *
-            vappress_cal_a1 +
-            vappress_cal_a0, 3,
-        )
-        dht22_vappress = dht22_vappress_calib
+            saturation_vappress_ucalib = (
+                0.6113 * np.exp((2501000.0 / 461.5) *
+                                ((1.0 / 273.15) -
+                                (
+                                    1.0 / (
+                                        dht22_temperature_raw +
+                                        273.15
+                                    )
+                                )))
+            )
+            saturation_vappress_calib = (
+                0.6113 * np.exp((2501000.0 / 461.5) *
+                                ((1.0 / 273.15) -
+                                (
+                                    1.0 / (
+                                        dht22_temperature_calib +
+                                        273.15
+                                    )
+                                )))
+            )
+            dht22_vappress = (
+                (dht22_humidity / 100.0) *
+                saturation_vappress_ucalib
+            )
+            dht22_vappress_raw = round(dht22_vappress, 3)
+            dht22_vappress_calib = round(
+                dht22_vappress *
+                vappress_cal_a1 +
+                vappress_cal_a0, 3,
+            )
+            dht22_vappress = dht22_vappress_calib
 
-        dht22_humidity_raw = round(dht22_humidity, 5)
-        dht22_humidity = round(
-            100 * (
-                dht22_vappress_calib /
-                saturation_vappress_calib
-            ), 5,
-        )
+            dht22_humidity_raw = round(dht22_humidity, 5)
+            dht22_humidity = round(
+                100 * (
+                    dht22_vappress_calib /
+                    saturation_vappress_calib
+                ), 5,
+            )
 
-        # read pm-sensor takes max 1 sec
-        if pm_status is True:
-            pm = nova_pm.read_pm()
-            pm2_5 = pm['PM2_5']
-            pm10 = pm['PM10']
-        else:
-            pm2_5 = np.nan
-            pm10 = np.nan
+            # read pm-sensor takes max 1 sec
+            if pm_status is True:
+                pm = nova_pm.read_pm()
+                pm2_5 = pm['PM2_5']
+                pm10 = pm['PM10']
+            else:
+                pm2_5 = np.nan
+                pm10 = np.nan
 
-        if dht22_humidity > 100:
-            dht22_humidity = 100
+            if dht22_humidity > 100:
+                dht22_humidity = 100
 
-        # Get GPS position
-        gps_time = gpsp.timestamp
-        gps_altitude = gpsp.alt
-        gps_latitude = gpsp.latitude
-        gps_longitude = gpsp.longitude
-        gps_speed = round(gpsp.speed * 1.852, 2)
-        # convert to kph
-        # f_mode = int(gpsd.fix.mode)  # store number of sats
-        # has_fix = False  # assume no fix
+            # Get GPS position
+            gps_time = gpsp.timestamp
+            gps_altitude = gpsp.alt
+            gps_latitude = gpsp.latitude
+            gps_longitude = gpsp.longitude
+            gps_speed = round(gpsp.speed * 1.852, 2)
+            # convert to kph
+            # f_mode = int(gpsd.fix.mode)  # store number of sats
+            # has_fix = False  # assume no fix
 
-        # build readings
-        readings = {
-            'id': raspberryid,
-            'record': counter,
-            'raspberry_time': now.strftime('%Y-%m-%d %H:%M:%S'),
-            'gps_time': gps_time,
-            'altitude': gps_altitude,
-            'latitude': gps_latitude,
-            'longitude': gps_longitude,
-            'speed': gps_speed,
-            'temperature': dht22_temperature,
-            'temperature_raw': dht22_temperature_raw,
-            'rel_humidity': dht22_humidity,
-            'rel_humidity_raw': dht22_humidity_raw,
-            'vapour_pressure': dht22_vappress,
-            'vapour_pressure_raw': dht22_vappress_raw,
-            'pm10': pm10,
-            'pm2_5': pm2_5,
-        }
+            # build readings
+            readings = {
+                'id': raspberryid,
+                'record': counter,
+                'raspberry_time': now.strftime('%Y-%m-%d %H:%M:%S'),
+                'gps_time': gps_time,
+                'altitude': gps_altitude,
+                'latitude': gps_latitude,
+                'longitude': gps_longitude,
+                'speed': gps_speed,
+                'temperature': dht22_temperature,
+                'temperature_raw': dht22_temperature_raw,
+                'rel_humidity': dht22_humidity,
+                'rel_humidity_raw': dht22_humidity_raw,
+                'vapour_pressure': dht22_vappress,
+                'vapour_pressure_raw': dht22_vappress_raw,
+                'pm10': pm10,
+                'pm2_5': pm2_5,
+            }
 
-        # append to csv file
-        writer.writerow(readings)
-        f.close()
+            # append to csv file
+            writer.writerow(readings)
+            f.close()
 
         finish = datetime.datetime.utcnow()
         runtime = finish - now
@@ -245,4 +246,6 @@ def main() -> None:
 
 
 signal.signal(signal.SIGTERM, exit_program)
-main()
+
+if __name__ == '__main__':
+    main()
