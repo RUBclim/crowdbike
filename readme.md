@@ -15,6 +15,7 @@
 1. Kabel (bunte Steckbrücken) zum Anschluss aller Sensoren
 1. Powerbank zur Stromversorgung des Rasperry Pi's
 1. Gehäuse und Tasche zur Montage am Fahrrad
+1. Ansaugschlauch für PM-Sensor (optional)
 
 ## Benötigte Software/Hardware zur Einrichtung
 1. Laptop/Computer mit MobaXterm (Download [hier](https://mobaxterm.mobatek.net/download-home-edition.html) Installer Edition oder Portable Edition)
