@@ -43,6 +43,7 @@
     framebuffer_width=720
     framebuffer_height=1280
     ```
+1. Die Datei speichern und schließen.
 #### WLAN Konfiguration
 1. Eine neue Datei mit dem exakten Namen `wpa_supplicant.conf` anlegen
     1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein .txt mehr am Ende steht!))
@@ -67,8 +68,11 @@
     ```
 1. Darauf achten, dass Name und Passwort in `""` stehen!
 1. Es dürfen keine Leerzeichen das `=` umgeben!
+1. 3x kontrollieren dass das Passwort und die SSID stimmt!!
+1. Die Datei speichern und schließen.
 
 ### Starten des Raspberry Pi
+1. Falls der Smartphone-Hotspot im Verlauf eingeschaltet wurde, darauf achten, dass
 1. Anschließen der Powerbank an den Raspberry Pi an den Eingang `PWR IN`
 1. Raspberry pi sollte nun booten (grüne LED blinkt)
 1. Ca. eine Minute warten
@@ -114,9 +118,7 @@
 
 - Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer via SSH) beschrieben.
 - Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
-- Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
-    - `sudo shutdown -P now`
-    - Warten bis grüne LED nicht mehr leuchtet, dann Stromversorgung (Powerbank) trennen
+
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 - Installationen unter Linux meist mit `sudo apt-get install Programm-Name`
 - Installieren folgender Programme mit obiger Syntax
@@ -131,6 +133,10 @@
 - Benötigte Dateien von Github herunterladen
     - Prüfen ob man sich im home-Verzeichnis befindet durch Eingaben von `cd ~` und Bestätigen mit `Enter`
     - Crowdbike Software: `git clone https://github.com/theendlessriver13/Meteobike --depth=1 crowdbike`
+
+- Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
+    - `sudo shutdown -P now`
+    - Warten bis grüne LED nicht mehr leuchtet, dann Stromversorgung (Powerbank) trennen
 
 ## Anschluss der Sensoren
 ### Temperatur- und Feuchte-Sensor
@@ -245,8 +251,8 @@ GND|GND|schwarz|
             print(temp, hum)
             time.sleep(1)
         except Exception:
-        time.sleep(1)
-        pass
+            time.sleep(1)
+            pass
     ```
 - **Hinweis:** Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten! Keine Mischung beider! Es führt zwangsläufig zu einem Sytax-Error!
 - Starten des Scripts durch Eingabe von `python3 temp_hum_test.py`
@@ -287,7 +293,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     "cloud": {
         "folder_token": "abcde1234",
         "passwd": "my_password",
-        "base_url": "https://example.nextcloud.de"
+        "base_url": "https://example.nextcloud.de/"
     }
 }
 
@@ -320,7 +326,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     1. Navigieren auf den Desktop mit `cd ~/Desktop/`
     1. Erstellen einer neuen Datei mit `nano start_crowdbike.sh`
     1. In die Datei folgendes schreiben:
-        ```sh
+        ```console
         python3 ~/crowdbike/Code/crowdbike.py
         ```
     1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
@@ -347,7 +353,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
         python3 ~/crowdbike/Code/crowdbike_nonGUI.py & >> ~/crowdbike_nonGUI.log 2>&1
         ```
     1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
-    1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x nano start_nonGUI_crowdbike.sh` und Bestätigen mit `Enter`.
+    1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x start_nonGUI_crowdbike.sh` und Bestätigen mit `Enter`.
 
 
 ### Automatischer Start beim Einschalten des Raspberry Pi für die `nonGUI`-Variante einrichten (optional)
