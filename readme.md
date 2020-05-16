@@ -94,6 +94,7 @@
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
 - Letzte eingebenen Befehle wiederaufrufen mit &uarr; und &darr; (Pfeiltasten rauf/runter)
+- Einfügen von sich im Zwischenspeicher befindlichen Text mit `Rechtsklick`
 
 ### Einrichtung des Betriebssystems abschließen
 - Hostnamen setzen
@@ -120,11 +121,9 @@
 - Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
 
 ### Für die Sensoren benötigte Programme herunterladen und installieren
-- Installationen unter Linux meist mit `sudo apt-get install Programm-Name`
-- Installieren folgender Programme mit obiger Syntax
+- Installieren von Systemanwendungen
 - Alle Rückfragen wie `"Es werden zusätzlich 10MB Plattenspeicher genutzt"` mit `J`+`Enter` bestätigen
-
-    - `libgpiod2`
+    - `sudo apt-get install libgpiod2`
 - Installieren der Python Libraries
     - `sudo pip3 install adafruit-circuitpython-gps`
     - `sudo pip3 install adafruit-circuitpython-dht`
@@ -210,7 +209,6 @@ GND|GND|schwarz|
             time.sleep(1)
         except Exception:
             time.sleep(1)
-            pass
 
     # stop requests
     my_gps.running = False
@@ -252,7 +250,6 @@ GND|GND|schwarz|
             time.sleep(1)
         except Exception:
             time.sleep(1)
-            pass
     ```
 - **Hinweis:** Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten! Keine Mischung beider! Es führt zwangsläufig zu einem Sytax-Error!
 - Starten des Scripts durch Eingabe von `python3 temp_hum_test.py`
