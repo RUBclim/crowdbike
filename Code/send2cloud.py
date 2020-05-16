@@ -15,7 +15,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-# __load config files__
+# load config files
 with open(
     os.path.join(
         os.path.dirname(__file__),
@@ -29,6 +29,8 @@ archive_dir = os.path.join(log_dir, 'archive')
 folder_token = config['cloud']['folder_token']
 passwd = config['cloud']['passwd']
 base_url = config['cloud']['base_url']
+if not base_url[-1] == '/':
+    base_url += '/'
 
 # create archive directory
 if not os.path.exists(archive_dir):
@@ -51,13 +53,33 @@ if files_present:
     for log in os.listdir(log_dir):
         if os.path.splitext(log)[1].lower() == '.csv':
             print(f'uploading: {log} to the cloud')
-            curl_call = f'curl {first_args} {os.path.join(log_dir, log)} -u {folder_token}:{passwd} -H X-Requested-With:XMLHttpRequest {base_url}/public.php/webdav/{log}'  # noqa E501
+            curl_call = f'curl {first_args} {os.path.join(log_dir, log)} -u '\
+                f'{folder_token}:{passwd} -H X-Requested-With:XMLHttpRequest '\
+                f'{base_url}public.php/webdav/{log}'
+
+            # create argument list to pass to the subprocess call
             curl_call = curl_call.split(' ')
+
             if args.verbose:
-                subprocess.check_output(curl_call)
+                call = subprocess.run(args=curl_call, capture_output=True)
+                stdoutput = call.stdout.decode('utf-8')
+                print(call.stderr.decode('utf-8'))
+                if stdoutput == '':
+                    shutil.move(os.path.join(log_dir, log), archive_dir)
+                else:
+                    print(' error '.center(79, '='))
+                    print(stdoutput)
+
             else:
-                subprocess.call(curl_call)
-            shutil.move(os.path.join(log_dir, log), archive_dir)
+                call = subprocess.run(args=curl_call, capture_output=True)
+                stdoutput = call.stdout.decode('utf-8')
+
+                if stdoutput == '':
+                    shutil.move(os.path.join(log_dir, log), archive_dir)
+                else:
+                    print(' error '.center(79, '='))
+                    print(stdoutput)
+
 elif not files_present:
     print(f'Everything up to date. There are no files to upload in "{log_dir}"')  # noqa E501
 else:
