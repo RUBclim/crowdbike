@@ -13,7 +13,7 @@
 1. UART zu USB Adapter (5V) zum Anschluss des PM-Sensors (optional)
 1. Adapter Micro-USB zu USB zum Anschluss des PM-Sensors (optional)
 1. Kabel (bunte Steckbrücken) zum Anschluss aller Sensoren
-1. Powerbank zur Stromversorgung des Rasperry Pi's
+1. Powerbank zur Stromversorgung des Raspberry Pi's
 1. Gehäuse und Tasche zur Montage am Fahrrad
 1. Ansaugschlauch für PM-Sensor (optional)
 
@@ -35,8 +35,8 @@
 1. Bei `CHOOSE OS` &rarr; `Use custom` das eben heruntergeladene Image auswählen.
 1. Bei `CHOOSE SD CARD` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
 1. Mit `WRITE` den Schreibvorgang starten.
-1. Wenn der Schreib- und Verifyvorgang nach einiger Zeit abgeschlossen ist, SD-Karte kurz entnehmen und wieder einstecken. Dann das Laufwerk `boot` im Explorer öffnen.
-1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphonebildschirm passend ist.
+1. Wenn der Schreib- und Verify-Vorgang nach einiger Zeit abgeschlossen ist, SD-Karte kurz entnehmen und wieder einstecken. Dann das Laufwerk `boot` im Explorer öffnen.
+1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphone-Bildschirm passend ist.
     ```bash
     # uncomment to force a console size. By default it will be display's size minus
     # overscan.
@@ -46,7 +46,7 @@
 1. Die Datei speichern und schließen.
 #### WLAN Konfiguration
 1. Eine neue Datei mit dem exakten Namen `wpa_supplicant.conf` anlegen
-    1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein .txt mehr am Ende steht!))
+    1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein `.txt` mehr am Ende steht!))
     1. Eventuell müssen in Windows erst die Dateinamenerweiterungen aktiviert werden. Dies geschieht über Ansicht und dann einen Haken bei Dateinamenerweiterungen setzen.
 1. Bei der Frage "Wollen Sie die Dateinamenerweiterung ändern, wird die Datei möglicherweise unbrauchbar" mit `Ja` bestätigen.
 1. Nun mit Rechtsklick &rarr; Öffnen mit den Editor auswählen
@@ -93,7 +93,7 @@
 - Ordnerinhalt anzeigen `ls` oder `ls -l` (-l für Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
 - In übergeordnetes Verzeichnis wechseln `cd ..`
-- Letzte eingebenen Befehle wiederaufrufen mit &uarr; und &darr; (Pfeiltasten rauf/runter)
+- Letzte eingegebene Befehle wieder aufrufen mit &uarr; und &darr; (Pfeiltasten rauf/runter)
 - Einfügen von sich im Zwischenspeicher befindlichen Text mit `Rechtsklick`
 
 ### Einrichtung des Betriebssystems abschließen
@@ -129,7 +129,7 @@
     - `sudo pip3 install adafruit-circuitpython-dht`
     - `pip3 install retry`
 
-- Benötigte Dateien von Github herunterladen
+- Benötigte Dateien von GitHub herunterladen
     - Prüfen ob man sich im home-Verzeichnis befindet durch Eingaben von `cd ~` und Bestätigen mit `Enter`
     - Crowdbike Software: `git clone https://github.com/theendlessriver13/Meteobike --depth=1 crowdbike`
 
@@ -183,7 +183,7 @@ GND|GND|schwarz|
 ## Erste Tests der Sensoren (optional)
 ### GPS
 1. In Verzeichnis crowdbike navigieren `cd ~/crowdbike`
-1. Anlegen eines Testscripts für das GPS
+1. Anlegen eines Test-Scripts für das GPS
 1. Eingabe von `nano gps_test.py`
 1. Kopieren (Einfügen in den Editor erfolgt durch `Rechtsklick`) oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
@@ -221,7 +221,7 @@ GND|GND|schwarz|
     ```
     - **Hinweis:**
     - Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten! Keine
-    Mischung beider! Es führt zwangsläufig zu einem Sytax-Error!
+    Mischung beider! Es führt zwangsläufig zu einem Syntax-Error!
     - Starten des Scripts durch Eingabe von `python3 gps_test.py`
     - Um Werte zu erhalten, muss das GPS Empfang haben. Dies ist erkennbar, wenn die mit `FIX` gekennzeichnete LED auf dem GPS-Modul nur noch ca. alle 10-15 Sekunden blinkt. Blinkt sie in kürzeren Intervallen, ist noch kein Empfang vorhanden.
     - Hier ist es meist nötig, den Raspberry Pi bei geöffneten Fenster auf die Fensterbank zu legen
@@ -229,7 +229,7 @@ GND|GND|schwarz|
 
 ### Temperatur- und Feuchtesensor
 1. In Verzeichnis crowdbike navigieren `cd ~/crowdbike`
-1. Anlegen eines Testscripts für Temperatur- und Feuchtesensor
+1. Anlegen eines Test-Scripts für Temperatur- und Feuchtesensor
 1. Eingabe von `nano temp_hum_test.py`
 1. Kopieren (Einfügen in den Editor erfolgt durch `Rechtsklick`) oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
@@ -257,7 +257,7 @@ GND|GND|schwarz|
 
 ### PM-Sensor (optional)
 1. Navigieren in Ordner durch `cd ~/crowdbike`
-1. Anlegen eines Testscripts für den PM-Sensor
+1. Anlegen eines Test-Scripts für den PM-Sensor
 1. Eingabe von `nano pm_test.py`
 1. Kopieren oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
@@ -276,8 +276,8 @@ GND|GND|schwarz|
 - Starten des Scripts durch Eingabe von `python3 pm_test.py`
 ## Anpassen/Personalisieren der Logger-Software
 Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um die Software zu personalisieren und einzurichten
-- Navigieren zum config-file durch `cd ~/crowdbike/Code`
-- Öffnen des files durch Eingabe von `nano config.json` und Bestätigen durch `Enter`
+- Navigieren zum config-File durch `cd ~/crowdbike/Code`
+- Öffnen des Files durch Eingabe von `nano config.json` und Bestätigen durch `Enter`
 ```json
 {
     "user": {
@@ -335,13 +335,13 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 1. Namen der Verbindung festlegen z.B. `'crowdbike1'`
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
-1. Auf dem Desktop sollte sich jetzt das Skript sochtbar sein, das wir eben erstellt haben. Mit einem Doppelklick und einem Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
+1. Auf dem Desktop sollte das Skript jetzt sichtbar sein, das wir eben erstellt haben. Mit einem Doppelklick und einem Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
 
 ## Variante ohne GUI nutzen
 1. Die Variante ohne GUI befindet sich in `~/crowdbike/Code/crowdbike_nonGUI.py`
-1. Es sind keine neuen Einstellungen notwendig, da die Anwendung auf die gleichen config-files zugreift.
+1. Es sind keine neuen Einstellungen notwendig, da die Anwendung auf die gleichen config-Files zugreift.
 
-### Manueller start
+### Manueller Start
 - für den manuellen Start kann wie schon für die GUI-Version geschehen ein Start-Skript geschrieben werden
     1. Das Skript wieder auf dem Desktop anlegen `cd ~/Desktop/`
     1. Erstellen der Datei durch `nano start_nonGUI_crowdbike.sh`
@@ -357,7 +357,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Eingabe von `crontab -e`
 - Unten folgendes ergänzen: `@reboot sleep 10 && python3 /home/pi/crowdbike/Code/crowdbike_nonGUI.py >> /home/pi/crowdbike_nonGUI.log 2>&1` (alles in eine Zeile!)
 #### Erklärung:
-- `sleep 10` stellt sicher, dass die Software erst gestartetn wird wenn der raspberry pi vollständig gebootet hat
+- `sleep 10` stellt sicher, dass die Software erst gestartet wird wenn der Raspberry Pi vollständig gebootet hat
 - `python3` besagt dass das File danach mit Python 3 gestartet werden soll
 - `/home/pi/crowdbike/Code/crowdbike_nonGUI.py` ist der absolute Pfad zum Skript
 - `>> /home/pi/crowdbike.log 2>&1` schreibt evtl. auftretende Error-Meldungen in das angegeben log-File. Sollten Probleme auftreten, ist dies die erste Anlaufstelle!
@@ -377,13 +377,13 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Das Beobachten wieder mit `Strg + c` abbrechen
 ### Nutzungshinweise zur `nonGUI` Version
 - Es muss sich darauf verlassen werden, dass das Programm ordnungsgemäß gestartet ist. Es besteht die Möglichkeit dass es aufgrund eines Fehlers zu keiner Datenaufzeichnung gekommen ist.
-- Die Kontrolle ob das Programm tatsächlich ordnungsgemäß läfut, kann z.B. unter Android mit einer Verbindung per `SSH` mithilfe der App [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh&hl=de) durchgeführt werden.
+- Die Kontrolle ob das Programm tatsächlich ordnungsgemäß läuft, kann z.B. unter Android mit einer Verbindung per `SSH` mithilfe der App [JuiceSSH](https://play.google.com/store/apps/details?id=com.sonelli.juicessh&hl=de) durchgeführt werden.
 - Hier kann dann wie oben beschrieben das log-File beobachtet werden.
 - Das Abbrechen der Datenaufzeichnung kann schonungslos durch trennen der Stromversorgung erreicht werden (nicht empfohlen) es kann zur Beschädigung des OS führen.
 - Korrekt beendet wird es durch ausführen von `bash ~/crowdbike/Code/stop_nonGUI.sh`
 ## Updates
-- Um evtl. Updates und Bugfixes herunterzuladen muss folgendes ausgeführt werden:
-1. Navigieren in den Ornder durch `cd ~/crowdbike/Code`
+- Um evtl. Updates und Bug-Fixes herunterzuladen muss folgendes ausgeführt werden:
+1. Navigieren in den Ordner durch `cd ~/crowdbike/Code`
 1. Ausführen von `git fetch`
 1. Ausführen von `git checkout origin/master crowdbike.py` oder eben des Files für das eine neue Version verfügbar ist.
 ## Sensor-Kalibrierung
@@ -397,10 +397,20 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     }
     ```
 ## Upload der Daten
-- Um die gemessenen Werte zu sammeln, gibt es ein kleines Skript, das die Daten in einen geteilten Ordner einer Nextcloud hochlädt
+- Um die gemessenen Werte zu sammeln, gibt es ein kleines Skript, das die Daten in einen geteilten Ordner einer NextCloud hochlädt
 - Das Skript sollte nur ausgeführt werden, wenn parallel kein crowdbike Prozess läuft (GUI oder nonGUI Variante)
 - Bei Ausführen von `python3 ~/crowdbike/Code/send2cloud.py` wird der gesamte Inhalt des zuvor definierten log-Ordners zur Cloud gesendet
-- Vorraussetung dafür ist, dass die Angaben in `config.json` richtig sind
-- Bei Problemen kann durch `python3 ~/crowdbike/Code/send2cloud.py -v` die vebosity erhöht werden.
+- Voraussetzung dafür ist, dass die Angaben in `config.json` richtig sind
+- Bei Problemen kann durch `python3 ~/crowdbike/Code/send2cloud.py -v` die Vebosity erhöht werden.
+- Es kann auch wieder eine Verknüpfung auf dem Desktop erstellt werden
+- Eingabe von `nano ~/Desktop/send2cloud.sh`
+- In das File schreiben:
+    ```bash
+    python3 ~/crowdbike/Code/send2cloud.py
+    ```
+- Nun muss das File wieder durch `chmod +x ~/Desktop/send2cloud.sh` ausführbar gemacht werden.
+- Zum Ausführen kann nun einfach z.B. vom Smartphone aus das Programm gestartet werden.
+- Im nach dem Doppelklick auftauchenden Dialog `Im Terminal ausführen` auswählen.
+- Nun werden die Files hochgeladen.
 ## Quellen:
 **Andreas Christen (2018):** Meteobike - Mapping urban heat islands with bikes. [GitHub](https://github.com/achristen/Meteobike/blob/master/readme.md). [19.01.2020].
