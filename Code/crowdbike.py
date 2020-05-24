@@ -196,24 +196,24 @@ def start_counting(label: Label) -> None:
         dht22_temperature = dht22_temperature_calib
 
         saturation_vappress_ucalib = (
-                                      0.6113 * np.exp((2501000.0 / 461.5) *
-                                                      ((1.0 / 273.15) -
-                                                      (
-                                                          1.0 / (
-                                                              dht22_temperature_raw +  # noqa 501
-                                                              273.15
-                                                          )
-                                                      )))
+            0.6113 * np.exp((2501000.0 / 461.5) *
+                            ((1.0 / 273.15) -
+                            (
+                                1.0 / (
+                                    dht22_temperature_raw +
+                                    273.15
+                                )
+                            )))
         )
         saturation_vappress_calib = (
-                                      0.6113 * np.exp((2501000.0 / 461.5) *
-                                                      ((1.0 / 273.15) -
-                                                      (
-                                                          1.0 / (
-                                                              dht22_temperature_calib +  # noqa 501
-                                                              273.15
-                                                          )
-                                                      )))
+            0.6113 * np.exp((2501000.0 / 461.5) *
+                            ((1.0 / 273.15) -
+                            (
+                                1.0 / (
+                                    dht22_temperature_calib +
+                                    273.15
+                                )
+                            )))
         )
         dht22_vappress = (
             (dht22_humidity / 100.0) * saturation_vappress_ucalib
