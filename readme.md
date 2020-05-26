@@ -390,7 +390,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Die Kalibrierung der Sensoren kann im File `~/crowdbike/Code/calibration.json` eingetragen werden.
     ```json
     {
-        "temp_cal_a1": 1.00100,
+        "temp_cal_a1": 1.00000,
         "temp_cal_a0": 0.00000,
         "vappress_cal_a1": 1.00000,
         "vappress_cal_a0": 0.00000
