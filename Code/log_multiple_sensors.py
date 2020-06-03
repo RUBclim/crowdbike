@@ -50,7 +50,7 @@ HEADER = [
 
 
 @retry(tries=5)
-def read_dht22(sensor: adafruit_dht.DHT22) -> Tuple[int, int]:
+def read_dht22(sensor: adafruit_dht.DHT22) -> Tuple[float, float]:
     temp = sensor.temperature
     hum = sensor.humidity
     if temp is None:
@@ -60,7 +60,7 @@ def read_dht22(sensor: adafruit_dht.DHT22) -> Tuple[int, int]:
     return (temp, hum)
 
 
-def write_header():
+def write_header() -> None:
     with open(FILENAME, 'w') as f:
         writer = csv.DictWriter(f=f, fieldnames=HEADER)
         writer.writeheader()
@@ -87,6 +87,7 @@ def main() -> None:
                 }
                 if args.verbose:
                     print(log)
+                    print(' done reading all sensors '.center(79, '*'))
 
                 writer.writerow(rowdict=log)
             f.close()
