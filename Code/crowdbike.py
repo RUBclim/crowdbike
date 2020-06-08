@@ -31,6 +31,7 @@ Buttons:
 """
 import json
 import os
+import uuid
 from datetime import datetime
 from tkinter import Button
 from tkinter import DISABLED
@@ -61,6 +62,7 @@ with open(
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
+UUID = uuid.getnode()
 
 with open(
     os.path.join(
@@ -113,6 +115,7 @@ cnames = [
     'vapour_pressure_raw',
     'pm10',
     'pm2_5',
+    'uuid',
 ]
 
 
@@ -307,6 +310,7 @@ def start_counting(label: Label) -> None:
 
             f0.write(str(pm10) + ',')
             f0.write(str(pm2_5) + '\n')
+            f0.write(str(UUID) + '\n')
 
             f0.close()
     count()

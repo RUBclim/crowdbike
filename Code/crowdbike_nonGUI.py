@@ -27,6 +27,7 @@ import json
 import os
 import signal
 import time
+import uuid
 
 import adafruit_dht
 import board
@@ -47,6 +48,7 @@ with open(
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
+UUID = uuid.getnode()
 
 with open(
     os.path.join(
@@ -86,6 +88,7 @@ columnnames = [
     'vapour_pressure_raw',
     'pm10',
     'pm2_5',
+    'uuid',
 ]
 
 # check if file is already there
@@ -228,6 +231,7 @@ def main() -> None:
                 'vapour_pressure_raw': dht22_vappress_raw,
                 'pm10': pm10,
                 'pm2_5': pm2_5,
+                'uuid': UUID,
             }
 
             # append to csv file
