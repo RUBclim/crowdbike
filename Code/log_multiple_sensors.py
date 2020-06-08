@@ -1,6 +1,7 @@
 import argparse
 import csv
 import signal
+import time
 from datetime import datetime
 from typing import Tuple
 
@@ -85,12 +86,14 @@ def main() -> None:
                     'hum': readings[1],
                     'sensor_id': sensor,
                 }
+                time.sleep(1)
                 if args.verbose:
                     print(log)
                     print(' done reading all sensors '.center(79, '*'))
 
                 writer.writerow(rowdict=log)
             f.close()
+            print(' next run '.center(79, '*'))
 
 
 signal.signal(signal.SIGTERM, _exit_programm)
