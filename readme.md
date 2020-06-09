@@ -162,19 +162,9 @@ GND|PIN 6 (GND)|weiß|
 
 ![Anschluss gps](/Documentation/pi_gps.png)
 ### PM-Sensor (optional)
-#### **Achtung! Ein falscher Anschluss kann zur Zerstörung des Sensors oder des Raspberry-Pi führen. Deshalb vor dem Start erneut prüfen.**
 1. Micro-USB auf USB Adapter an den Micro-USB-Port `USB`  anschließen
 1. An die USB-A-Buchse den UART-USB-Adapter anschließen
-1. Am UART-Adapter den mittleren Pin mit dem äußeren Pin (5V) brücken (sieh Abb.)
-1. Kabel wie folgt mit PM-Sensor verbinden
-
-|PM-Sensor|UART-Adapter|Kabelfarbe|
-|:---:|:---:|:---:|
-|VIN|VCCI0|rot|
-GND|GND|schwarz|
-|TX|RXD| violett|
-|RX|TXD| grau|
-
+1. Weißes Kabel vom PM-Sensor zum UART-Adapter einstecken
 ![Anschluss pm](/Documentation/pi_pm.png)
 ## Sensoren in Betrieb nehmen
 - Raspberry Pi wieder mit der Powerbank verbinden und warten bis dieser gebootet hat
@@ -301,6 +291,19 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Die `sampling_rate` steuert die Häufigkeit in der eine Messung durchgeführt wird in Sekunden.
 - Bei `folder_token` den in der PPP mitgeteilten Token eintragen.
 - Ebenfalls bei `passwd` und `base_url` die in der PPP mitgeteilten Daten eintragen.
+## Sensor-Kalibrierung
+- Die Kalibrierung der Sensoren muss im File `~/crowdbike/Code/calibration.json` eingetragen werden.
+- Öffnen des Files mit `nano ~/crowdbike/Code/calibration.json`
+- Darauf achten, dass die Faktoren für die entsprechende Sensornummer eingetragen werden.
+    ```json
+    {
+        "temp_cal_a1": 1.00000,
+        "temp_cal_a0": 0.00000,
+        "vappress_cal_a1": 1.00000,
+        "vappress_cal_a0": 0.00000
+    }
+    ```
+- Speichern mit `Strg + s` und Schließen mit `Strg + x`
 ## Erstes Starten der Logger-Software
 1. Navigieren zum Skript durch `cd ~/crowdbike/Code`
 1. Ausführen durch Eingabe von `python3 crowdbike.py` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben.
@@ -337,7 +340,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
 1. Auf dem Desktop sollte das Skript jetzt sichtbar sein, das wir eben erstellt haben. Mit einem Doppelklick und einem Klick auf Ausführen sollte nach kurzer Zeit das Programm starten.
 
-## Variante ohne GUI nutzen
+## Variante ohne GUI nutzen (Optional)
 1. Die Variante ohne GUI befindet sich in `~/crowdbike/Code/crowdbike_nonGUI.py`
 1. Es sind keine neuen Einstellungen notwendig, da die Anwendung auf die gleichen config-Files zugreift.
 
@@ -386,17 +389,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 1. Navigieren in den Ordner durch `cd ~/crowdbike/Code`
 1. Ausführen von `git fetch`
 1. Ausführen von `git checkout origin/master crowdbike.py` oder eben des Files für das eine neue Version verfügbar ist.
-## Sensor-Kalibrierung
-- Die Kalibrierung der Sensoren kann im File `~/crowdbike/Code/calibration.json` eingetragen werden.
-    ```json
-    {
-        "temp_cal_a1": 1.00000,
-        "temp_cal_a0": 0.00000,
-        "vappress_cal_a1": 1.00000,
-        "vappress_cal_a0": 0.00000
-    }
-    ```
-## Upload der Daten
+## Upload der gemessenen Daten in die Cloud
 - Um die gemessenen Werte zu sammeln, gibt es ein kleines Skript, das die Daten in einen geteilten Ordner einer NextCloud hochlädt
 - Das Skript sollte nur ausgeführt werden, wenn parallel kein crowdbike Prozess läuft (GUI oder nonGUI Variante)
 - Bei Ausführen von `python3 ~/crowdbike/Code/send2cloud.py` wird der gesamte Inhalt des zuvor definierten log-Ordners zur Cloud gesendet
