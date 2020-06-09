@@ -31,7 +31,6 @@ Buttons:
 """
 import json
 import os
-import uuid
 from datetime import datetime
 from tkinter import Button
 from tkinter import DISABLED
@@ -48,9 +47,12 @@ import adafruit_dht
 import board
 import numpy as np
 from FUN import get_ip
+from FUN import get_wlan_macaddr
 from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
+
+
 # __load config files__
 with open(
     os.path.join(
@@ -62,7 +64,7 @@ with open(
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
-UUID = uuid.getnode()
+mac = get_wlan_macaddr()
 
 with open(
     os.path.join(
@@ -115,7 +117,7 @@ cnames = [
     'vapour_pressure_raw',
     'pm10',
     'pm2_5',
-    'uuid',
+    'mac',
 ]
 
 
@@ -310,7 +312,7 @@ def start_counting(label: Label) -> None:
 
             f0.write(str(pm10) + ',')
             f0.write(str(pm2_5) + '\n')
-            f0.write(str(UUID) + '\n')
+            f0.write(str(mac) + '\n')
 
             f0.close()
     count()

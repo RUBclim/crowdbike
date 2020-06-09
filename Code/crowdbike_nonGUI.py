@@ -27,11 +27,11 @@ import json
 import os
 import signal
 import time
-import uuid
 
 import adafruit_dht
 import board
 import numpy as np
+from FUN import get_wlan_macaddr
 from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
@@ -48,7 +48,7 @@ with open(
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
-UUID = uuid.getnode()
+mac = get_wlan_macaddr()
 
 with open(
     os.path.join(
@@ -88,7 +88,7 @@ columnnames = [
     'vapour_pressure_raw',
     'pm10',
     'pm2_5',
-    'uuid',
+    'mac',
 ]
 
 # check if file is already there
@@ -231,7 +231,7 @@ def main() -> None:
                 'vapour_pressure_raw': dht22_vappress_raw,
                 'pm10': pm10,
                 'pm2_5': pm2_5,
-                'uuid': UUID,
+                'mac': mac,
             }
 
             # append to csv file

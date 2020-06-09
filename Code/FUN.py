@@ -1,12 +1,34 @@
+import re
 import socket
+import subprocess
 import threading
 import time
+import uuid
 
 import adafruit_dht
 import adafruit_gps
 import serial
 from numpy import nan
 from retry import retry
+
+
+def get_wlan_macaddr():
+    ifconfig = subprocess.check_output(
+        args=('ifconfig', '-a'),
+    ).decode('utf-8')
+    ifconfig_list = re.split(r'\n| ', ifconfig)
+
+    for i in range(len(ifconfig_list)):
+        if bool(re.match(pattern=r'wlan\d{1}:$', string=ifconfig_list[i])):
+            wlan = ifconfig_list[i:]
+            for j in range(len(wlan)):
+                if wlan[j] == 'ether':
+                    mac_address = wlan[j + 1]
+            break
+    else:
+        # can't finde the macadress of the wlan module
+        mac_address = uuid.getnode()
+    return mac_address
 
 
 def get_ip() -> str:
