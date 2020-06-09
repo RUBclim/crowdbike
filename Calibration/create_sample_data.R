@@ -57,8 +57,8 @@ for (sensor in sensor_id) {
     hum_add <- runif(1, -10, 10)
     temp_coefficient <- runif(1, 0.7, 1.3)
     temp_add <- runif(1, -1.2, 1.2)
-    all_data[sensor_id == sensor, hum:= hum_rgs * hum_coefficient + hum_add]
-    all_data[sensor_id == sensor, temp:= temp_rgs * temp_coefficient + temp_add]
+    all_data[sensor_id == sensor, hum := hum_rgs * hum_coefficient + hum_add]
+    all_data[sensor_id == sensor, temp := temp_rgs * temp_coefficient + temp_add]
     all_data[sensor_id == sensor, hum_pre_calib_coef := hum_coefficient]
     all_data[sensor_id == sensor, hum_pre_calib_add := hum_add]
     all_data[sensor_id == sensor, temp_pre_calib_coef := temp_coefficient]
@@ -66,8 +66,8 @@ for (sensor in sensor_id) {
     }
 
 
-randomizer_temp <-runif(1200, -1, 1)
-randomizer_hum <-runif(1200, -10, 10)
+randomizer_temp <- runif(1200, -1, 1)
+randomizer_hum <- runif(1200, -10, 10)
 data <- cbind(all_dates, all_data, randomizer_temp, randomizer_hum)
 data[, temp := temp + randomizer_temp]
 data[, hum := hum + randomizer_hum]
@@ -80,3 +80,7 @@ fwrite(
     file = 'sample_data.csv',
     dateTimeAs = 'write.csv'
 )
+
+
+source('.lint.R')
+lint_my_script('create_sample_data.R')
