@@ -1,3 +1,7 @@
+*.csv
+*.png
+.RData
+.Rhistory
 .vscode
-crowdbike.code-workspace
 Code/__pycache__/*
+crowdbike.code-workspace
