@@ -45,22 +45,22 @@ plot_uncalibrated <- function(data, results, param) {
     if (param == 'temp') {
         x <- data$temp_rgs
         y <- data$temp_dht
-        name_x <- 'temperature of DHT22-sensor [°C]'
-        name_y <- 'temperature of RGS II [°C]'
+        name_x <- 'temperature of RGS II [°C]'
+        name_y <- 'temperature of DHT22-sensor [°C]'
         lim <- c(5, 30)
         text_y <- 28
         text_x <- 6
-        unit <- 'K'
+        unit <- ' K'
     }
     else if (param == 'hum') {
         x <- data$hum_rgs
         y <- data$hum_dht
-        name_x <- 'rel. humidity of DHT22-sensor [%]'
-        name_y <- 'rel. humidity of RGS II [%]'
+        name_x <- 'rel. humidity of RGS II [%]'
+        name_y <- 'rel. humidity of DHT22-sensor [%]'
         lim <- c(0, 100)
         text_y <- 90
         text_x <- 5
-        unit <- '%'
+        unit <- ' %'
     }
     else {
         stop(paste(
@@ -70,8 +70,8 @@ plot_uncalibrated <- function(data, results, param) {
     ggplot(data = data, aes(x = x , y = y)) +
         geom_point() +
         geom_abline(intercept = 0, slope = 1, color = 'red', lwd = 1) +
-        scale_y_continuous(name = name_x) +
-        scale_x_continuous(name = name_y) +
+        scale_x_continuous(name = name_x) +
+        scale_y_continuous(name = name_y) +
         labs(title = paste(
             'DHT22-sensor "', factor(
                 data$sensor_id),
@@ -103,22 +103,22 @@ plot_calibrated <- function(data, results, param) {
     if (param == 'temp') {
         x <- data$temp_rgs
         y <- data$temp_calib
-        name_x <- 'temperature of DHT22-sensor [°C]'
-        name_y <- 'temperature of RGS II [°C]'
+        name_x <- 'temperature of RGS II [°C]'
+        name_y <- 'temperature of DHT22-sensor [°C]'
         lim <- c(5, 30)
         text_y <- 28
         text_x <- 6
-        unit <- 'K'
+        unit <- ' K'
     }
     else if (param == 'hum') {
         x <- data$hum_rgs
         y <- data$hum_calib
-        name_x <- 'rel. humidity of DHT22-sensor [%]'
-        name_y <- 'rel. humidity of RGS II [%]'
+        name_x <- 'rel. humidity of RGS II [%]'
+        name_y <- 'rel. humidity of DHT22-sensor [%]'
         lim <- c(0, 100)
         text_y <- 90
         text_x <- 5
-        unit <- '%'
+        unit <- ' %'
     }
     else {
         stop(paste(
@@ -154,7 +154,6 @@ plot_calibrated <- function(data, results, param) {
                         ylim = lim,
                         expand = F)
 }
-
 
 calibrate <- function(data, sensor, rgs_data, start, param) {
     data <- data[date >= as.POSIXct(start, tz = 'UTC'), ]
@@ -193,12 +192,10 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     if (param == 'temp') {
         lin_mod <- lm(all_data[sensor_id == sensor, temp_dht]
                       ~ all_data[sensor_id == sensor, temp_rgs])
-    }
-    else if (param == 'hum') {
+    } else if (param == 'hum') {
         lin_mod <- lm(all_data[sensor_id == sensor, hum_dht]
                       ~ all_data[sensor_id == sensor, hum_rgs])
-    }
-    else {
+    } else {
         stop(paste(
             '"param" must be either "temp" or "hum" not ',
             param, sep = ''))
@@ -221,8 +218,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             fml,
             temp_cal_a1,
             temp_cal_a0)
-    }
-    else {
+    } else {
         vapress_cal_a1 <- 1 / slope
         vapress_cal_a0 <- y_inter
         results <- data.table(
@@ -245,8 +241,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
         all_data[, 'temp_calib' := (temp_dht / slope) - y_inter]
         plot_calib <- plot_calibrated(
             data = all_data, results = results, param = 'temp')
-    }
-    else {
+    } else {
         plot_uncalib <- plot_uncalibrated(
             data = all_data, results = results, param = 'hum')
         all_data[, 'hum_calib' := (hum_dht / slope) - y_inter]
@@ -329,4 +324,4 @@ fwrite(x = calib_table_hum,
 
 # lint
 source('.lint.R')
-lint_my_script('reading_data.R')
+lint_my_script('calibrate_temp_hum.R')
