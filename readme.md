@@ -299,8 +299,8 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     {
         "temp_cal_a1": 1.00000,
         "temp_cal_a0": 0.00000,
-        "vappress_cal_a1": 1.00000,
-        "vappress_cal_a0": 0.00000
+        "hum_cal_a1": 1.00000,
+        "hum_cal_a0": 0.00000
     }
     ```
 - Speichern mit `Strg + s` und Schließen mit `Strg + x`

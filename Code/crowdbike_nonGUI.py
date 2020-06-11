@@ -35,7 +35,8 @@ from FUN import get_wlan_macaddr
 from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
-
+from FUN import sat_vappressure
+from FUN import vappressure
 
 # __load config files__
 with open(
@@ -61,8 +62,8 @@ with open(
 # __calibration params__
 temperature_cal_a1 = calib['temp_cal_a1']
 temperature_cal_a0 = calib['temp_cal_a0']
-vappress_cal_a1 = calib['vappress_cal_a1']
-vappress_cal_a0 = calib['vappress_cal_a0']
+hum_cal_a1 = calib['hum_cal_a1']
+hum_cal_a0 = calib['hum_cal_a0']
 
 logfile_path = config['user']['logfile_path']
 if not os.path.exists(logfile_path):
@@ -85,7 +86,6 @@ columnnames = [
     'rel_humidity',
     'rel_humidity_raw',
     'vapour_pressure',
-    'vapour_pressure_raw',
     'pm10',
     'pm2_5',
     'mac',
@@ -142,52 +142,25 @@ def main() -> None:
             dht22_temperature = readings['temperature']
 
             # calculate temperature with sensor calibration values
-
             dht22_temperature_raw = round(dht22_temperature, 5)
             dht22_temperature_calib = round(
                 dht22_temperature *
                 temperature_cal_a1 +
                 temperature_cal_a0, 3,
             )
-            dht22_temperature = dht22_temperature_calib
-
-            saturation_vappress_ucalib = (
-                0.6113 * np.exp((2501000.0 / 461.5) *
-                                ((1.0 / 273.15) -
-                                (
-                                    1.0 / (
-                                        dht22_temperature_raw +
-                                        273.15
-                                    )
-                                )))
-            )
-            saturation_vappress_calib = (
-                0.6113 * np.exp((2501000.0 / 461.5) *
-                                ((1.0 / 273.15) -
-                                (
-                                    1.0 / (
-                                        dht22_temperature_calib +
-                                        273.15
-                                    )
-                                )))
-            )
-            dht22_vappress = (
-                (dht22_humidity / 100.0) *
-                saturation_vappress_ucalib
-            )
-            dht22_vappress_raw = round(dht22_vappress, 3)
-            dht22_vappress_calib = round(
-                dht22_vappress *
-                vappress_cal_a1 +
-                vappress_cal_a0, 3,
-            )
-            dht22_vappress = dht22_vappress_calib
 
             dht22_humidity_raw = round(dht22_humidity, 5)
-            dht22_humidity = round(
-                100 * (
-                    dht22_vappress_calib /
-                    saturation_vappress_calib
+            dht22_humidity_calib = round(
+                dht22_humidity *
+                hum_cal_a1 +
+                hum_cal_a0, 3,
+            )
+
+            saturation_vappress = sat_vappressure(dht22_temperature_calib)
+            dht22_vappress = round(
+                vappressure(
+                    dht22_humidity_calib,
+                    saturation_vappress,
                 ), 5,
             )
 
@@ -223,12 +196,11 @@ def main() -> None:
                 'latitude': gps_latitude,
                 'longitude': gps_longitude,
                 'speed': gps_speed,
-                'temperature': dht22_temperature,
+                'temperature': dht22_temperature_calib,
                 'temperature_raw': dht22_temperature_raw,
-                'rel_humidity': dht22_humidity,
+                'rel_humidity': dht22_humidity_calib,
                 'rel_humidity_raw': dht22_humidity_raw,
                 'vapour_pressure': dht22_vappress,
-                'vapour_pressure_raw': dht22_vappress_raw,
                 'pm10': pm10,
                 'pm2_5': pm2_5,
                 'mac': mac,

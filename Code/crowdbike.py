@@ -51,7 +51,8 @@ from FUN import get_wlan_macaddr
 from FUN import GPS
 from FUN import pm_sensor
 from FUN import read_dht22
-
+from FUN import sat_vappressure
+from FUN import vappressure
 
 # __load config files__
 with open(
@@ -77,8 +78,8 @@ with open(
 # __calibration params__
 temperature_cal_a1 = calib['temp_cal_a1']
 temperature_cal_a0 = calib['temp_cal_a0']
-vappress_cal_a1 = calib['vappress_cal_a1']
-vappress_cal_a0 = calib['vappress_cal_a0']
+hum_cal_a1 = calib['hum_cal_a1']
+hum_cal_a0 = calib['hum_cal_a0']
 
 window_title = 'Crowdbike' + raspberryid
 logfile_path = config['user']['logfile_path']
@@ -114,7 +115,6 @@ cnames = [
     'rel_humidity',
     'rel_humidity_raw',
     'vapour_pressure',
-    'vapour_pressure_raw',
     'pm10',
     'pm2_5',
     'mac',
@@ -198,44 +198,19 @@ def start_counting(label: Label) -> None:
             temperature_cal_a1 +
             temperature_cal_a0, 3,
         )
-        dht22_temperature = dht22_temperature_calib
-
-        saturation_vappress_ucalib = (
-            0.6113 * np.exp((2501000.0 / 461.5) *
-                            ((1.0 / 273.15) -
-                            (
-                                1.0 / (
-                                    dht22_temperature_raw +
-                                    273.15
-                                )
-                            )))
-        )
-        saturation_vappress_calib = (
-            0.6113 * np.exp((2501000.0 / 461.5) *
-                            ((1.0 / 273.15) -
-                            (
-                                1.0 / (
-                                    dht22_temperature_calib +
-                                    273.15
-                                )
-                            )))
-        )
-        dht22_vappress = (
-            (dht22_humidity / 100.0) * saturation_vappress_ucalib
-        )
-        dht22_vappress_raw = round(dht22_vappress, 3)
-        dht22_vappress_calib = round(
-            dht22_vappress *
-            vappress_cal_a1 +
-            vappress_cal_a0, 3,
-        )
-        dht22_vappress = dht22_vappress_calib
 
         dht22_humidity_raw = round(dht22_humidity, 5)
-        dht22_humidity = round(
-            100 * (
-                dht22_vappress_calib /
-                saturation_vappress_calib
+        dht22_humidity_calib = round(
+            dht22_humidity *
+            hum_cal_a1 +
+            hum_cal_a0, 3,
+        )
+
+        saturation_vappress = sat_vappressure(dht22_temperature_calib)
+        dht22_vappress = round(
+            vappressure(
+                dht22_humidity_calib,
+                saturation_vappress,
             ), 5,
         )
 
@@ -276,8 +251,12 @@ def start_counting(label: Label) -> None:
         value_longitude.config(text='{0:.6f} °E'.format(gps_longitude))
         value_speed.config(text='{0:.1f} km/h'.format(gps_speed))
         value_time.config(text=gps_time)
-        value_temperature.config(text='{0:.1f} °C'.format(dht22_temperature))
-        value_humidity.config(text='{0:.1f} %'.format(dht22_humidity))
+        value_temperature.config(
+            text='{0:.1f} °C'.format(
+                dht22_temperature_calib,
+            ),
+        )
+        value_humidity.config(text='{0:.1f} %'.format(dht22_humidity_calib))
         value_vappress.config(text='{0:.3f} kPa'.format(dht22_vappress))
 
         value_pm10.config(text='{0:.1f} \u03BCg/m\u00B3'.format(pm10))
@@ -301,17 +280,16 @@ def start_counting(label: Label) -> None:
             f0.write('{0:.6f}'.format(gps_longitude) + ',')
             f0.write('{0:.1f}'.format(gps_speed) + ',')
 
-            f0.write(str(dht22_temperature) + ',')
+            f0.write(str(dht22_temperature_calib) + ',')
             f0.write(str(dht22_temperature_raw) + ',')
 
-            f0.write(str(dht22_humidity) + ',')
+            f0.write(str(dht22_humidity_calib) + ',')
             f0.write(str(dht22_humidity_raw) + ',')
 
             f0.write(str(dht22_vappress) + ',')
-            f0.write(str(dht22_vappress_raw) + ',')
 
             f0.write(str(pm10) + ',')
-            f0.write(str(pm2_5) + '\n')
+            f0.write(str(pm2_5) + ',')
             f0.write(str(mac) + '\n')
 
             f0.close()

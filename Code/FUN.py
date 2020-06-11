@@ -8,6 +8,7 @@ import uuid
 import adafruit_dht
 import adafruit_gps
 import serial
+from numpy import exp
 from numpy import nan
 from retry import retry
 
@@ -168,6 +169,20 @@ def read_dht22(sensor: adafruit_dht.DHT22) -> dict:
     if hum is None:
         hum = nan
     return {'temperature': temp, 'humidity': hum}
+
+
+def sat_vappressure(temp):
+    saturation_vappress = (
+        0.6113 * exp(
+            (2501000.0 / 461.5) * ((1.0 / 273.15) - (1.0 / (temp + 273.15))),
+        )
+    )
+    return saturation_vappress
+
+
+def vappressure(humidity, saturation_vappress):
+    vappress = ((humidity / 100.0) * saturation_vappress)
+    return vappress
 
 
 class GPS(threading.Thread):

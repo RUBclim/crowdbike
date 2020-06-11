@@ -3,5 +3,5 @@ Calibration/plots
 .RData
 .Rhistory
 .vscode
-Code/__pycache__/*
+*/__pycache__/
 crowdbike.code-workspace
