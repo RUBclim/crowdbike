@@ -55,27 +55,27 @@
     ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
     update_config=1
     country=DE
-
     network={
         ssid="Name eures Heim-WLANs"
+        priority=1
         psk="Passwort eures Heim-WLANs"
     }
-
     network={
         ssid="Name eures Smartphone-Hotspots"
+        priority=2
         psk="Passwort eures Smartphone-Hotspots"
     }
     ```
 1. Darauf achten, dass Name und Passwort in `""` stehen!
 1. Es dürfen keine Leerzeichen das `=` umgeben!
+1. Die Einrückungen müssen mit `TAB`, **nicht** mit Leerzeichen gemacht werden!
 1. 3x kontrollieren dass das Passwort und die SSID stimmt!!
 1. Die Datei speichern und schließen.
 
 ### Starten des Raspberry Pi
-1. Falls der Smartphone-Hotspot im Verlauf eingeschaltet wurde, darauf achten, dass
 1. Anschließen der Powerbank an den Raspberry Pi an den Eingang `PWR IN`
 1. Raspberry pi sollte nun booten (grüne LED blinkt)
-1. Ca. eine Minute warten
+1. Ca. 2-3 Minuten warten
 
 ## Herstellen einer Verbindung vom Laptop/Computer via SSH
 1. Verbinden des Laptops/Computers mit dem gleichem WLAN-Netzwerk wie der Raspberry Pi &rarr; Heim-WLAN wie zuvor eingestellt.
@@ -252,6 +252,7 @@ GND|PIN 6 (GND)|weiß|
 1. Kopieren oder abtippen des unten stehenden Codes
 1. Durch `Strg + s` speichern und mit `Strg + x` den Texteditor wieder verlassen
     ```python
+    import time
     from Code.FUN import pm_sensor
 
 
@@ -261,6 +262,7 @@ GND|PIN 6 (GND)|weiß|
     # get a reading every second, 10 times
     for i in range(10):
         print(nova_sensor.read_pm())
+        time.sleep(1)
     ```
 - **Hinweis:** Einrückungen durch `TAB` **oder** 4-Leerzeichen am Anfang der Zeile beachten
 - Starten des Scripts durch Eingabe von `python3 pm_test.py`
