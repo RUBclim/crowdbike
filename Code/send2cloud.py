@@ -63,22 +63,35 @@ if files_present:
             if args.verbose:
                 call = subprocess.run(args=curl_call, capture_output=True)
                 stdoutput = call.stdout.decode('utf-8')
-                print(call.stderr.decode('utf-8'))
-                if stdoutput == '':
+                stderr = call.stderr.decode('utf-8')
+                print(stderr)
+                err = stderr.split('curl:')
+
+                if len(err) > 1:
+                    err = err[1]
+
+                if stdoutput == '' and len(err) == 1:
                     shutil.move(os.path.join(log_dir, log), archive_dir)
                 else:
                     print(' error '.center(79, '='))
                     print(stdoutput)
+                    print(err)
 
             else:
                 call = subprocess.run(args=curl_call, capture_output=True)
                 stdoutput = call.stdout.decode('utf-8')
+                stderr = call.stderr.decode('utf-8')
+                err = stderr.split('curl:')
 
-                if stdoutput == '':
+                if len(err) > 1:
+                    err = err[1]
+
+                if stdoutput == '' and len(err) == 1:
                     shutil.move(os.path.join(log_dir, log), archive_dir)
                 else:
                     print(' error '.center(79, '='))
                     print(stdoutput)
+                    print(err)
 
 elif not files_present:
     print(f'Everything up to date. There are no files to upload in "{log_dir}"')  # noqa E501
