@@ -207,7 +207,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     rsq <- summary(lin_mod)$r.squared
     fml <- paste('y = ', slope, 'x + ', y_inter, sep = '')
     if (param == 'temp') {
-        temp_cal_a1 <- 1 / slope
+        temp_cal_a1 <- slope
         temp_cal_a0 <- y_inter
         results <- data.table(
             sensor,
@@ -219,8 +219,8 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             temp_cal_a1,
             temp_cal_a0)
     } else {
-        vapress_cal_a1 <- 1 / slope
-        vapress_cal_a0 <- y_inter
+        hum_cal_a1 <- slope
+        hum_cal_a0 <- y_inter
         results <- data.table(
             sensor,
             slope,
@@ -228,8 +228,8 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             rmse,
             rsq,
             fml,
-            vapress_cal_a1,
-            vapress_cal_a0)
+            hum_cal_a1,
+            hum_cal_a0)
     }
 
     all_data$sensor_id <- as.factor(all_data$sensor_id)

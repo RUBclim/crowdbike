@@ -194,15 +194,15 @@ def start_counting(label: Label) -> None:
         # calculate temperature with sensor calibration values
         dht22_temperature_raw = round(dht22_temperature, 5)
         dht22_temperature_calib = round(
-            dht22_temperature *
-            temperature_cal_a1 +
+            dht22_temperature /
+            temperature_cal_a1 -
             temperature_cal_a0, 3,
         )
 
         dht22_humidity_raw = round(dht22_humidity, 5)
         dht22_humidity_calib = round(
-            dht22_humidity *
-            hum_cal_a1 +
+            dht22_humidity /
+            hum_cal_a1 -
             hum_cal_a0, 3,
         )
 
