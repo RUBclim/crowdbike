@@ -4,31 +4,24 @@ import subprocess
 import threading
 import time
 import uuid
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 import adafruit_dht
 import adafruit_gps
 import serial
 from numpy import exp
 from numpy import nan
-from retry import retry
 
 
-def get_wlan_macaddr():
-    ifconfig = subprocess.check_output(
-        args=('ifconfig', '-a'),
-    ).decode('utf-8')
-    ifconfig_list = re.split(r'\n| ', ifconfig)
-
-    for i in range(len(ifconfig_list)):
-        if bool(re.match(pattern=r'wlan\d{1}:$', string=ifconfig_list[i])):
-            wlan = ifconfig_list[i:]
-            for j in range(len(wlan)):
-                if wlan[j] == 'ether':
-                    mac_address = wlan[j + 1]
-            break
+def get_wlan_macaddr() -> str:
+    ifconfig = subprocess.check_output(args=('ifconfig', '-a')).decode('utf-8')
+    match = re.search(r'(?:ether\s)([0-9a-f:]+)', ifconfig)
+    if match is not None:
+        mac_address = match.groups()[0]
     else:
-        # can't finde the macadress of the wlan module
-        mac_address = uuid.getnode()
+        mac_address = str(uuid.getnode())
     return mac_address
 
 
@@ -45,7 +38,7 @@ def get_ip() -> str:
     return IP
 
 
-class pm_sensor:
+class PmSensor:
     def __init__(self, dev: str, baudrate: int = 9600) -> None:
         self.dev = dev
         self.baudrate = baudrate
@@ -55,7 +48,7 @@ class pm_sensor:
         ser.port = self.dev
         ser.baudrate = self.baudrate
 
-    def read_pm(self) -> None:
+    def read_pm(self) -> Dict[str, Union[float, nan]]:
         '''
         method for reading the Nova-PM-sensor
         dev must be type <str> e.g. '/dev/ttyUSB0'
@@ -83,10 +76,10 @@ class pm_sensor:
             measures = {'PM10': pm10, 'PM2_5': pm2_5}
 
             ser.close()
-            return(measures)
         except Exception:
             measures = {'PM10': nan, 'PM2_5': nan}
-            return measures
+
+        return measures
 
     def sensor_sleep(self) -> None:
         '''
@@ -160,8 +153,7 @@ class pm_sensor:
         ser.close()
 
 
-@retry(tries=5)
-def read_dht22(sensor: adafruit_dht.DHT22) -> dict:
+def read_dht22(sensor: adafruit_dht.DHT22) -> Dict[str, str]:
     temp = sensor.temperature
     hum = sensor.humidity
     if temp is None:
@@ -171,7 +163,7 @@ def read_dht22(sensor: adafruit_dht.DHT22) -> dict:
     return {'temperature': temp, 'humidity': hum}
 
 
-def sat_vappressure(temp):
+def sat_vappressure(temp: Union[int, float]) -> float:
     saturation_vappress = (
         0.6113 * exp(
             (2501000.0 / 461.5) * ((1.0 / 273.15) - (1.0 / (temp + 273.15))),
@@ -180,13 +172,35 @@ def sat_vappressure(temp):
     return saturation_vappress
 
 
-def vappressure(humidity, saturation_vappress):
+def vappressure(
+        humidity: Union[int, float],
+        saturation_vappress: Union[int, float],
+) -> float:
     vappress = ((humidity / 100.0) * saturation_vappress)
     return vappress
 
 
+class TemperatureSensor(threading.Thread):
+    def __init__(self, dht_22: adafruit_dht.DHT22) -> None:
+        threading.Thread.__init__(self)
+        self.dht_22 = dht_22
+        self.running = True
+        self.humidity = None
+        self.temperature = None
+
+    def run(self) -> None:
+        while self.running:
+            try:
+                self.humidity = self.dht_22.temperature
+                self.temperature = self.dht_22.humidity
+            except Exception:
+                continue
+            time.sleep(.1)
+
+
 class GPS(threading.Thread):
     '''Class for reading the adafruit gps'''
+
     def __init__(self) -> None:
         threading.Thread.__init__(self)
         self.uart = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=10)
@@ -195,13 +209,13 @@ class GPS(threading.Thread):
         self.gps.send_command(b'PMTK220,1000')
         self.running = True
 
-        self.has_fix = None
-        self.latitude = None
-        self.longitude = None
-        self.satellites = None
-        self.timestamp = None
-        self.alt = None
-        self.speed = None
+        self.has_fix: Optional[bool] = None
+        self.latitude: Optional[float] = None
+        self.longitude: Optional[float] = None
+        self.satellites: Optional[int] = None
+        self.timestamp: Optional[str] = None
+        self.alt: Optional[float] = None
+        self.speed: Optional[float] = None
 
     def run(self) -> None:
         '''start thread and get values'''

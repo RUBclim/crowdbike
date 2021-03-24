@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Program <crowdbike.py> to read and record GPS data,
 air temperature and humidity
@@ -43,7 +42,7 @@ with open(
     os.path.join(
         os.path.dirname(__file__),
         'config.json',
-    ), 'r',
+    ),
 ) as config:
     config = json.load(config)
 
@@ -55,7 +54,7 @@ with open(
     os.path.join(
         os.path.dirname(__file__),
         'calibration.json',
-    ), 'r',
+    ),
 ) as calib:
     calib = json.load(calib)
 

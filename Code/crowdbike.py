@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Program <crowdbike.py> to read and record GPS data,
 air temperature and humidity
@@ -59,7 +58,7 @@ with open(
     os.path.join(
         os.path.dirname(__file__),
         'config.json',
-    ), 'r',
+    ),
 ) as config:
     config = json.load(config)
 
@@ -71,7 +70,7 @@ with open(
     os.path.join(
         os.path.dirname(__file__),
         'calibration.json',
-    ), 'r',
+    ),
 ) as calib:
     calib = json.load(calib)
 
@@ -246,21 +245,21 @@ def start_counting(label: Label) -> None:
 
         # __format value display in gui__
         value_ctime.config(text=computer_time)
-        value_altitude.config(text='{0:.3f} m ASL'.format(gps_altitude))
-        value_latitude.config(text='{0:.6f} °N'.format(gps_latitude))
-        value_longitude.config(text='{0:.6f} °E'.format(gps_longitude))
-        value_speed.config(text='{0:.1f} km/h'.format(gps_speed))
+        value_altitude.config(text=f'{gps_altitude:.3f} m ASL')
+        value_latitude.config(text=f'{gps_latitude:.6f} °N')
+        value_longitude.config(text=f'{gps_longitude:.6f} °E')
+        value_speed.config(text=f'{gps_speed:.1f} km/h')
         value_time.config(text=gps_time)
         value_temperature.config(
-            text='{0:.1f} °C'.format(
+            text='{:.1f} °C'.format(
                 dht22_temperature_calib,
             ),
         )
-        value_humidity.config(text='{0:.1f} %'.format(dht22_humidity_calib))
-        value_vappress.config(text='{0:.3f} kPa'.format(dht22_vappress))
+        value_humidity.config(text=f'{dht22_humidity_calib:.1f} %')
+        value_vappress.config(text=f'{dht22_vappress:.3f} kPa')
 
-        value_pm10.config(text='{0:.1f} \u03BCg/m\u00B3'.format(pm10))
-        value_pm2_5.config(text='{0:.1f} \u03BCg/m\u00B3'.format(pm2_5))
+        value_pm10.config(text=f'{pm10:.1f} \u03BCg/m\u00B3')
+        value_pm2_5.config(text=f'{pm2_5:.1f} \u03BCg/m\u00B3')
 
         label.config(text=str(counter))
         label.after(1000 * sampling_rate, count)
@@ -275,10 +274,10 @@ def start_counting(label: Label) -> None:
             else:
                 f0.write('nan,')
 
-            f0.write('{0:.3f}'.format(gps_altitude) + ',')
-            f0.write('{0:.6f}'.format(gps_latitude) + ',')
-            f0.write('{0:.6f}'.format(gps_longitude) + ',')
-            f0.write('{0:.1f}'.format(gps_speed) + ',')
+            f0.write(f'{gps_altitude:.3f}' + ',')
+            f0.write(f'{gps_latitude:.6f}' + ',')
+            f0.write(f'{gps_longitude:.6f}' + ',')
+            f0.write(f'{gps_speed:.1f}' + ',')
 
             f0.write(str(dht22_temperature_calib) + ',')
             f0.write(str(dht22_temperature_raw) + ',')
@@ -308,8 +307,8 @@ Label(
     master, text=studentname + "'s Crowdbike", fg='blue',
     font=('Helvetica', font_size),
 ).grid(
-        row=0, column=1, sticky=W,
-        columnspan=2,
+    row=0, column=1, sticky=W,
+    columnspan=2,
 )
 Label(
     master, text=' IP', fg='blue',
@@ -319,15 +318,15 @@ Label(
     master, text=str('IP: ' + get_ip()), fg='blue',
     font=('Helvetica', font_size),
 ).grid(
-        row=1, column=2, sticky=E,
-        columnspan=2,
+    row=1, column=2, sticky=E,
+    columnspan=2,
 )
 Label(
     master, text=' PM-Sensor', fg='blue',
     font=('Helvetica', font_size),
 ).grid(
-        row=1, column=0, sticky=W,
-        columnspan=2,
+    row=1, column=0, sticky=W,
+    columnspan=2,
 )
 
 # define labels

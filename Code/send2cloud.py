@@ -20,7 +20,7 @@ with open(
     os.path.join(
         os.path.dirname(__file__),
         'config.json',
-    ), 'r',
+    ),
 ) as config:
     config = json.load(config)
 
