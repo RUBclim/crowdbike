@@ -68,7 +68,7 @@ def write_header() -> None:
     f.close()
 
 
-def _exit_programm(signum, frame) -> None:
+def _exit_programm(signum, frame) -> None:  # type: ignore
     exit(0)
 
 

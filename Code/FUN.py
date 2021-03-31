@@ -4,15 +4,26 @@ import subprocess
 import threading
 import time
 import uuid
-from typing import Dict
 from typing import Optional
 from typing import Union
 
 import adafruit_dht
 import adafruit_gps
+import board
+import RPi.GPIO as GPIO
 import serial
 from numpy import exp
 from numpy import nan
+from sensirion_i2c_driver import I2cConnection
+from sensirion_i2c_driver.linux_i2c_transceiver import LinuxI2cTransceiver
+from sensirion_i2c_sht.sht3x import Sht3xI2cDevice
+
+
+# set GPIOs at import time
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(23, GPIO.OUT)
+GPIO.setup(24, GPIO.OUT)
+GPIO.setup(25, GPIO.OUT)
 
 
 def get_wlan_macaddr() -> str:
@@ -38,48 +49,38 @@ def get_ip() -> str:
     return IP
 
 
-class PmSensor:
+class PmSensor(threading.Thread):
     def __init__(self, dev: str, baudrate: int = 9600) -> None:
-        self.dev = dev
-        self.baudrate = baudrate
-        # initialize serial port
-        global ser
-        ser = serial.Serial()
-        ser.port = self.dev
-        ser.baudrate = self.baudrate
+        threading.Thread.__init__(self)
+        self.running = False
+        self.ser = serial.Serial(port=dev, baudrate=baudrate)
+        self.pm2_5 = nan
+        self.pm10 = nan
 
-    def read_pm(self) -> Dict[str, Union[float, nan]]:
-        '''
-        method for reading the Nova-PM-sensor
-        dev must be type <str> e.g. '/dev/ttyUSB0'
-        originally from
-        https://gist.github.com/marw/9bdd78b430c8ece8662ec403e04c75fe
-        '''
+    def run(self) -> None:
+        while self.running:
+            try:
+                if not self.ser.isOpen():
+                    self.ser.open()
 
-        try:
-            # open connection
-            if not ser.isOpen():
-                ser.open()
+                data = self.ser.read(10)
+                assert data[0] == ord(b'\xaa')
+                assert data[1] == ord(b'\xc0')
+                assert data[9] == ord(b'\xab')
+                checksum = sum(v for v in data[2:8]) % 256
+                assert checksum == data[8]
 
-            # read data
-            bytes = ser.read(10)
-            assert bytes[0] == ord(b'\xaa')
-            assert bytes[1] == ord(b'\xc0')
-            assert bytes[9] == ord(b'\xab')
-
-            pm2_5 = (bytes[3] * 256 + bytes[2]) / 10.0
-            pm10 = (bytes[5] * 256 + bytes[4]) / 10.0
-
-            checksum = sum(v for v in bytes[2:8]) % 256
-            assert checksum == bytes[8]
-
-            measures = {'PM10': pm10, 'PM2_5': pm2_5}
-
-            ser.close()
-        except Exception:
-            measures = {'PM10': nan, 'PM2_5': nan}
-
-        return measures
+                self.pm10 = (data[3] * 256 + data[2]) / 10.0
+                self.pm2_5 = (data[5] * 256 + data[4]) / 10.0
+                self.ser.close()
+                update_led(yellow=True)
+            except Exception:
+                self.pm10 = nan
+                self.pm2_5 = nan
+            finally:
+                time.sleep(.1)
+                update_led(yellow=False)
+                time.sleep(.1)
 
     def sensor_sleep(self) -> None:
         '''
@@ -87,35 +88,18 @@ class PmSensor:
         originally from
         https://github.com/luetzel/sds011/blob/master/sds011_pylab.py
         '''
-        if not ser.isOpen():
-            ser.open()
+        if not self.ser.isOpen():
+            self.ser.open()
 
-        bytes = [
-            b'\xaa',  # head
-            b'\xb4',  # command 1
-            b'\x06',  # data byte 1
-            b'\x01',  # data byte 2 (set mode)
-            b'\x00',  # data byte 3 (sleep)
-            b'\x00',  # data byte 4
-            b'\x00',  # data byte 5
-            b'\x00',  # data byte 6
-            b'\x00',  # data byte 7
-            b'\x00',  # data byte 8
-            b'\x00',  # data byte 9
-            b'\x00',  # data byte 10
-            b'\x00',  # data byte 11
-            b'\x00',  # data byte 12
-            b'\x00',  # data byte 13
-            b'\xff',  # data byte 14 (device id byte 1)
-            b'\xff',  # data byte 15 (device id byte 2)
-            b'\x05',  # checksum
-            b'\xab',  # tail
+        sleep_bytes = [
+            b'\xaa', b'\xb4', b'\x06', b'\x01', b'\x00', b'\x00', b'\x00',
+            b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00',
+            b'\x00', b'\xff', b'\xff', b'\x05', b'\xab',
         ]
+        for b in sleep_bytes:
+            self.ser.write(b)
 
-        for b in bytes:
-            ser.write(b)
-
-        ser.close()
+        self.ser.close()
 
     def sensor_wake(self) -> None:
         '''
@@ -123,44 +107,17 @@ class PmSensor:
         originally from
         https://github.com/luetzel/sds011/blob/master/sds011_pylab.py
         '''
-        if not ser.isOpen():
-            ser.open()
-        bytes = [
-            b'\xaa',  # head
-            b'\xb4',  # command 1
-            b'\x06',  # data byte 1
-            b'\x01',  # data byte 2 (set mode)
-            b'\x01',  # data byte 3 (sleep)
-            b'\x00',  # data byte 4
-            b'\x00',  # data byte 5
-            b'\x00',  # data byte 6
-            b'\x00',  # data byte 7
-            b'\x00',  # data byte 8
-            b'\x00',  # data byte 9
-            b'\x00',  # data byte 10
-            b'\x00',  # data byte 11
-            b'\x00',  # data byte 12
-            b'\x00',  # data byte 13
-            b'\xff',  # data byte 14 (device id byte 1)
-            b'\xff',  # data byte 15 (device id byte 2)
-            b'\x06',  # checksum
-            b'\xab',  # tail
+        if not self.ser.isOpen():
+            self.ser.open()
+        wake_bytes = [
+            b'\xaa', b'\xb4', b'\x06', b'\x01', b'\x01', b'\x00', b'\x00',
+            b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00', b'\x00',
+            b'\x00', b'\xff', b'\xff', b'\x06', b'\xab',
         ]
+        for b in wake_bytes:
+            self.ser.write(b)
 
-        for b in bytes:
-            ser.write(b)
-
-        ser.close()
-
-
-def read_dht22(sensor: adafruit_dht.DHT22) -> Dict[str, str]:
-    temp = sensor.temperature
-    hum = sensor.humidity
-    if temp is None:
-        temp = nan
-    if hum is None:
-        hum = nan
-    return {'temperature': temp, 'humidity': hum}
+        self.ser.close()
 
 
 def sat_vappressure(temp: Union[int, float]) -> float:
@@ -180,10 +137,38 @@ def vappressure(
     return vappress
 
 
-class TemperatureSensor(threading.Thread):
-    def __init__(self, dht_22: adafruit_dht.DHT22) -> None:
+class DHT22(threading.Thread):
+    def __init__(self) -> None:
         threading.Thread.__init__(self)
-        self.dht_22 = dht_22
+        self.dht_22 = adafruit_dht.DHT22(board.D4)
+        self.running = True
+        self.humidity: Optional[float] = None
+        self.temperature: Optional[float] = None
+
+    def run(self) -> None:
+        while self.running:
+            try:
+                self.humidity = self.dht_22.temperature
+                self.temperature = self.dht_22.humidity
+                # XXX: The DHT library kinda sucks, if the sensor throws
+                # errors, because it was disconnected, self._temperature
+                # stays at the old value so measurements remain the same
+                # this way the LED is kinda useless!
+                if self.temperature is not None:
+                    update_led(red=True)
+            except Exception:
+                continue
+            finally:
+                time.sleep(.1)
+                update_led(red=False)
+                time.sleep(.1)
+
+
+class SHT85(threading.Thread):
+    def __init__(self) -> None:
+        threading.Thread.__init__(self)
+        con = I2cConnection(LinuxI2cTransceiver('/dev/i2c-1'))
+        self.sht_85 = Sht3xI2cDevice(con)
         self.running = True
         self.humidity = None
         self.temperature = None
@@ -191,11 +176,16 @@ class TemperatureSensor(threading.Thread):
     def run(self) -> None:
         while self.running:
             try:
-                self.humidity = self.dht_22.temperature
-                self.temperature = self.dht_22.humidity
+                temp, hum = self.sht_85.single_shot_measurement()
+                self.temperature = temp.degrees_celsius
+                self.humidity = hum.percent_rh
+                update_led(red=True)
             except Exception:
                 continue
-            time.sleep(.1)
+            finally:
+                time.sleep(.1)
+                update_led(red=False)
+                time.sleep(.1)
 
 
 class GPS(threading.Thread):
@@ -212,10 +202,10 @@ class GPS(threading.Thread):
         self.has_fix: Optional[bool] = None
         self.latitude: Optional[float] = None
         self.longitude: Optional[float] = None
-        self.satellites: Optional[int] = None
-        self.timestamp: Optional[str] = None
+        self.satellites: int = nan
+        self.timestamp: str = nan
         self.alt: Optional[float] = None
-        self.speed: Optional[float] = None
+        self.speed: float = nan
 
     def run(self) -> None:
         '''start thread and get values'''
@@ -253,10 +243,36 @@ class GPS(threading.Thread):
                         '%Y-%m-%d %H:%M:%S',
                         self.gps.timestamp_utc,
                     )
-                time.sleep(.1)
+                if self.has_fix is True:
+                    update_led(green=True)
             except Exception:
                 continue
+            finally:
+                time.sleep(.1)
+                update_led(green=False)
+                time.sleep(.1)
 
     def stop(self) -> None:
         '''close uart port when terminating'''
         self.uart.close()
+
+
+def update_led(
+        red: Optional[bool] = None,
+        yellow: Optional[bool] = None,
+        green: Optional[bool] = None,
+) -> None:
+    if red is True:
+        GPIO.output(23, GPIO.HIGH)
+    else:
+        GPIO.output(23, GPIO.LOW)
+
+    if yellow is True:
+        GPIO.output(24, GPIO.HIGH)
+    else:
+        GPIO.output(24, GPIO.LOW)
+
+    if green is True:
+        GPIO.output(25, GPIO.HIGH)
+    else:
+        GPIO.output(25, GPIO.LOW)

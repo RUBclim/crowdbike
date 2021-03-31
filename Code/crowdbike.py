@@ -31,6 +31,17 @@ Buttons:
 import json
 import os
 from datetime import datetime
+from typing import Union
+
+import numpy as np
+from FUN import DHT22
+from FUN import get_ip
+from FUN import get_wlan_macaddr
+from FUN import GPS
+from FUN import PmSensor
+from FUN import sat_vappressure
+from FUN import SHT85
+from FUN import vappressure
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
@@ -42,37 +53,16 @@ from tkinter import Scale
 from tkinter import Tk
 from tkinter import W
 
-import adafruit_dht
-import board
-import numpy as np
-from FUN import get_ip
-from FUN import get_wlan_macaddr
-from FUN import GPS
-from FUN import pm_sensor
-from FUN import read_dht22
-from FUN import sat_vappressure
-from FUN import vappressure
-
 # __load config files__
-with open(
-    os.path.join(
-        os.path.dirname(__file__),
-        'config.json',
-    ),
-) as config:
-    config = json.load(config)
+with open(os.path.join(os.path.dirname(__file__), 'config.json')) as cfg:
+    config = json.load(cfg)
 
 raspberryid = config['user']['bike_nr']  # number of your pi
 studentname = config['user']['studentname']
 mac = get_wlan_macaddr()
 
-with open(
-    os.path.join(
-        os.path.dirname(__file__),
-        'calibration.json',
-    ),
-) as calib:
-    calib = json.load(calib)
+with open(os.path.join(os.path.dirname(__file__), 'calibration.json')) as cal:
+    calib = json.load(cal)
 
 # __calibration params__
 temperature_cal_a1 = calib['temp_cal_a1']
@@ -80,26 +70,42 @@ temperature_cal_a0 = calib['temp_cal_a0']
 hum_cal_a1 = calib['hum_cal_a1']
 hum_cal_a0 = calib['hum_cal_a0']
 
-window_title = 'Crowdbike' + raspberryid
+window_title = f'Crowdbike {raspberryid}'
 logfile_path = config['user']['logfile_path']
-if not os.path.exists(logfile_path):
-    os.makedirs(logfile_path)
+os.makedirs(logfile_path, exist_ok=True)
 
 logfile_name = f'{raspberryid}_{studentname}_{datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa E501
 logfile = os.path.join(logfile_path, logfile_name)
 
-# __global variables
-font_size = 24
-recording = False
-pm_status = config['user']['pm_sensor']
-sampling_rate = config['user']['sampling_rate']
-
-# main program
 counter = 0
+
+# initialize threads
 gpsp = GPS()
 gpsp.start()
-dht22_sensor = adafruit_dht.DHT22(board.D4)
-nova_pm = pm_sensor(dev='/dev/ttyUSB0')
+
+temp_hum_sensor: Union[DHT22, SHT85]
+sensor_type = config['user']['sensor_type']
+if sensor_type == 'SHT85':
+    temp_hum_sensor = SHT85()
+elif sensor_type == 'DHT22':
+    temp_hum_sensor = DHT22()
+else:
+    raise NameError('sensor type unknown, must be either SHT85 or DHT22')
+
+temp_hum_sensor.start()
+nova_pm = PmSensor(dev='/dev/ttyUSB0')
+
+# global variables
+font_size = 24
+recording = False
+
+pm_status = nova_pm.running = config['user']['pm_sensor']
+# switch off sensor if it running prior to starting the app
+if pm_status is False:
+    nova_pm.sensor_sleep()
+
+sampling_rate = config['user']['sampling_rate']
+
 cnames = [
     'id',
     'record',
@@ -126,6 +132,12 @@ def exit_program() -> None:
     gpsp.running = False
     gpsp.stop()
     gpsp.join()
+    temp_hum_sensor.running = False
+    temp_hum_sensor.join()
+    nova_pm.running = False
+    # only try joining the thread it was running
+    if nova_pm.isAlive():
+        nova_pm.join()
     exit(0)
 
 
@@ -156,17 +168,24 @@ def stop_data() -> None:
 def set_pm_status(value: str) -> None:
     global pm_slider
     global pm_status
+    global nova_pm
     if value == '1':
         pm_status = True
         pm_slider['troughcolor'] = '#20ff20'
         try:
             nova_pm.sensor_wake()
+            # reinitialize thread so it gets a new PID
+            nova_pm = PmSensor(dev='/dev/ttyUSB0')
+            nova_pm.running = True
+            nova_pm.start()
         except Exception:
             pass
     else:
         pm_status = False
         pm_slider['troughcolor'] = '#c10000'
         try:
+            nova_pm.running = False
+            nova_pm.join()
             nova_pm.sensor_sleep()
         except Exception:
             pass
@@ -175,55 +194,55 @@ def set_pm_status(value: str) -> None:
 def start_counting(label: Label) -> None:
     counter = 0
 
-    def count():
+    def count() -> None:
         global counter
         counter += 1
         computer_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
         # get sensor readings from DHT-sensor
         try:
-            readings = read_dht22(dht22_sensor)
+            humidity = temp_hum_sensor.humidity or np.nan
+            temperature = temp_hum_sensor.temperature or np.nan
         except Exception:
-            dht22_humidity = np.nan
-            dht22_temperature = np.nan
+            humidity = np.nan
+            temperature = np.nan
 
-        dht22_humidity = readings['humidity']
-        dht22_temperature = readings['temperature']
+        # dht22_humidity = readings['humidity']
+        # dht22_temperature = readings['temperature']
 
         # calculate temperature with sensor calibration values
-        dht22_temperature_raw = round(dht22_temperature, 5)
-        dht22_temperature_calib = round(
-            dht22_temperature /
+        temperature_raw = round(temperature, 5)
+        temperature_calib = round(
+            temperature /
             temperature_cal_a1 -
             temperature_cal_a0, 3,
         )
 
-        dht22_humidity_raw = round(dht22_humidity, 5)
-        dht22_humidity_calib = round(
-            dht22_humidity /
+        humidity_raw = round(humidity, 5)
+        humidity_calib = round(
+            humidity /
             hum_cal_a1 -
             hum_cal_a0, 3,
         )
 
-        saturation_vappress = sat_vappressure(dht22_temperature_calib)
-        dht22_vappress = round(
+        saturation_vappress = sat_vappressure(temperature_calib)
+        vappress = round(
             vappressure(
-                dht22_humidity_calib,
+                humidity_calib,
                 saturation_vappress,
             ), 5,
         )
 
-        # read pm-sensor takes max 1 sec
+        # read pm-sensor
         if pm_status is True:
-            pm = nova_pm.read_pm()
-            pm2_5 = pm['PM2_5']
-            pm10 = pm['PM10']
+            pm2_5 = nova_pm.pm2_5
+            pm10 = nova_pm.pm10
         else:
             pm2_5 = np.nan
             pm10 = np.nan
 
-        if dht22_humidity > 100:
-            dht22_humidity = 100
+        if humidity > 100:
+            humidity = 100
 
         # Get GPS position
         gps_time = gpsp.timestamp
@@ -231,8 +250,7 @@ def start_counting(label: Label) -> None:
         gps_latitude = gpsp.latitude
         gps_longitude = gpsp.longitude
         gps_speed = round(gpsp.speed * 1.852, 2)
-
-        f_mode = int(gpsp.satellites)  # store number of sats
+        f_mode = gpsp.satellites  # store number of satellites
         has_fix = False  # assume no fix
 
         if f_mode == 2:
@@ -252,11 +270,11 @@ def start_counting(label: Label) -> None:
         value_time.config(text=gps_time)
         value_temperature.config(
             text='{:.1f} °C'.format(
-                dht22_temperature_calib,
+                temperature_calib,
             ),
         )
-        value_humidity.config(text=f'{dht22_humidity_calib:.1f} %')
-        value_vappress.config(text=f'{dht22_vappress:.3f} kPa')
+        value_humidity.config(text=f'{humidity_calib:.1f} %')
+        value_vappress.config(text=f'{vappress:.3f} kPa')
 
         value_pm10.config(text=f'{pm10:.1f} \u03BCg/m\u00B3')
         value_pm2_5.config(text=f'{pm2_5:.1f} \u03BCg/m\u00B3')
@@ -279,13 +297,13 @@ def start_counting(label: Label) -> None:
             f0.write(f'{gps_longitude:.6f}' + ',')
             f0.write(f'{gps_speed:.1f}' + ',')
 
-            f0.write(str(dht22_temperature_calib) + ',')
-            f0.write(str(dht22_temperature_raw) + ',')
+            f0.write(str(temperature_calib) + ',')
+            f0.write(str(temperature_raw) + ',')
 
-            f0.write(str(dht22_humidity_calib) + ',')
-            f0.write(str(dht22_humidity_raw) + ',')
+            f0.write(str(humidity_calib) + ',')
+            f0.write(str(humidity_raw) + ',')
 
-            f0.write(str(dht22_vappress) + ',')
+            f0.write(str(vappress) + ',')
 
             f0.write(str(pm10) + ',')
             f0.write(str(pm2_5) + ',')
@@ -471,7 +489,7 @@ b4.grid(row=15, column=2, sticky=W)
 # slider
 pm_slider = Scale(
     orient=HORIZONTAL, length=80, to=1, label='',
-    showvalue=False, sliderlength=40, troughcolor=None,
+    showvalue=False, sliderlength=40, troughcolor='#666666',
     width=30, command=set_pm_status,
 )
 if pm_status:

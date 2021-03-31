@@ -1,0 +1,5 @@
+adafruit-circuitpython-dht
+adafruit-circuitpython-gps
+numpy
+pyserial
+sensirion-i2c-sht

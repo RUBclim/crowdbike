@@ -16,13 +16,8 @@ parser.add_argument(
 args = parser.parse_args()
 
 # load config files
-with open(
-    os.path.join(
-        os.path.dirname(__file__),
-        'config.json',
-    ),
-) as config:
-    config = json.load(config)
+with open(os.path.join(os.path.dirname(__file__), 'config.json')) as cfg:
+    config = json.load(cfg)
 
 log_dir = config['user']['logfile_path']
 archive_dir = os.path.join(log_dir, 'archive')
@@ -53,12 +48,12 @@ if files_present:
     for log in os.listdir(log_dir):
         if os.path.splitext(log)[1].lower() == '.csv':
             print(f'uploading: {log} to the cloud')
-            curl_call = f'curl {first_args} {os.path.join(log_dir, log)} -u '\
-                f'{folder_token}:{passwd} -H X-Requested-With:XMLHttpRequest '\
-                f'{base_url}public.php/webdav/{log}'
-
-            # create argument list to pass to the subprocess call
-            curl_call = curl_call.split(' ')
+            curl_call = [
+                'curl', first_args, os.path.join(log_dir, log), '-u',
+                f'{folder_token}:{passwd}', '-H',
+                'X-Requested-With:XMLHttpRequest',
+                f'{base_url}public.php/webdav/{log}',
+            ]
 
             if args.verbose:
                 call = subprocess.run(args=curl_call, capture_output=True)
@@ -68,7 +63,7 @@ if files_present:
                 err = stderr.split('curl:')
 
                 if len(err) > 1:
-                    err = err[1]
+                    err_str = err[1]
 
                 if stdoutput == '' and len(err) == 1:
                     shutil.move(os.path.join(log_dir, log), archive_dir)
@@ -84,7 +79,7 @@ if files_present:
                 err = stderr.split('curl:')
 
                 if len(err) > 1:
-                    err = err[1]
+                    err_str = err[1]
 
                 if stdoutput == '' and len(err) == 1:
                     shutil.move(os.path.join(log_dir, log), archive_dir)
