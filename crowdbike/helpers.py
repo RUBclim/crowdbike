@@ -1,12 +1,22 @@
+import os
 import re
 import socket
 import subprocess
+import sys
 import uuid
 from typing import Optional
 from typing import Union
 
 import RPi.GPIO as GPIO
 from numpy import exp
+
+if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
+    import importlib_resources
+else:  # pragma: no cover (<py38)
+    import importlib.resources as importlib_resources
+
+
+CONFIG_DIR = os.path.expanduser('~/.config/crowdbike')
 
 
 # set GPIOs at import time
@@ -75,3 +85,31 @@ def update_led(
         GPIO.output(25, GPIO.HIGH)
     else:
         GPIO.output(25, GPIO.LOW)
+
+
+def setup_config() -> None:
+    if os.path.exists(CONFIG_DIR):
+        choice = input(
+            'the config directory already exists, '
+            'if you continue, it will be overwritten (yes/no): ',
+        )
+        if choice == 'yes' or choice == 'y':
+            _make_config_dirs()
+        else:
+            return
+    else:
+        _make_config_dirs()
+
+
+def _make_config_dirs() -> None:
+    os.makedirs(CONFIG_DIR, exist_ok=True)
+    cfg = importlib_resources.read_text('crowdbike.resources', 'config.json')
+    calib = importlib_resources.read_text(
+        'crowdbike.resources',
+        'calibration.json',
+    )
+    with open(os.path.join(CONFIG_DIR, 'config.json'), 'w') as f:
+        f.write(cfg)
+
+    with open(os.path.join(CONFIG_DIR, 'calibration.json'), 'w') as f:
+        f.write(calib)

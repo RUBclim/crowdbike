@@ -28,9 +28,13 @@ Buttons:
     Stop:  Stop recording (Pause)
     Exit:  exit program
 """
+import argparse
 import json
 import os
+import sys
 from datetime import datetime
+from typing import NoReturn
+from typing import Optional
 from typing import Union
 
 import numpy as np
@@ -49,11 +53,30 @@ from tkinter import W
 from crowdbike.helpers import get_ip
 from crowdbike.helpers import get_wlan_macaddr
 from crowdbike.helpers import sat_vappressure
+from crowdbike.helpers import setup_config
 from crowdbike.helpers import vappressure
 from crowdbike.sensors import DHT22
 from crowdbike.sensors import GPS
 from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
+
+
+class ArgumentParser(argparse.ArgumentParser):
+    def exit(self, status: int = 0, message: Optional[str] = None) -> NoReturn:
+        GPIO.cleanup()
+        if message:
+            self._print_message(message, sys.stderr)
+        exit(status)
+
+
+parser = ArgumentParser()
+parser.add_argument('command', choices=['init', 'run'])
+args = parser.parse_args()
+
+if args.command == 'init':
+    setup_config()
+    GPIO.cleanup()
+    exit(0)
 
 
 # __load config files__
