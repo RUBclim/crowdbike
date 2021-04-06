@@ -50,6 +50,7 @@ from tkinter import Scale
 from tkinter import Tk
 from tkinter import W
 
+from crowdbike.helpers import CONFIG_DIR
 from crowdbike.helpers import get_ip
 from crowdbike.helpers import get_wlan_macaddr
 from crowdbike.helpers import sat_vappressure
@@ -90,14 +91,14 @@ if args.command == 'init':
 
 
 # __load config files__
-with open(os.path.join(os.path.dirname(__file__), 'config.json')) as cfg:
+with open(os.path.join(CONFIG_DIR, 'config.json')) as cfg:
     config = json.load(cfg)
 
 raspberryid = config['user']['bike_nr']
 studentname = config['user']['studentname']
 mac = get_wlan_macaddr()
 
-with open(os.path.join(os.path.dirname(__file__), 'calibration.json')) as cal:
+with open(os.path.join(CONFIG_DIR, 'calibration.json')) as cal:
     calib = json.load(cal)
 
 # __calibration params__
