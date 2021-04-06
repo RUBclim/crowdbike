@@ -1,5 +1,5 @@
-from Code.FUN import sat_vappressure
-from Code.FUN import vappressure
+from crowdbike.helpers import sat_vappressure
+from crowdbike.helpers import vappressure
 
 
 def test_sat_vappressure_calc():

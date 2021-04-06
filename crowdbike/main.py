@@ -34,14 +34,7 @@ from datetime import datetime
 from typing import Union
 
 import numpy as np
-from FUN import DHT22
-from FUN import get_ip
-from FUN import get_wlan_macaddr
-from FUN import GPS
-from FUN import PmSensor
-from FUN import sat_vappressure
-from FUN import SHT85
-from FUN import vappressure
+import RPi.GPIO as GPIO
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
@@ -52,6 +45,16 @@ from tkinter import NORMAL
 from tkinter import Scale
 from tkinter import Tk
 from tkinter import W
+
+from crowdbike.helpers import get_ip
+from crowdbike.helpers import get_wlan_macaddr
+from crowdbike.helpers import sat_vappressure
+from crowdbike.helpers import vappressure
+from crowdbike.sensors import DHT22
+from crowdbike.sensors import GPS
+from crowdbike.sensors import PmSensor
+from crowdbike.sensors import SHT85
+
 
 # __load config files__
 with open(os.path.join(os.path.dirname(__file__), 'config.json')) as cfg:
@@ -138,6 +141,7 @@ def exit_program() -> None:
     # only try joining the thread it was running
     if nova_pm.isAlive():
         nova_pm.join()
+    GPIO.cleanup()
     exit(0)
 
 
