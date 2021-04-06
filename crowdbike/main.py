@@ -60,6 +60,11 @@ from crowdbike.sensors import GPS
 from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
 
+if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
+    import importlib_metadata
+else:  # pragma: no cover (<py38)
+    import importlib.metadata as importlib_metadata
+
 
 class ArgumentParser(argparse.ArgumentParser):
     def exit(self, status: int = 0, message: Optional[str] = None) -> NoReturn:
@@ -71,6 +76,11 @@ class ArgumentParser(argparse.ArgumentParser):
 
 parser = ArgumentParser()
 parser.add_argument('command', choices=['init', 'run'])
+parser.add_argument(
+    '-V', '--version',
+    action='version',
+    version=f'%(prog)s {importlib_metadata.version("crowdbike")}',
+)
 args = parser.parse_args()
 
 if args.command == 'init':
