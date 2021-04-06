@@ -1,4 +1,5 @@
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/theendlessriver13/Meteobike/master.svg)](https://results.pre-commit.ci/latest/github/theendlessriver13/Meteobike/master)
+
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
 ### First established at University of Freiburg, Enviromental Meteorology by [Andreas Christen](https://github.com/achristen)
