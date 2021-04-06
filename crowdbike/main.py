@@ -93,7 +93,7 @@ if args.command == 'init':
 with open(os.path.join(os.path.dirname(__file__), 'config.json')) as cfg:
     config = json.load(cfg)
 
-raspberryid = config['user']['bike_nr']  # number of your pi
+raspberryid = config['user']['bike_nr']
 studentname = config['user']['studentname']
 mac = get_wlan_macaddr()
 
@@ -320,33 +320,32 @@ def start_counting(label: Label) -> None:
         label.after(1000 * sampling_rate, count)
 
         if recording and has_fix:
-            f0 = open(logfile, 'a')
-            f0.write(raspberryid + ',')
-            f0.write(str(counter) + ',')
-            f0.write(computer_time + ',')
-            if has_fix:
-                f0.write(gps_time + ',')
-            else:
-                f0.write('nan,')
+            with open(logfile, 'a') as f0:
+                f0.write(raspberryid + ',')
+                f0.write(str(counter) + ',')
+                f0.write(computer_time + ',')
+                if has_fix:
+                    f0.write(gps_time + ',')
+                else:
+                    f0.write('nan,')
 
-            f0.write(f'{gps_altitude:.3f}' + ',')
-            f0.write(f'{gps_latitude:.6f}' + ',')
-            f0.write(f'{gps_longitude:.6f}' + ',')
-            f0.write(f'{gps_speed:.1f}' + ',')
+                f0.write(f'{gps_altitude:.3f}' + ',')
+                f0.write(f'{gps_latitude:.6f}' + ',')
+                f0.write(f'{gps_longitude:.6f}' + ',')
+                f0.write(f'{gps_speed:.1f}' + ',')
 
-            f0.write(str(temperature_calib) + ',')
-            f0.write(str(temperature_raw) + ',')
+                f0.write(str(temperature_calib) + ',')
+                f0.write(str(temperature_raw) + ',')
 
-            f0.write(str(humidity_calib) + ',')
-            f0.write(str(humidity_raw) + ',')
+                f0.write(str(humidity_calib) + ',')
+                f0.write(str(humidity_raw) + ',')
 
-            f0.write(str(vappress) + ',')
+                f0.write(str(vappress) + ',')
 
-            f0.write(str(pm10) + ',')
-            f0.write(str(pm2_5) + ',')
-            f0.write(str(mac) + '\n')
+                f0.write(str(pm10) + ',')
+                f0.write(str(pm2_5) + ',')
+                f0.write(str(mac) + '\n')
 
-            f0.close()
     count()
 
 
