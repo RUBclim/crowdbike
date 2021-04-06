@@ -1,7 +1,9 @@
 *.csv
-Calibration/plots
 .RData
 .Rhistory
+.mypy_cache
+.pytest_cache
 .vscode
-*/__pycache__/
-crowdbike.code-workspace
+Calibration/plots
+venv
+__pycache__
