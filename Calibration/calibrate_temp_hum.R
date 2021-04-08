@@ -21,7 +21,8 @@ colnames(data_rgs) <- c('date', 'temp', 'hum')
 data_rgs$date <- as.POSIXct(
     data_rgs$date,
     format = '%d/%m/%Y %H:%M',
-    tz = 'Etc/GMT-1')
+    tz = 'Etc/GMT-1'
+)
 
 # shift timezone to UTC
 attr(data_rgs$date, "tzone") <- "UTC"
@@ -63,39 +64,50 @@ plot_uncalibrated <- function(data, results, param) {
         unit <- ' %'
     }
     else {
-        stop(paste(
-            '"param" must be either "temp" or "hum" not ',
-            param, sep = ''))
+        stop(
+            paste(
+                '"param" must be either "temp" or "hum" not ',
+                param, sep = ''
+            )
+        )
     }
     ggplot(data = data, aes(x = x , y = y)) +
         geom_point() +
         geom_abline(intercept = 0, slope = 1, color = 'red', lwd = 1) +
         scale_x_continuous(name = name_x) +
         scale_y_continuous(name = name_y) +
-        labs(title = paste(
-            'DHT22-sensor "', factor(
-                data$sensor_id),
-            '" compared to measurements of RGS II', sep = '')
-            ) +
-        geom_text(aes(y = text_y,
-                      x = text_x,
-                      label = paste('RMSE = ',
-                                    format(results$rmse,
-                                           digits = 3),
-                                    unit,' \nR² = ',
-                                    format(results$rsq,
-                                           digits = 3),
-                                    '\n', results$fml,
-                                    '\nN = ',
-                                    (nrow(na.omit(data))),
-                                    sep = '')),
-                  hjust = 0,
-                  vjust = 1,
-                  fontface = 'italic') +
+        labs(
+            title = paste(
+                'DHT22-sensor "', factor(data$sensor_id),
+                '" compared to measurements of RGS II',
+                sep = ''
+            )
+        ) +
+        geom_text(
+            aes(
+                y = text_y,
+                x = text_x,
+                label = paste(
+                    'RMSE = ',
+                    format(results$rmse, digits = 3),
+                    unit,' \nR² = ',
+                    format(results$rsq, digits = 3),
+                    '\n', results$fml,
+                    '\nN = ',
+                    (nrow(na.omit(data))),
+                    sep = ''
+                )
+            ),
+            hjust = 0,
+            vjust = 1,
+            fontface = 'italic'
+        ) +
         theme_bw(base_size = 14) +
-        coord_cartesian(xlim = lim,
-                        ylim = lim,
-                        expand = F)
+        coord_cartesian(
+            xlim = lim,
+            ylim = lim,
+            expand = F
+        )
 }
 
 
@@ -121,38 +133,51 @@ plot_calibrated <- function(data, results, param) {
         unit <- ' %'
     }
     else {
-        stop(paste(
-            '"param" must be either "temp" or "hum" not ',
-            param, sep = ''))
+        stop(
+            paste(
+                '"param" must be either "temp" or "hum" not ',
+                param,
+                sep = ''
+            )
+        )
     }
     ggplot(data = data, aes(x = x , y = y)) +
         geom_point() +
         geom_abline(intercept = 0, slope = 1, color = 'red', lwd = 1) +
         scale_y_continuous(name = name_y) +
         scale_x_continuous(name = name_x) +
-        labs(title = paste(
-            'DHT22-sensor "', factor(
-                data$sensor_id),
-            '" compared to measurements of RGS II after calibration', sep = '')
+        labs(
+            title = paste(
+                'DHT22-sensor "',
+                factor(data$sensor_id),
+                '" compared to measurements of RGS II after calibration',
+                sep = ''
+            )
         ) +
-        geom_text(aes(y = text_y,
-                      x = text_x,
-                      label = paste('RMSE = ',
-                                    format(results$rmse,
-                                           digits = 3),
-                                    unit, ' \nR² = ',
-                                    format(results$rsq,
-                                           digits = 3),
-                                    '\nN = ',
-                                    (nrow(na.omit(data))),
-                                    sep = '')),
-                  hjust = 0,
-                  vjust = 1,
-                  fontface = 'italic') +
+        geom_text(
+            aes(
+                y = text_y,
+                x = text_x,
+                label = paste(
+                    'RMSE = ',
+                    format(results$rmse, digits = 3),
+                    unit, ' \nR² = ',
+                    format(results$rsq, digits = 3),
+                    '\nN = ',
+                    (nrow(na.omit(data))),
+                    sep = ''
+                )
+            ),
+            hjust = 0,
+            vjust = 1,
+            fontface = 'italic'
+        ) +
         theme_bw(base_size = 14) +
-        coord_cartesian(xlim = lim,
-                        ylim = lim,
-                        expand = F)
+        coord_cartesian(
+            xlim = lim,
+            ylim = lim,
+            expand = F
+        )
 }
 
 calibrate <- function(data, sensor, rgs_data, start, param) {
@@ -163,7 +188,8 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
         statistic = 'mean',
         fill = T,
         start.date = start,
-        type = 'sensor_id')
+        type = 'sensor_id'
+    )
 
     data_10_min <- as.data.table(data_10_min)
     if (sum(is.na(data_10_min)) == nrow(data_10_min)) {
@@ -175,10 +201,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     setkey(data_10_min, date)
     setkey(data_rgs, date)
 
-    all_data <- merge(
-        x = data_10_min,
-        y = data_rgs,
-        all.x = T)
+    all_data <- merge(x = data_10_min, y = data_rgs, all.x = T)
 
     colnames(all_data) <- c(
         'date',
@@ -186,19 +209,25 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
         'temp_dht',
         'hum_dht',
         'temp_rgs',
-        'hum_rgs')
+        'hum_rgs'
+    )
 
     # generate linear model of data
     if (param == 'temp') {
-        lin_mod <- lm(all_data[sensor_id == sensor, temp_dht]
+        lin_mod <- lm(
+            all_data[sensor_id == sensor, temp_dht]
                       ~ all_data[sensor_id == sensor, temp_rgs])
     } else if (param == 'hum') {
         lin_mod <- lm(all_data[sensor_id == sensor, hum_dht]
                       ~ all_data[sensor_id == sensor, hum_rgs])
     } else {
-        stop(paste(
-            '"param" must be either "temp" or "hum" not ',
-            param, sep = ''))
+        stop(
+            paste(
+                '"param" must be either "temp" or "hum" not ',
+                param,
+                sep = ''
+            )
+        )
     }
 
     slope <- round(x = lin_mod$coefficients[2], 5)
@@ -217,7 +246,8 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             rsq,
             fml,
             temp_cal_a1,
-            temp_cal_a0)
+            temp_cal_a0
+        )
     } else {
         hum_cal_a1 <- slope
         hum_cal_a0 <- y_inter
@@ -229,7 +259,8 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             rsq,
             fml,
             hum_cal_a1,
-            hum_cal_a0)
+            hum_cal_a0
+        )
     }
 
     all_data$sensor_id <- as.factor(all_data$sensor_id)
@@ -249,10 +280,13 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             data = all_data, results = results, param = 'hum')
     }
 
-    return(list(
-        'results' = results,
-        'plot_uncalib' = plot_uncalib,
-        'plot_calib' = plot_calib))
+    return(
+        list(
+            'results' = results,
+            'plot_uncalib' = plot_uncalib,
+            'plot_calib' = plot_calib
+        )
+    )
 }
 
 
@@ -281,25 +315,29 @@ for (sensor_id in levels(data$sensor_id)) {
         sensor = sensor_id,
         rgs_data = data_rgs,
         start = '2020-06-01 15:20:00',
-        param = 'temp')
+        param = 'temp'
+    )
 
     result_hum <- calibrate(
         data = data,
         sensor = sensor_id,
         rgs_data = data_rgs,
         start = '2020-06-01 15:20:00',
-        param = 'hum')
+        param = 'hum'
+    )
 
 
     save_plot(
         plot = result_temp$plot_uncalib,
         prefix = result_temp$results$sensor,
-        trailing = 'tempcor_plot')
+        trailing = 'tempcor_plot'
+    )
 
     save_plot(
         plot = result_temp$plot_calib,
         prefix = result_temp$results$sensor,
-        trailing = 'tempcor_plot_calib')
+        trailing = 'tempcor_plot_calib'
+    )
 
     calib_table_temp <- rbind(calib_table_temp, result_temp$results)
 
@@ -307,20 +345,20 @@ for (sensor_id in levels(data$sensor_id)) {
     save_plot(
         plot = result_hum$plot_uncalib,
         prefix = result_hum$results$sensor,
-        trailing = 'humcor_plot')
+        trailing = 'humcor_plot'
+    )
 
     save_plot(
         plot = result_hum$plot_calib,
         prefix = result_hum$results$sensor,
-        trailing = 'humcor_plot_calib')
+        trailing = 'humcor_plot_calib'
+    )
 
     calib_table_hum <- rbind(calib_table_hum, result_hum$results)
 }
 
-fwrite(x = calib_table_temp,
-       file = 'temp_calibration_results.csv')
-fwrite(x = calib_table_hum,
-       file = 'hum_calibration_results.csv')
+fwrite(x = calib_table_temp, file = 'temp_calibration_results.csv')
+fwrite(x = calib_table_hum, file = 'hum_calibration_results.csv')
 
 # lint
 source('.lint.R')
