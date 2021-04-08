@@ -244,22 +244,16 @@ def start_counting(label: Label) -> None:
             humidity = float('nan')
             temperature = float('nan')
 
-        # dht22_humidity = readings['humidity']
-        # dht22_temperature = readings['temperature']
-
         # calculate temperature with sensor calibration values
         temperature_raw = round(temperature, 5)
         temperature_calib = round(
-            temperature /
-            temperature_cal_a1 -
-            temperature_cal_a0, 3,
+            temperature * temperature_cal_a1 + temperature_cal_a0,
+            3,
         )
-
         humidity_raw = round(humidity, 5)
         humidity_calib = round(
-            humidity /
-            hum_cal_a1 -
-            hum_cal_a0, 3,
+            humidity * hum_cal_a1 + hum_cal_a0,
+            3,
         )
 
         saturation_vappress = sat_vappressure(temperature_calib)

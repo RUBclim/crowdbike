@@ -47,7 +47,7 @@ plot_uncalibrated <- function(data, results, param) {
         x <- data$temp_rgs
         y <- data$temp_dht
         name_x <- 'temperature of RGS II [°C]'
-        name_y <- 'temperature of DHT22-sensor [°C]'
+        name_y <- 'temperature of crowdbike-sensor [°C]'
         lim <- c(5, 30)
         text_y <- 28
         text_x <- 6
@@ -57,7 +57,7 @@ plot_uncalibrated <- function(data, results, param) {
         x <- data$hum_rgs
         y <- data$hum_dht
         name_x <- 'rel. humidity of RGS II [%]'
-        name_y <- 'rel. humidity of DHT22-sensor [%]'
+        name_y <- 'rel. humidity of crowdbike-sensor [%]'
         lim <- c(0, 100)
         text_y <- 90
         text_x <- 5
@@ -78,7 +78,7 @@ plot_uncalibrated <- function(data, results, param) {
         scale_y_continuous(name = name_y) +
         labs(
             title = paste(
-                'DHT22-sensor "', factor(data$sensor_id),
+                'crowdbike-sensor "', factor(data$sensor_id),
                 '" compared to measurements of RGS II',
                 sep = ''
             )
@@ -89,7 +89,7 @@ plot_uncalibrated <- function(data, results, param) {
                 x = text_x,
                 label = paste(
                     'RMSE = ',
-                    format(results$rmse, digits = 3),
+                    format(results$rmse_pre, digits = 3),
                     unit,' \nR² = ',
                     format(results$rsq, digits = 3),
                     '\n', results$fml,
@@ -116,7 +116,7 @@ plot_calibrated <- function(data, results, param) {
         x <- data$temp_rgs
         y <- data$temp_calib
         name_x <- 'temperature of RGS II [°C]'
-        name_y <- 'temperature of DHT22-sensor [°C]'
+        name_y <- 'temperature of crowdbike-sensor [°C]'
         lim <- c(5, 30)
         text_y <- 28
         text_x <- 6
@@ -126,7 +126,7 @@ plot_calibrated <- function(data, results, param) {
         x <- data$hum_rgs
         y <- data$hum_calib
         name_x <- 'rel. humidity of RGS II [%]'
-        name_y <- 'rel. humidity of DHT22-sensor [%]'
+        name_y <- 'rel. humidity of crowdbike-sensor [%]'
         lim <- c(0, 100)
         text_y <- 90
         text_x <- 5
@@ -148,7 +148,7 @@ plot_calibrated <- function(data, results, param) {
         scale_x_continuous(name = name_x) +
         labs(
             title = paste(
-                'DHT22-sensor "',
+                'crowdbike-sensor "',
                 factor(data$sensor_id),
                 '" compared to measurements of RGS II after calibration',
                 sep = ''
@@ -160,7 +160,7 @@ plot_calibrated <- function(data, results, param) {
                 x = text_x,
                 label = paste(
                     'RMSE = ',
-                    format(results$rmse, digits = 3),
+                    format(results$rmse_after, digits = 3),
                     unit, ' \nR² = ',
                     format(results$rsq, digits = 3),
                     '\nN = ',
@@ -215,11 +215,16 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     # generate linear model of data
     if (param == 'temp') {
         lin_mod <- lm(
-            all_data[sensor_id == sensor, temp_dht]
-                      ~ all_data[sensor_id == sensor, temp_rgs])
+            all_data[sensor_id == sensor, temp_rgs]
+            ~ all_data[sensor_id == sensor, temp_dht]
+        )
+        all_data[, dev_pre := temp_dht - temp_rgs]
     } else if (param == 'hum') {
-        lin_mod <- lm(all_data[sensor_id == sensor, hum_dht]
-                      ~ all_data[sensor_id == sensor, hum_rgs])
+        lin_mod <- lm(
+            all_data[sensor_id == sensor, hum_rgs]
+            ~ all_data[sensor_id == sensor, hum_dht]
+        )
+        all_data[, dev_pre:= hum_dht - hum_rgs]
     } else {
         stop(
             paste(
@@ -232,7 +237,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
 
     slope <- round(x = lin_mod$coefficients[2], 5)
     y_inter <- round(x = lin_mod$coefficients[1], digits = 5)
-    rmse <- RMSE(lin_mod$residuals)
+    rmse_pre <- RMSE(all_data$dev_pre)
     rsq <- summary(lin_mod)$r.squared
     fml <- paste('y = ', slope, 'x + ', y_inter, sep = '')
     if (param == 'temp') {
@@ -242,7 +247,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             sensor,
             slope,
             y_inter,
-            rmse,
+            rmse_pre,
             rsq,
             fml,
             temp_cal_a1,
@@ -255,7 +260,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             sensor,
             slope,
             y_inter,
-            rmse,
+            rmse_pre,
             rsq,
             fml,
             hum_cal_a1,
@@ -268,16 +273,33 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     # apply calibration
     if (param == 'temp') {
         plot_uncalib <- plot_uncalibrated(
-            data = all_data, results = results, param = 'temp')
-        all_data[, 'temp_calib' := (temp_dht / slope) - y_inter]
+            data = all_data,
+            results = results,
+            param = 'temp'
+        )
+        all_data[, 'temp_calib' := temp_dht * slope + y_inter]
+        all_data[, dev_after := temp_calib - temp_rgs]
+        results[, rmse_after := RMSE(all_data$dev_after)]
+
         plot_calib <- plot_calibrated(
-            data = all_data, results = results, param = 'temp')
+            data = all_data,
+            results = results,
+            param = 'temp'
+        )
     } else {
         plot_uncalib <- plot_uncalibrated(
-            data = all_data, results = results, param = 'hum')
-        all_data[, 'hum_calib' := (hum_dht / slope) - y_inter]
+            data = all_data,
+            results = results,
+            param = 'hum'
+        )
+        all_data[, 'hum_calib' := hum_dht * slope + y_inter]
+        all_data[, dev_after := hum_calib - hum_rgs]
+        results[, rmse_after := RMSE(all_data$dev_after)]
         plot_calib <- plot_calibrated(
-            data = all_data, results = results, param = 'hum')
+            data = all_data,
+            results = results,
+            param = 'hum'
+        )
     }
 
     return(
@@ -291,14 +313,16 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
 
 
 save_plot <- function(plot, prefix, trailing) {
-    ggsave(plot = plot,
-           filename = paste(prefix, '_', trailing, '.png', sep = ''),
-           device = 'png',
-           scale = 1.8,
-           width = 14,
-           height = 14,
-           units = 'cm',
-           dpi = 600)
+    ggsave(
+        plot = plot,
+        filename = paste(prefix, '_', trailing, '.png', sep = ''),
+        device = 'png',
+        scale = 1.8,
+        width = 14,
+        height = 14,
+        units = 'cm',
+        dpi = 600
+    )
 }
 
 
