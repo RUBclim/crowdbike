@@ -7,7 +7,6 @@ from typing import Tuple
 
 import adafruit_dht
 import board
-from numpy import nan
 from retry import retry
 
 FILENAME = '/home/pi/crowdbike/logs/calibration_measurements_'\
@@ -55,9 +54,9 @@ def read_dht22(sensor: adafruit_dht.DHT22) -> Tuple[float, float]:
     temp = sensor.temperature
     hum = sensor.humidity
     if temp is None:
-        temp = nan
+        temp = float('nan')
     if hum is None:
-        hum = nan
+        hum = float('nan')
     return (temp, hum)
 
 

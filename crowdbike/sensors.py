@@ -1,12 +1,12 @@
 import threading
 import time
 from typing import Optional
+from typing import Union
 
 import adafruit_dht
 import adafruit_gps
 import board
 import serial
-from numpy import nan
 from sensirion_i2c_driver import I2cConnection
 from sensirion_i2c_driver.linux_i2c_transceiver import LinuxI2cTransceiver
 from sensirion_i2c_sht.sht3x import Sht3xI2cDevice
@@ -19,8 +19,8 @@ class PmSensor(threading.Thread):
         threading.Thread.__init__(self)
         self.running = False
         self.ser = serial.Serial(port=dev, baudrate=baudrate)
-        self.pm2_5 = nan
-        self.pm10 = nan
+        self.pm2_5 = float('nan')
+        self.pm10 = float('nan')
 
     def run(self) -> None:
         while self.running:
@@ -40,8 +40,8 @@ class PmSensor(threading.Thread):
                 self.ser.close()
                 update_led(yellow=True)
             except Exception:
-                self.pm10 = nan
-                self.pm2_5 = nan
+                self.pm10 = float('nan')
+                self.pm2_5 = float('nan')
             finally:
                 time.sleep(.1)
                 update_led(yellow=False)
@@ -150,10 +150,10 @@ class GPS(threading.Thread):
         self.has_fix: Optional[bool] = None
         self.latitude: Optional[float] = None
         self.longitude: Optional[float] = None
-        self.satellites: int = nan
-        self.timestamp: str = nan
+        self.satellites: Union[int, float] = float('nan')
+        self.timestamp: str = 'nan'
         self.alt: Optional[float] = None
-        self.speed: float = nan
+        self.speed: Union[int, float] = float('nan')
 
     def run(self) -> None:
         '''start thread and get values'''
@@ -164,27 +164,27 @@ class GPS(threading.Thread):
                 if self.gps.satellites is not None:
                     self.satellites = self.gps.satellites
                 else:
-                    self.satellites = nan
+                    self.satellites = float('nan')
 
                 if self.gps.latitude is not None:
                     self.latitude = self.gps.latitude
                 else:
-                    self.latitude = nan
+                    self.latitude = float('nan')
 
                 if self.gps.longitude is not None:
                     self.longitude = self.gps.longitude
                 else:
-                    self.longitude = nan
+                    self.longitude = float('nan')
 
                 if self.gps.altitude_m is not None:
                     self.alt = self.gps.altitude_m
                 else:
-                    self.alt = nan
+                    self.alt = float('nan')
 
                 if self.gps.speed_knots is not None:
                     self.speed = self.gps.speed_knots
                 else:
-                    self.speed = nan
+                    self.speed = float('nan')
 
                 if self.gps.timestamp_utc is not None:
                     self.timestamp = time.strftime(

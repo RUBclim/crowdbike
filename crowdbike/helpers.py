@@ -1,3 +1,4 @@
+import math
 import os
 import re
 import socket
@@ -8,7 +9,6 @@ from typing import Optional
 from typing import Union
 
 import RPi.GPIO as GPIO
-from numpy import exp
 
 if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
     import importlib_resources
@@ -51,7 +51,7 @@ def get_ip() -> str:
 
 def sat_vappressure(temp: Union[int, float]) -> float:
     saturation_vappress = (
-        0.6113 * exp(
+        0.6113 * math.exp(
             (2501000.0 / 461.5) * ((1.0 / 273.15) - (1.0 / (temp + 273.15))),
         )
     )

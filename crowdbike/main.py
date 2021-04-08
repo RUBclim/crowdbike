@@ -37,7 +37,6 @@ from typing import NoReturn
 from typing import Optional
 from typing import Union
 
-import numpy as np
 import RPi.GPIO as GPIO
 from tkinter import Button
 from tkinter import DISABLED
@@ -239,11 +238,11 @@ def start_counting(label: Label) -> None:
 
         # get sensor readings from DHT-sensor
         try:
-            humidity = temp_hum_sensor.humidity or np.nan
-            temperature = temp_hum_sensor.temperature or np.nan
+            humidity = temp_hum_sensor.humidity or float('nan')
+            temperature = temp_hum_sensor.temperature or float('nan')
         except Exception:
-            humidity = np.nan
-            temperature = np.nan
+            humidity = float('nan')
+            temperature = float('nan')
 
         # dht22_humidity = readings['humidity']
         # dht22_temperature = readings['temperature']
@@ -276,8 +275,8 @@ def start_counting(label: Label) -> None:
             pm2_5 = nova_pm.pm2_5
             pm10 = nova_pm.pm10
         else:
-            pm2_5 = np.nan
-            pm10 = np.nan
+            pm2_5 = float('nan')
+            pm10 = float('nan')
 
         if humidity > 100:
             humidity = 100
