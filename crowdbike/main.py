@@ -50,6 +50,7 @@ from tkinter import Tk
 from tkinter import W
 
 from crowdbike.helpers import CONFIG_DIR
+from crowdbike.helpers import create_logger
 from crowdbike.helpers import get_ip
 from crowdbike.helpers import get_wlan_macaddr
 from crowdbike.helpers import sat_vappressure
@@ -59,6 +60,7 @@ from crowdbike.sensors import DHT22
 from crowdbike.sensors import GPS
 from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
+
 
 if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
     import importlib_metadata
@@ -81,17 +83,32 @@ parser.add_argument(
     action='version',
     version=f'%(prog)s {importlib_metadata.version("crowdbike")}',
 )
+parser.add_argument(
+    '--logfile',
+    type=str,
+    default=os.path.expanduser('~'),
+    help='file to write the logs to',
+)
+parser.add_argument(
+    '--loglevel',
+    type=str,
+    default='WARNING',
+    choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
+)
 args = parser.parse_args()
-
 if args.command == 'init':
     setup_config()
     GPIO.cleanup()
     exit(0)
 
+logger = create_logger(logdir=args.logfile, loglevel=args.loglevel)
+logger.info('started crowdbike...')
+logger.info(f'arguments passed: {args}')
 
 # __load config files__
 with open(os.path.join(CONFIG_DIR, 'config.json')) as cfg:
     config = json.load(cfg)
+    logger.info(f'configuration loaded: {json.dumps(config, indent=2)}')
 
 raspberryid = config['user']['bike_nr']
 studentname = config['user']['studentname']
@@ -99,6 +116,7 @@ mac = get_wlan_macaddr()
 
 with open(os.path.join(CONFIG_DIR, 'calibration.json')) as cal:
     calib = json.load(cal)
+    logger.info(f'calibration loaded: {json.dumps(calib, indent=2)}')
 
 # __calibration params__
 temperature_cal_a1 = calib['temp_cal_a1']
@@ -112,24 +130,27 @@ os.makedirs(logfile_path, exist_ok=True)
 
 logfile_name = f'{raspberryid}_{studentname}_{datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa E501
 logfile = os.path.join(logfile_path, logfile_name)
+logger.info(f'writing measurement logs to {logfile}')
 
 counter = 0
 
 # initialize threads
-gpsp = GPS()
+gpsp = GPS(logger)
 gpsp.start()
 
 temp_hum_sensor: Union[DHT22, SHT85]
 sensor_type = config['user']['sensor_type']
 if sensor_type == 'SHT85':
-    temp_hum_sensor = SHT85()
+    temp_hum_sensor = SHT85(logger)
+    logger.info('using SHT85 sensor')
 elif sensor_type == 'DHT22':
-    temp_hum_sensor = DHT22()
+    temp_hum_sensor = DHT22(logger)
+    logger.info('using DHT22 sensor')
 else:
     raise NameError('sensor type unknown, must be either SHT85 or DHT22')
 
 temp_hum_sensor.start()
-nova_pm = PmSensor(dev='/dev/ttyUSB0')
+nova_pm = PmSensor(dev='/dev/ttyUSB0', logger=logger)
 
 # global variables
 font_size = 24
@@ -164,6 +185,7 @@ cnames = [
 
 # __functions__
 def exit_program() -> None:
+    logger.info('exiting programm...')
     master.destroy()
     gpsp.running = False
     gpsp.stop()
@@ -171,7 +193,7 @@ def exit_program() -> None:
     temp_hum_sensor.running = False
     temp_hum_sensor.join()
     nova_pm.running = False
-    # only try joining the thread it was running
+    # only try joining the thread if it was running
     if nova_pm.isAlive():
         nova_pm.join()
     GPIO.cleanup()
@@ -197,6 +219,7 @@ def record_data() -> None:
 def stop_data() -> None:
     global recording
     recording = False
+    logger.info('recording stopped')
     b1.config(state=NORMAL)
     b2.config(state=DISABLED)
 
@@ -212,10 +235,11 @@ def set_pm_status(value: str) -> None:
         try:
             nova_pm.sensor_wake()
             # reinitialize thread so it gets a new PID
-            nova_pm = PmSensor(dev='/dev/ttyUSB0')
+            nova_pm = PmSensor(dev='/dev/ttyUSB0', logger=logger)
             nova_pm.running = True
             nova_pm.start()
-        except Exception:
+        except Exception as e:
+            logger.warning(f'failed reading the PM sensor (main): {e}')
             pass
     else:
         pm_status = False
@@ -224,7 +248,8 @@ def set_pm_status(value: str) -> None:
             nova_pm.running = False
             nova_pm.join()
             nova_pm.sensor_sleep()
-        except Exception:
+        except Exception as e:
+            logger.warning(f'failed setting the PM to sleep mode (main) {e}')
             pass
 
 
@@ -240,7 +265,8 @@ def start_counting(label: Label) -> None:
         try:
             humidity = temp_hum_sensor.humidity or float('nan')
             temperature = temp_hum_sensor.temperature or float('nan')
-        except Exception:
+        except Exception as e:
+            logger.warning(f'reading the temp sensor failed (main): {e}')
             humidity = float('nan')
             temperature = float('nan')
 

@@ -1,3 +1,4 @@
+import logging
 import math
 import os
 import re
@@ -113,3 +114,24 @@ def _make_config_dirs() -> None:
 
     with open(os.path.join(CONFIG_DIR, 'calibration.json'), 'w') as f:
         f.write(calib)
+
+
+def create_logger(
+        logdir: str,
+        loglevel: str = 'WARNING',
+) -> logging.Logger:
+    LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
+    if loglevel not in LEVELS:
+        raise ValueError(f'loglevel must be one of {", ".join(LEVELS)}')
+
+    dirname = os.path.dirname(logdir)
+    if dirname != '':
+        os.makedirs(dirname, exist_ok=True)
+
+    logger = logging.getLogger('crowdbike')
+    file_handler = logging.FileHandler(logdir)
+    formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.setLevel(loglevel)
+    return logger

@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 from typing import Optional
@@ -15,12 +16,18 @@ from crowdbike.helpers import update_led
 
 
 class PmSensor(threading.Thread):
-    def __init__(self, dev: str, baudrate: int = 9600) -> None:
+    def __init__(
+            self,
+            dev: str,
+            logger: logging.Logger,
+            baudrate: int = 9600,
+    ) -> None:
         threading.Thread.__init__(self)
         self.running = False
         self.ser = serial.Serial(port=dev, baudrate=baudrate)
         self.pm2_5 = float('nan')
         self.pm10 = float('nan')
+        self.logger = logger
 
     def run(self) -> None:
         while self.running:
@@ -39,7 +46,8 @@ class PmSensor(threading.Thread):
                 self.pm2_5 = (data[5] * 256 + data[4]) / 10.0
                 self.ser.close()
                 update_led(yellow=True)
-            except Exception:
+            except Exception as e:
+                self.logger.warning(f'failed reading PM-sensor: {e}')
                 self.pm10 = float('nan')
                 self.pm2_5 = float('nan')
             finally:
@@ -65,6 +73,7 @@ class PmSensor(threading.Thread):
             self.ser.write(b)
 
         self.ser.close()
+        self.logger.info('set PM sensor to sleep mode')
 
     def sensor_wake(self) -> None:
         '''
@@ -83,15 +92,17 @@ class PmSensor(threading.Thread):
             self.ser.write(b)
 
         self.ser.close()
+        self.logger.info('set PM sensor to awake mode')
 
 
 class DHT22(threading.Thread):
-    def __init__(self) -> None:
+    def __init__(self, logger: logging.Logger) -> None:
         threading.Thread.__init__(self)
         self.dht_22 = adafruit_dht.DHT22(board.D4)
         self.running = True
         self.humidity: Optional[float] = None
         self.temperature: Optional[float] = None
+        self.logger = logger
 
     def run(self) -> None:
         while self.running:
@@ -104,7 +115,8 @@ class DHT22(threading.Thread):
                 # this way the LED is kinda useless!
                 if self.temperature is not None:
                     update_led(red=True)
-            except Exception:
+            except Exception as e:
+                self.logger.warning(f'failed reading DHT22-sensor: {e}')
                 continue
             finally:
                 time.sleep(.1)
@@ -113,13 +125,14 @@ class DHT22(threading.Thread):
 
 
 class SHT85(threading.Thread):
-    def __init__(self) -> None:
+    def __init__(self, logger: logging.Logger) -> None:
         threading.Thread.__init__(self)
         con = I2cConnection(LinuxI2cTransceiver('/dev/i2c-1'))
         self.sht_85 = Sht3xI2cDevice(con)
         self.running = True
         self.humidity = None
         self.temperature = None
+        self.logger = logger
 
     def run(self) -> None:
         while self.running:
@@ -128,7 +141,8 @@ class SHT85(threading.Thread):
                 self.temperature = temp.degrees_celsius
                 self.humidity = hum.percent_rh
                 update_led(red=True)
-            except Exception:
+            except Exception as e:
+                self.logger.warning(f'failed reading SHT85-sensor: {e}')
                 continue
             finally:
                 time.sleep(.1)
@@ -139,7 +153,7 @@ class SHT85(threading.Thread):
 class GPS(threading.Thread):
     '''Class for reading the adafruit gps'''
 
-    def __init__(self) -> None:
+    def __init__(self, logger: logging.Logger) -> None:
         threading.Thread.__init__(self)
         self.uart = serial.Serial('/dev/ttyS0', baudrate=9600, timeout=10)
         self.gps = adafruit_gps.GPS(self.uart, debug=False)
@@ -154,6 +168,7 @@ class GPS(threading.Thread):
         self.timestamp: str = 'nan'
         self.alt: Optional[float] = None
         self.speed: Union[int, float] = float('nan')
+        self.logger = logger
 
     def run(self) -> None:
         '''start thread and get values'''
@@ -193,7 +208,8 @@ class GPS(threading.Thread):
                     )
                 if self.has_fix is True:
                     update_led(green=True)
-            except Exception:
+            except Exception as e:
+                self.logger.warning(f'failed reading GPS: {e}')
                 continue
             finally:
                 time.sleep(.1)
@@ -203,3 +219,4 @@ class GPS(threading.Thread):
     def stop(self) -> None:
         '''close uart port when terminating'''
         self.uart.close()
+        self.logger.info('closed GPS UART port')
