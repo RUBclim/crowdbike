@@ -388,6 +388,7 @@ def start_counting(label: Label) -> None:
 
 # define widgets
 master = Tk()
+master.protocol('WM_DELETE_WINDOW', exit_program)
 master.title(window_title)
 # master.attributes('-fullscreen', True)
 Label(
