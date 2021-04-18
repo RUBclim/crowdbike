@@ -216,7 +216,7 @@ def upload_to_cloud(
     elif not files_present:
         nothing_to_do = (
             f'Everything up to date. '
-            f'There are no files to upload in "{log_dir}"',
+            f'There are no files to upload in "{log_dir}"'
         )
         logger.info(nothing_to_do)
         print(nothing_to_do)

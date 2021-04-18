@@ -218,8 +218,9 @@ def exit_program() -> None:
 def record_data() -> None:
     global recording
     recording = True
-    b2.config(state=NORMAL)
-    b1.config(state=DISABLED)
+    b_stop.config(state=NORMAL)
+    b_record.config(state=DISABLED)
+    b_upload.config(state=DISABLED)
 
     if os.path.isfile(logfile):
         return
@@ -235,8 +236,9 @@ def stop_data() -> None:
     global recording
     recording = False
     logger.info('recording stopped')
-    b1.config(state=NORMAL)
-    b2.config(state=DISABLED)
+    b_record.config(state=NORMAL)
+    b_stop.config(state=DISABLED)
+    b_upload.config(state=NORMAL)
 
 
 # tkinter button slider function
@@ -407,7 +409,7 @@ Label(
     master, text=str('IP: ' + get_ip()), fg='blue',
     font=('Helvetica', font_size),
 ).grid(
-    row=1, column=2, sticky=E,
+    row=1, column=1, sticky=E,
     columnspan=2,
 )
 Label(
@@ -545,17 +547,34 @@ value_pm2_5.grid(row=13, column=1, sticky=W, columnspan=2)
 start_counting(value_counter)
 
 # define buttons
-b1 = Button(
+b_record = Button(
     master, text='Record', width=7, state=DISABLED,
     command=record_data,
 )
-b1.grid(row=15, column=0, sticky=W)
+b_record.grid(row=15, column=0, sticky=W, padx=(20, 0), pady=(20, 20))
 
-b2 = Button(master, text='Stop', width=7, state=DISABLED, command=stop_data)
-b2.grid(row=15, column=1, sticky=W)
+b_stop = Button(
+    master, text='Stop', width=7,
+    state=DISABLED, command=stop_data,
+)
+b_stop.grid(row=15, column=1, sticky=W, padx=(20, 40), pady=(20, 20))
 
-b4 = Button(master, text='Exit', width=7, state=NORMAL, command=exit_program)
-b4.grid(row=15, column=2, sticky=W)
+b_exit = Button(
+    master, text='Exit', width=7,
+    state=NORMAL, command=exit_program,
+)
+b_exit.grid(row=15, column=2, sticky=W, pady=(20, 20))
+
+b_upload = Button(
+    master,
+    text='upload',
+    width=7,
+    state=DISABLED,
+    command=lambda: upload_to_cloud(
+        verbose=False, config=config, logger=logger,
+    ),
+)
+b_upload.grid(row=15, column=0, sticky=E, padx=(0, 20), pady=(20, 20))
 
 # slider
 pm_slider = Scale(
