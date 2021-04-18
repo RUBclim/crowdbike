@@ -178,7 +178,7 @@ def upload_to_cloud(
                     'X-Requested-With:XMLHttpRequest',
                     f'{base_url}public.php/webdav/{log}',
                 ]
-
+                logger.debug(f'curl call sent: {curl_call}')
                 if verbose:
                     call = subprocess.run(args=curl_call, capture_output=True)
                     stdoutput = call.stdout.decode('utf-8')

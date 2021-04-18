@@ -87,7 +87,7 @@ parser.add_argument(
 parser.add_argument(
     '--logfile',
     type=str,
-    default=os.path.expanduser('~'),
+    default=os.path.expanduser('~/crowdbike.log'),
     help='file to write the logs to',
 )
 parser.add_argument(
@@ -139,7 +139,8 @@ window_title = f'Crowdbike {raspberryid}'
 logfile_path = config['user']['logfile_path']
 os.makedirs(logfile_path, exist_ok=True)
 
-logfile_name = f'{raspberryid}_{studentname}_{datetime.utcnow().strftime("%Y-%m-%d_%H%M%S")}.csv'  # noqa E501
+log_time = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S')
+logfile_name = f"{raspberryid}_{studentname.replace(' ', '_')}_{log_time}.csv"
 logfile = os.path.join(logfile_path, logfile_name)
 logger.info(f'writing measurement logs to {logfile}')
 
