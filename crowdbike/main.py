@@ -42,6 +42,7 @@ from serial.serialutil import SerialException
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
+from tkinter import font
 from tkinter import HORIZONTAL
 from tkinter import Label
 from tkinter import mainloop
@@ -49,6 +50,7 @@ from tkinter import NORMAL
 from tkinter import Scale
 from tkinter import Tk
 from tkinter import W
+from tkinter.ttk import Separator
 
 from crowdbike.helpers import CONFIG_DIR
 from crowdbike.helpers import create_logger
@@ -62,6 +64,7 @@ from crowdbike.sensors import DHT22
 from crowdbike.sensors import GPS
 from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
+
 
 if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
     import importlib_metadata
@@ -165,7 +168,10 @@ temp_hum_sensor.start()
 nova_pm = PmSensor(dev='/dev/ttyUSB0', logger=logger)
 
 # global variables
-font_size = 24
+with open(os.path.join(CONFIG_DIR, 'theme.json')) as t:
+    theme = json.load(t)
+    logger.info(f'theme loaded: {json.dumps(theme, indent=2)}')
+
 recording = False
 
 pm_status = nova_pm.running = config['user']['pm_sensor']
@@ -389,182 +395,230 @@ def start_counting(label: Label) -> None:
 # define widgets
 master = Tk()
 master.protocol('WM_DELETE_WINDOW', exit_program)
+master.configure(background=theme['bg_col'])
+default_font = font.nametofont('TkDefaultFont')
+default_font.configure(size=theme['font_size'], family=theme['f_family'])
 master.title(window_title)
 # master.attributes('-fullscreen', True)
 Label(
-    master, text=' Name', fg='blue',
-    font=('Helvetica', font_size),
+    master, text=' Name', fg=theme['fg_header'],
+    bg=theme['bg_col'],
 ).grid(row=0, column=0, sticky=W)
 Label(
-    master, text=studentname + "'s Crowdbike", fg='blue',
-    font=('Helvetica', font_size),
-).grid(
-    row=0, column=1, sticky=W,
-    columnspan=2,
-)
+    master, text=studentname + "'s Crowdbike", fg=theme['fg_header'],
+    bg=theme['bg_col'],
+).grid(row=0, column=1, sticky=W, columnspan=2)
 Label(
-    master, text=' IP', fg='blue',
-    font=('Helvetica', font_size),
-).grid(row=2, column=0, sticky=W)
+    master, text=f'IP: {get_ip()}', fg=theme['fg_header'], bg=theme['bg_col'],
+).grid(row=1, column=1, sticky=E, columnspan=2)
 Label(
-    master, text=str('IP: ' + get_ip()), fg='blue',
-    font=('Helvetica', font_size),
-).grid(
-    row=1, column=1, sticky=E,
-    columnspan=2,
+    master, text=' PM-Sensor', fg=theme['fg_header'],
+    bg=theme['bg_col'],
+).grid(row=1, column=0, sticky=W, columnspan=2)
+Separator(master, orient=HORIZONTAL).grid(
+    row=2, columnspan=3, sticky='ew', pady=(10, 10),
 )
-Label(
-    master, text=' PM-Sensor', fg='blue',
-    font=('Helvetica', font_size),
-).grid(
-    row=1, column=0, sticky=W,
-    columnspan=2,
-)
-
 # define labels
 label_counter = Label(
     master, text=' Counter',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_counter.grid(row=2, column=0, sticky=W)
+label_counter.grid(row=3, column=0, sticky=W)
 
-label_ctime = Label(master, text=' Time', font=('Helvetica', font_size))
-label_ctime.grid(row=3, column=0, sticky=W)
+label_ctime = Label(
+    master, text=' Time',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_ctime.grid(row=4, column=0, sticky=W)
 
 label_altitude = Label(
     master, text=' Altitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_altitude.grid(row=4, column=0, sticky=W)
+label_altitude.grid(row=5, column=0, sticky=W)
 
 label_latitude = Label(
     master, text=' Latitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_latitude.grid(row=5, column=0, sticky=W)
+label_latitude.grid(row=6, column=0, sticky=W)
 
 label_longitude = Label(
     master, text=' Longitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_longitude.grid(row=6, column=0, sticky=W)
+label_longitude.grid(row=7, column=0, sticky=W)
 
-label_speed = Label(master, text=' Speed', font=('Helvetica', font_size))
-label_speed.grid(row=7, column=0, sticky=W)
+label_speed = Label(
+    master, text=' Speed',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_speed.grid(row=8, column=0, sticky=W)
 
-label_time = Label(master, text=' GPS Time', font=('Helvetica', font_size))
-label_time.grid(row=8, column=0, sticky=W)
+label_time = Label(
+    master, text=' GPS Time',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_time.grid(row=9, column=0, sticky=W)
 
 label_temperature = Label(
     master, text=' Temperature',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_temperature.grid(row=9, column=0, sticky=W)
+label_temperature.grid(row=10, column=0, sticky=W)
 
 label_humidity = Label(
     master, text=' Rel. Humidity',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_humidity.grid(row=10, column=0, sticky=W)
+label_humidity.grid(row=11, column=0, sticky=W)
 
 label_vappress = Label(
     master, text=' Vap. Pressure   ',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_vappress.grid(row=11, column=0, sticky=W)
+label_vappress.grid(row=12, column=0, sticky=W)
 
 # labels for pm sensor
-label_pm10 = Label(master, text=' PM 10 ', font=('Helvetica', font_size))
-label_pm10.grid(row=12, column=0, sticky=W)
+label_pm10 = Label(
+    master, text=' PM 10 ',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_pm10.grid(row=13, column=0, sticky=W)
 
-label_pm2_5 = Label(master, text=' PM 2.5 ', font=('Helvetica', font_size))
-label_pm2_5.grid(row=13, column=0, sticky=W)
+label_pm2_5 = Label(
+    master, text=' PM 2.5 ',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_pm2_5.grid(row=14, column=0, sticky=W)
 
 # define values (constructed also as labels, text will be modified in count)
-value_counter = Label(
-    master, text=' Counter', bg='red',
-    font=('Helvetica', font_size),
-)
-value_counter.grid(row=2, column=1, sticky=W, columnspan=2)
+value_counter = Label(master, text=' Counter', bg='red', fg=theme['fg_col'])
+value_counter.grid(row=3, column=1, sticky=W, columnspan=2)
 
-value_ctime = Label(master, text=' Time', font=('Helvetica', font_size))
-value_ctime.grid(row=3, column=1, sticky=W, columnspan=2)
+value_ctime = Label(
+    master, text=' Time',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+value_ctime.grid(row=4, column=1, sticky=W, columnspan=2)
 
 value_altitude = Label(
     master, text=' Altitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_altitude.grid(row=4, column=1, sticky=W, columnspan=2)
+value_altitude.grid(row=5, column=1, sticky=W, columnspan=2)
 
 value_latitude = Label(
     master, text=' Latitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_latitude.grid(row=5, column=1, sticky=W, columnspan=2)
+value_latitude.grid(row=6, column=1, sticky=W, columnspan=2)
 
 value_longitude = Label(
     master, text=' Longitude',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_longitude.grid(row=6, column=1, sticky=W, columnspan=2)
+value_longitude.grid(row=7, column=1, sticky=W, columnspan=2)
 
 value_speed = Label(
     master, text=' Speed',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
 
-value_speed.grid(row=7, column=1, sticky=W, columnspan=2)
+value_speed.grid(row=8, column=1, sticky=W, columnspan=2)
 
 value_time = Label(
     master, text='GPS Time ---------------',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_time.grid(row=8, column=1, sticky=W, columnspan=2)
+value_time.grid(row=9, column=1, sticky=W, columnspan=2)
 
 value_temperature = Label(
     master, text=' Temperature',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_temperature.grid(row=9, column=1, sticky=W, columnspan=2)
+value_temperature.grid(row=10, column=1, sticky=W, columnspan=2)
 
 value_humidity = Label(
     master, text=' Rel. Humidity',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_humidity.grid(row=10, column=1, sticky=W, columnspan=2)
+value_humidity.grid(row=11, column=1, sticky=W, columnspan=2)
 
 value_vappress = Label(
     master, text=' Vap. Pressure ',
-    font=('Helvetica', font_size),
+    bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_vappress.grid(row=11, column=1, sticky=W, columnspan=2)
+value_vappress.grid(row=12, column=1, sticky=W, columnspan=2)
 
-value_pm10 = Label(master, text=' PM 10 ', font=('Helvetica', font_size))
-value_pm10.grid(row=12, column=1, sticky=W, columnspan=2)
-value_pm2_5 = Label(master, text=' PM 2.5 ', font=('Helvetica', font_size))
-value_pm2_5.grid(row=13, column=1, sticky=W, columnspan=2)
+value_pm10 = Label(
+    master, text=' PM 10 ',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+value_pm10.grid(row=13, column=1, sticky=W, columnspan=2)
+value_pm2_5 = Label(
+    master, text=' PM 2.5 ',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+value_pm2_5.grid(row=14, column=1, sticky=W, columnspan=2)
 
 # initialize value_counter
 start_counting(value_counter)
-
+Separator(master, orient=HORIZONTAL).grid(
+    row=15, columnspan=3, sticky='ew', pady=(10, 0),
+)
 # define buttons
 b_record = Button(
-    master, text='Record', width=7, state=DISABLED,
+    master,
+    text='Record',
+    width=7,
+    state=DISABLED,
+    bg=theme['b_col'],
+    fg=theme['fg_col'],
+    font=(theme['f_family'], 12, 'bold'),
+    disabledforeground=theme['b_disabled'],
     command=record_data,
+    activeforeground=theme['fg_col'],
+    activebackground=theme['b_hover'],
+    highlightcolor=theme['b_hl_border'],
+    highlightbackground=theme['b_hl_border'],
+    highlightthickness=1,
+
 )
-b_record.grid(row=15, column=0, sticky=W, padx=(20, 0), pady=(20, 20))
+b_record.grid(row=16, column=0, sticky=W, padx=(20, 0), pady=(20, 20))
 
 b_stop = Button(
-    master, text='Stop', width=7,
+    master,
+    text='Stop',
+    width=7,
+    bg=theme['b_col'],
+    fg=theme['fg_col'],
+    font=(theme['f_family'], 12, 'bold'),
     state=DISABLED, command=stop_data,
+    disabledforeground=theme['b_disabled'],
+    activeforeground=theme['fg_col'],
+    activebackground=theme['b_hover'],
+    highlightcolor=theme['b_hl_border'],
+    highlightbackground=theme['b_hl_border'],
+    highlightthickness=1,
 )
-b_stop.grid(row=15, column=1, sticky=W, padx=(20, 40), pady=(20, 20))
+b_stop.grid(row=16, column=1, sticky=W, padx=(20, 40), pady=(20, 20))
 
 b_exit = Button(
-    master, text='Exit', width=7,
+    master,
+    text='Exit',
+    width=7,
+    bg=theme['b_col'],
+    fg=theme['fg_col'],
+    font=(theme['f_family'], 12, 'bold'),
     state=NORMAL, command=exit_program,
+    activeforeground=theme['fg_col'],
+    activebackground=theme['b_hover'],
+    highlightcolor=theme['b_hl_border'],
+    highlightbackground=theme['b_hl_border'],
+    highlightthickness=1,
 )
-b_exit.grid(row=15, column=2, sticky=W, pady=(20, 20))
+b_exit.grid(row=16, column=2, sticky=W, pady=(20, 20))
 
 b_upload = Button(
     master,
@@ -574,14 +628,29 @@ b_upload = Button(
     command=lambda: upload_to_cloud(
         verbose=False, config=config, logger=logger,
     ),
+    fg=theme['fg_col'],
+    bg=theme['b_col'],
+    font=(theme['f_family'], 12, 'bold'),
+    disabledforeground=theme['b_disabled'],
+    activeforeground=theme['fg_col'],
+    activebackground=theme['b_hover'],
+    highlightcolor=theme['b_hl_border'],
+    highlightbackground=theme['b_hl_border'],
+    highlightthickness=1,
 )
-b_upload.grid(row=15, column=0, sticky=E, padx=(0, 20), pady=(20, 20))
+b_upload.grid(row=16, column=0, sticky=E, padx=(0, 20), pady=(20, 20))
 
 # slider
 pm_slider = Scale(
     orient=HORIZONTAL, length=80, to=1, label='',
     showvalue=False, sliderlength=40, troughcolor='#666666',
     width=30, command=set_pm_status,
+    fg=theme['fg_col'],
+    bg=theme['b_col'],
+    activebackground=theme['b_hover'],
+    highlightcolor=theme['b_hl_border'],
+    highlightbackground=theme['b_hl_border'],
+    highlightthickness=1,
 )
 if pm_status:
     pm_slider['troughcolor'] = '#20ff20'

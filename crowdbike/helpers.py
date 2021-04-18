@@ -112,11 +112,15 @@ def _make_config_dirs() -> None:
         'crowdbike.resources',
         'calibration.json',
     )
+    theme = importlib_resources.read_text('crowdbike.resources', 'theme.json')
     with open(os.path.join(CONFIG_DIR, 'config.json'), 'w') as f:
         f.write(cfg)
 
     with open(os.path.join(CONFIG_DIR, 'calibration.json'), 'w') as f:
         f.write(calib)
+
+    with open(os.path.join(CONFIG_DIR, 'theme.json'), 'w') as f:
+        f.write(theme)
 
 
 def create_logger(
