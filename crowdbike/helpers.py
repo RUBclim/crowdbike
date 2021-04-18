@@ -2,10 +2,13 @@ import logging
 import math
 import os
 import re
+import shutil
 import socket
 import subprocess
 import sys
 import uuid
+from typing import Any
+from typing import Dict
 from typing import Optional
 from typing import Union
 
@@ -135,3 +138,89 @@ def create_logger(
     logger.addHandler(file_handler)
     logger.setLevel(loglevel)
     return logger
+
+
+def upload_to_cloud(
+        verbose: bool,
+        config: Dict[str, Any],
+        logger: logging.Logger,
+) -> None:
+    log_dir = config['user']['logfile_path']
+    archive_dir = os.path.join(log_dir, 'archive')
+    folder_token = config['cloud']['folder_token']
+    passwd = config['cloud']['passwd']
+    base_url = config['cloud']['base_url']
+    # we need a trailing slash for the url to be valid
+    if not base_url[-1] == '/':
+        base_url += '/'
+
+    os.makedirs(archive_dir, exist_ok=True)
+
+    files_present = False
+    for element in os.listdir(log_dir):
+        if os.path.isfile(os.path.join(log_dir, element)):
+            files_present = True
+            break
+
+    if verbose:
+        first_args = '-vT'
+    else:
+        first_args = '-T'
+
+    if files_present:
+        for log in os.listdir(log_dir):
+            if os.path.splitext(log)[1].lower() == '.csv':
+                logger.info(f'uploading: {log} to the cloud')
+                print(f'uploading: {log} to the cloud')
+                curl_call = [
+                    'curl', first_args, os.path.join(log_dir, log), '-u',
+                    f'{folder_token}:{passwd}', '-H',
+                    'X-Requested-With:XMLHttpRequest',
+                    f'{base_url}public.php/webdav/{log}',
+                ]
+
+                if verbose:
+                    call = subprocess.run(args=curl_call, capture_output=True)
+                    stdoutput = call.stdout.decode('utf-8')
+                    stderr = call.stderr.decode('utf-8')
+                    logging.debug(stderr)
+                    print(stderr)
+                    err = stderr.split('curl:')
+
+                    if stdoutput == '' and len(err) == 1:
+                        shutil.move(os.path.join(log_dir, log), archive_dir)
+                    else:
+                        logger.debug(' error '.center(79, '='))
+                        print(' error '.center(79, '='))
+                        logger.debug(stdoutput)
+                        print(stdoutput)
+                        logger.debug(err)
+                        print(err)
+
+                else:
+                    call = subprocess.run(args=curl_call, capture_output=True)
+                    stdoutput = call.stdout.decode('utf-8')
+                    stderr = call.stderr.decode('utf-8')
+                    err = stderr.split('curl:')
+
+                    if stdoutput == '' and len(err) == 1:
+                        shutil.move(os.path.join(log_dir, log), archive_dir)
+                    else:
+                        logger.debug(' error '.center(79, '='))
+                        print(' error '.center(79, '='))
+                        logger.debug(stdoutput)
+                        print(stdoutput)
+                        logger.debug(err)
+                        print(err)
+
+    elif not files_present:
+        nothing_to_do = (
+            f'Everything up to date. '
+            f'There are no files to upload in "{log_dir}"',
+        )
+        logger.info(nothing_to_do)
+        print(nothing_to_do)
+    else:
+        raise Exception(
+            f'An unknown error occurred. {files_present} is not a boolean',
+        )

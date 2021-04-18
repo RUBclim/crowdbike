@@ -55,12 +55,12 @@ from crowdbike.helpers import get_ip
 from crowdbike.helpers import get_wlan_macaddr
 from crowdbike.helpers import sat_vappressure
 from crowdbike.helpers import setup_config
+from crowdbike.helpers import upload_to_cloud
 from crowdbike.helpers import vappressure
 from crowdbike.sensors import DHT22
 from crowdbike.sensors import GPS
 from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
-
 
 if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
     import importlib_metadata
@@ -77,7 +77,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 parser = ArgumentParser()
-parser.add_argument('command', choices=['init', 'run'])
+parser.add_argument('command', choices=['init', 'run', 'upload'])
 parser.add_argument(
     '-V', '--version',
     action='version',
@@ -109,6 +109,16 @@ logger.info(f'arguments passed: {args}')
 with open(os.path.join(CONFIG_DIR, 'config.json')) as cfg:
     config = json.load(cfg)
     logger.info(f'configuration loaded: {json.dumps(config, indent=2)}')
+
+if args.command == 'upload':
+    if args.loglevel == 'DEBUG':
+        verbose = True
+    else:
+        verbose = False
+
+    upload_to_cloud(verbose=verbose, config=config, logger=logger)
+    GPIO.cleanup()
+    exit(0)
 
 raspberryid = config['user']['bike_nr']
 studentname = config['user']['studentname']
