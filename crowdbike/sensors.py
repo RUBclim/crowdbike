@@ -24,7 +24,9 @@ class PmSensor(threading.Thread):
     ) -> None:
         threading.Thread.__init__(self)
         self.running = False
-        self.ser = serial.Serial(port=dev, baudrate=baudrate)
+        self.ser = serial.Serial(baudrate=baudrate)
+        # initialize later so no connection is established at initialization
+        self.ser.port = dev
         self.pm2_5 = float('nan')
         self.pm10 = float('nan')
         self.logger = logger

@@ -38,6 +38,7 @@ from typing import Optional
 from typing import Union
 
 import RPi.GPIO as GPIO
+from serial.serialutil import SerialException
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
@@ -169,7 +170,10 @@ recording = False
 pm_status = nova_pm.running = config['user']['pm_sensor']
 # switch off sensor if it running prior to starting the app
 if pm_status is False:
-    nova_pm.sensor_sleep()
+    try:
+        nova_pm.sensor_sleep()
+    except SerialException:
+        logger.warning('could not set PM sensor to sleep mode (startup)')
 
 sampling_rate = config['user']['sampling_rate']
 
