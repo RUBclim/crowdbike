@@ -91,7 +91,7 @@ parser.add_argument(
     '--logfile',
     type=str,
     default=os.path.expanduser('~/crowdbike.log'),
-    help='file to write the logs to',
+    help='file to write the system logs to',
 )
 parser.add_argument(
     '--loglevel',
@@ -124,7 +124,7 @@ if args.command == 'upload':
     GPIO.cleanup()
     exit(0)
 
-raspberryid = config['user']['bike_nr']
+pi_id = config['user']['bike_nr']
 studentname = config['user']['studentname']
 mac = get_wlan_macaddr()
 
@@ -138,14 +138,9 @@ temperature_cal_a0 = calib['temp_cal_a0']
 hum_cal_a1 = calib['hum_cal_a1']
 hum_cal_a0 = calib['hum_cal_a0']
 
-window_title = f'Crowdbike {raspberryid}'
+window_title = f'Crowdbike {pi_id}'
 logfile_path = config['user']['logfile_path']
 os.makedirs(logfile_path, exist_ok=True)
-
-log_time = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S')
-logfile_name = f"{raspberryid}_{studentname.replace(' ', '_')}_{log_time}.csv"
-logfile = os.path.join(logfile_path, logfile_name)
-logger.info(f'writing measurement logs to {logfile}')
 
 counter = 0
 
@@ -168,6 +163,7 @@ temp_hum_sensor.start()
 nova_pm = PmSensor(dev='/dev/ttyUSB0', logger=logger)
 
 # global variables
+logfile = ''
 with open(os.path.join(CONFIG_DIR, 'theme.json')) as t:
     theme = json.load(t)
     logger.info(f'theme loaded: {json.dumps(theme, indent=2)}')
@@ -223,10 +219,15 @@ def exit_program() -> None:
 
 def record_data() -> None:
     global recording
+    global logfile
     recording = True
     b_stop.config(state=NORMAL)
     b_record.config(state=DISABLED)
     b_upload.config(state=DISABLED)
+    log_time = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S')
+    logfile_name = f"{pi_id}_{studentname.replace(' ', '_')}_{log_time}.csv"
+    logfile = os.path.join(logfile_path, logfile_name)
+    logger.info(f'writing measurement logs to {logfile}')
 
     if os.path.isfile(logfile):
         return
@@ -364,7 +365,7 @@ def start_counting(label: Label) -> None:
 
         if recording and has_fix:
             with open(logfile, 'a') as f0:
-                f0.write(raspberryid + ',')
+                f0.write(pi_id + ',')
                 f0.write(str(counter) + ',')
                 f0.write(computer_time + ',')
                 if has_fix:
