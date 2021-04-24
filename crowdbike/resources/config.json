@@ -5,7 +5,8 @@
         "logfile_path": "/home/pi/crowdbike/logs/",
         "pm_sensor": false,
         "sampling_rate": 5,
-        "sensor_type": "SHT85"
+        "sensor_type": "SHT85",
+        "sensor_id": "1"
     },
     "cloud": {
         "folder_token": "abcde1234",

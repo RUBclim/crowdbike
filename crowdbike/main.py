@@ -197,6 +197,7 @@ cnames = [
     'pm10',
     'pm2_5',
     'mac',
+    'sensor_id',
 ]
 
 
@@ -365,11 +366,11 @@ def start_counting(label: Label) -> None:
 
         if recording and has_fix:
             with open(logfile, 'a') as f0:
-                f0.write(pi_id + ',')
-                f0.write(str(counter) + ',')
-                f0.write(computer_time + ',')
+                f0.write(f'{pi_id},')
+                f0.write(f'{counter},')
+                f0.write(f'{computer_time},')
                 if has_fix:
-                    f0.write(gps_time + ',')
+                    f0.write(f'{gps_time},')
                 else:
                     f0.write('nan,')
 
@@ -378,17 +379,19 @@ def start_counting(label: Label) -> None:
                 f0.write(f'{gps_longitude:.6f}' + ',')
                 f0.write(f'{gps_speed:.1f}' + ',')
 
-                f0.write(str(temperature_calib) + ',')
-                f0.write(str(temperature_raw) + ',')
+                f0.write(f'{temperature_calib},')
+                f0.write(f'{temperature_raw},')
 
-                f0.write(str(humidity_calib) + ',')
-                f0.write(str(humidity_raw) + ',')
+                f0.write(f'{humidity_calib},')
+                f0.write(f'{humidity_raw},')
 
-                f0.write(str(vappress) + ',')
+                f0.write(f'{vappress},')
 
-                f0.write(str(pm10) + ',')
-                f0.write(str(pm2_5) + ',')
-                f0.write(str(mac) + '\n')
+                f0.write(f'{pm10},')
+                f0.write(f'{pm2_5},')
+
+                f0.write(f'{mac},')
+                f0.write(f"{config['user']['sensor_id']}\n")
 
     count()
 
