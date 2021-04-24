@@ -143,7 +143,7 @@
 
 - Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer) beschrieben.
 - Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
-- Im VNC Viewer &rarr; `Rechtklick` auf die zuvor erstellte Verbindung &rarr; `Eigenschaften` &rarr; bei `VNC Server` `crowdbike` zu `crowdbike13` ändern &rarr; `OK`
+- Im VNC Viewer &rarr; `Rechtsklick` auf die zuvor erstellte Verbindung &rarr; `Eigenschaften` &rarr; bei `VNC Server` `crowdbike` zu `crowdbike13` ändern &rarr; `OK`
 - Verbindung mit Doppelklick wieder herstellen und Warnung zur Identitätsbestätigung mit `Forsetzen` bestätigen &rarr; ggf. Kennwort erneut eingeben und Haken bei Kennwort speichern setzen.
 
 ### Für die Sensoren benötigte Programme herunterladen und installieren
