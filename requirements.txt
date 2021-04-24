@@ -1,0 +1,8 @@
+adafruit-circuitpython-dht
+adafruit-circuitpython-gps
+importlib-metadata;python_version<"3.8"
+importlib-resources;python_version<"3.8"
+numpy
+pyserial
+RPi.GPIO
+sensirion-i2c-sht

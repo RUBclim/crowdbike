@@ -1,0 +1,11 @@
+{
+    "font_size": 24,
+    "f_family": "Helvetica",
+    "bg_col": "#36393f",
+    "fg_col": "#ffffff",
+    "fg_header": "#AAB8E8",
+    "b_col": "#7289da",
+    "b_disabled": "#5B6DAE",
+    "b_hover": "#546cb2",
+    "b_hl_border": "#AAB8E8"
+}
