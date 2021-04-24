@@ -112,7 +112,7 @@
 
 - Terminal öffnen (obere Leiste, schwarzes Symbol):
 
-![terminal](Documentation/terminal_starten.png)
+![terminal](docs/terminal_starten.png)
 
 - Falls die Schrift sehr klein ist, kann diese im Terminal mit <kbd>ctrl</kbd>+<kbd>+</kbd> vergrößert werden
 
@@ -167,7 +167,7 @@
 |   -    |  PIN 9 (GND)   |  schwarz   |
 |  out   | PIN 7 (GPCLK0) |    gelb    |
 
-![Anschluss dht22](/Documentation/pi_dht22.png)
+![Anschluss dht22](docs/pi_dht22.png)
 
 ### Temperatur- und Feuchte-Sensor SHT-85
 
@@ -180,7 +180,7 @@
 |  VSS   | PIN 9 (Ground)  |    grau    |
 |  SDA   | PIN 2 (SDA1I2C) |    grün    |
 
-![Anschluss SHT85](/Documentation/pi_sht85.png)
+![Anschluss SHT85](docs/pi_sht85.png)
 
 ### Status Ampel
 
@@ -193,7 +193,7 @@
 |   R   | PIN 16 (GPIO23) |    rot     |
 |  GRN  | PIN 14 (Ground) |  schwarz   |
 
-![Anschluss Ampel](/Documentation/pi_ampel.png)
+![Anschluss Ampel](docs/pi_ampel.png)
 
 ### GPS
 
@@ -206,14 +206,14 @@
 | TX  | PIN 10 (RXD) |  violett   |
 | RX  | PIN 8 (TXD)  |    grau    |
 
-![Anschluss gps](/Documentation/pi_gps.png)
+![Anschluss gps](docs/pi_gps.png)
 
 ### PM-Sensor (optional)
 
 1. Micro-USB auf USB Adapter an den Micro-USB-Port `USB` anschließen
 1. An die USB-A-Buchse den UART-USB-Adapter anschließen
 1. Weißes Kabel vom PM-Sensor zum UART-Adapter einstecken
-   ![Anschluss pm](/Documentation/pi_pm.png)
+   ![Anschluss pm](docs/pi_pm.png)
 
 ## Sensoren in Betrieb nehmen
 
@@ -302,7 +302,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 ## Erstes Starten der Logger-Software
 
 1. Ausführen durch Eingabe von `crowdbike run` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben.
-   > ![GUI](/Documentation/crowdbike_GUI.jpg)
+   > ![GUI](docs/crowdbike_GUI.jpg)
 
 ### Hinweise:
 
