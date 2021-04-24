@@ -420,41 +420,41 @@ Separator(master, orient=HORIZONTAL).grid(
     row=2, columnspan=3, sticky='ew', pady=(10, 10),
 )
 # define labels
+label_speed = Label(
+    master, text=' Speed',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+label_speed.grid(row=3, column=0, sticky=W)
+
 label_counter = Label(
     master, text=' Counter',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_counter.grid(row=3, column=0, sticky=W)
+label_counter.grid(row=4, column=0, sticky=W)
 
 label_ctime = Label(
     master, text=' Time',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_ctime.grid(row=4, column=0, sticky=W)
+label_ctime.grid(row=5, column=0, sticky=W)
 
 label_altitude = Label(
     master, text=' Altitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_altitude.grid(row=5, column=0, sticky=W)
+label_altitude.grid(row=6, column=0, sticky=W)
 
 label_latitude = Label(
     master, text=' Latitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_latitude.grid(row=6, column=0, sticky=W)
+label_latitude.grid(row=7, column=0, sticky=W)
 
 label_longitude = Label(
     master, text=' Longitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-label_longitude.grid(row=7, column=0, sticky=W)
-
-label_speed = Label(
-    master, text=' Speed',
-    bg=theme['bg_col'], fg=theme['fg_col'],
-)
-label_speed.grid(row=8, column=0, sticky=W)
+label_longitude.grid(row=8, column=0, sticky=W)
 
 label_time = Label(
     master, text=' GPS Time',
@@ -494,39 +494,38 @@ label_pm2_5 = Label(
 label_pm2_5.grid(row=14, column=0, sticky=W)
 
 # define values (constructed also as labels, text will be modified in count)
+value_speed = Label(
+    master, text=' Speed',
+    bg=theme['bg_col'], fg=theme['fg_col'],
+)
+value_speed.grid(row=3, column=1, sticky=W, columnspan=2)
+
 value_counter = Label(master, text=' Counter', bg='red', fg=theme['fg_col'])
-value_counter.grid(row=3, column=1, sticky=W, columnspan=2)
+value_counter.grid(row=4, column=1, sticky=W, columnspan=2)
 
 value_ctime = Label(
     master, text=' Time',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_ctime.grid(row=4, column=1, sticky=W, columnspan=2)
+value_ctime.grid(row=5, column=1, sticky=W, columnspan=2)
 
 value_altitude = Label(
     master, text=' Altitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_altitude.grid(row=5, column=1, sticky=W, columnspan=2)
+value_altitude.grid(row=6, column=1, sticky=W, columnspan=2)
 
 value_latitude = Label(
     master, text=' Latitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_latitude.grid(row=6, column=1, sticky=W, columnspan=2)
+value_latitude.grid(row=7, column=1, sticky=W, columnspan=2)
 
 value_longitude = Label(
     master, text=' Longitude',
     bg=theme['bg_col'], fg=theme['fg_col'],
 )
-value_longitude.grid(row=7, column=1, sticky=W, columnspan=2)
-
-value_speed = Label(
-    master, text=' Speed',
-    bg=theme['bg_col'], fg=theme['fg_col'],
-)
-
-value_speed.grid(row=8, column=1, sticky=W, columnspan=2)
+value_longitude.grid(row=8, column=1, sticky=W, columnspan=2)
 
 value_time = Label(
     master, text='GPS Time ---------------',
