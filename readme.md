@@ -110,10 +110,11 @@
 
 ### Einrichtung des Betriebssystems abschließen
 
-- Terminal öffnen TODO: Bild --> gibt Probleme, ggf. erst später ändern und andere Bildschirmgröße nehmen
-- ggf. mit `ctrl + +` die Schriftgröße erhöhen
+- Terminal öffnen (obere Leiste, schwarzes Symbol):
 
----
+![terminal](Documentation/terminal_starten.png)
+
+- Falls die Schrift sehr klein ist, kann diese im Terminal mit <kbd>ctrl</kbd>+<kbd>+</kbd> vergrößert werden
 
 - Hostnamen setzen
 
@@ -123,7 +124,7 @@
   1. Nun den Namen zu `crowdbike13` (Die euch zugewiesene Nummer) ändern
   1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Ok>` zu springen)
 
-- Serielle Schnittstelle aktivieren
+- Serielle Schnittstelle und I2C aktivieren
 
   1. mit Pfeiltasten zu "3 Interface Options" navigieren und mit `Enter` bestätigen
   1. Zu "P5 I2C" navigieren &rarr; `Enter`
@@ -143,11 +144,11 @@
 - Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer) beschrieben.
 - Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
 - Im VNC Viewer &rarr; `Rechtklick` auf die zuvor erstellte Verbindung &rarr; `Eigenschaften` &rarr; bei `VNC Server` `crowdbike` zu `crowdbike13` ändern &rarr; `OK`
-- Verbindung mit Doppelklick wieder herstellen und Warnung zur Idenitätsbestätigung mit `Forsetzen` bestätigen &rarr; ggf. Kennwort erneut eingeben
+- Verbindung mit Doppelklick wieder herstellen und Warnung zur Identitätsbestätigung mit `Forsetzen` bestätigen &rarr; ggf. Kennwort erneut eingeben und Haken bei Kennwort speichern setzen.
 
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 
-- wieder den Terminal öffnen und ggf. mit `ctrl + +` die Schriftgröße erhöhen
+- wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
 - `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@WIP`
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
 - Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
@@ -226,8 +227,10 @@
 
 Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um die Software zu personalisieren und einzurichten
 
-- Navigieren im Terminal zum config-File durch `cd ~/crowdbike/Code`
-- Öffnen des Files durch Eingabe von `nano config.json` und Bestätigen durch `Enter`
+- Verbindung wieder über VNC herstellen und erneut den Terminal öffnen
+- Software initialisieren durch Eingabe von `crowdbike init`
+
+- Öffnen des Files durch Eingabe von `nano ~/.config/crowdbike/config.json` und Bestätigen durch `Enter`
 - im Texteditor kann nur mit dem Pfeiltastnavigiert werden, nicht mit der Maus
 
 ```json
@@ -237,7 +240,8 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     "bike_nr": "01",
     "logfile_path": "/home/pi/crowdbike/logs/",
     "pm_sensor": false,
-    "sampling_rate": 5
+    "sampling_rate": 5,
+    "sensor_id": "1"
   },
   "cloud": {
     "folder_token": "abcde1234",
@@ -251,14 +255,15 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Anpassung bei `bike_nr =` eure Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
 - Bei `pm_sensor` angeben ob ihr einen angeschlossen habt oder nicht (es ist nur `true` oder `false` erlaubt!)
 - Die `sampling_rate` steuert die Häufigkeit in der eine Messung durchgeführt wird in Sekunden.
+- Die `sensor_id` ist eine eindeutige Identifikation des Temperatur- und Feuchte Sensors (Aufkleber auf der Platine)
 - Bei `folder_token` den in der PPP mitgeteilten Token eintragen.
 - Ebenfalls bei `passwd` und `base_url` die in der PPP mitgeteilten Daten eintragen.
-- speichern mit `ctrl + s` und schließen mit `ctrl + x`
+- speichern mit <kbd>ctrl</kbd>+<kbd>s</kbd> und schließen mit <kbd>ctrl</kbd>+<kbd>x</kbd>
 
 ## Sensor-Kalibrierung
 
-- Die Kalibrierung der Sensoren muss im File `~/crowdbike/Code/calibration.json` eingetragen werden.
-- Öffnen des Files mit `nano ~/crowdbike/Code/calibration.json`
+- Die Kalibrierung der Sensoren muss im File `~/.config/crowdbike/calibration.json` eingetragen werden.
+- Öffnen des Files mit `nano ~/.config/crowdbike/calibration.json`
 - Darauf achten, dass die Faktoren für die entsprechende Sensornummer eingetragen werden.
   ```json
   {
@@ -268,12 +273,12 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     "hum_cal_a0": 0.0
   }
   ```
-- Speichern mit `ctrl + s` und Schließen mit `ctrl + x`
+- speichern mit <kbd>ctrl</kbd>+<kbd>s</kbd> und schließen mit <kbd>ctrl</kbd>+<kbd>x</kbd>
 
-## Farbgebung der GUI
+## Farbgebung der GUI anpassen (optional)
 
 - die Farbgebung der GUI kann in `~/.config/crowdbike/them.json` angepasst werden
-- diese keys müssen vorhanden sein
+- diese Keys müssen vorhanden sein
 - Farben könnne hexadezimale Werte sein oder `red`, `green` etc.
 - `b_*` = button
 - `bg_*` = background
@@ -335,12 +340,12 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
       ```console
       crowdbike run
       ```
-   1. Speichern wieder mit `Strg + s` und Schließen mit `Strg + x`
+   1. Speichern wieder mit <kbd>ctrl</kbd>+<kbd>s</kbd>`Strg + s` und Schließen mit <kbd>ctrl</kbd>+<kbd>x</kbd>
    1. Nun muss das kleine Skript noch ausführbar gemacht werden. Diese geschieht durch Eingabe von `chmod +x start_crowdbike.sh` und Bestätigen mit `Enter`.
 1. Hotspot am Smartphone einschalten, der Raspberry Pi sollte sich automatisch verbinden, wenn keine anderen bekannten, stärkeren WLAN-Netzwerke vorhanden sind.
 1. VNC-Viewer am Smartphone starten (es ist **keine** Registrierung notwendig!)
 1. Per **+** eine Verbindung hinzufügen
-1. Bei `Address` den Hostname z.B. (`crowdbike6`) eingeben sollte das nicht funktionieren, kann man in den Smartphoneeinstellungen unter Hotspot die verbundenen Geräte anzeigen lassen und bei einem Klick auf `crowdbike1` kann die IP-Adresse angezeigt werden. Notiert diese und gebt diese statt dem Hostname ein. Sollte die in VNC-Viewer erstellte Verbindung beim nächsten mal nicht funktionieren, kann es sein, dass das Smartphone dem Raspberry Pi eine andere IP-Adresse zugewiesen hat. Kontrolliert dies wie oben beschrieben und versucht es erneut.
+1. Bei `Address` den Hostname z.B. (`crowdbike1`) eingeben sollte das nicht funktionieren, kann man in den Smartphone-Einstellungen unter Hotspot die verbundenen Geräte anzeigen lassen und bei einem Klick auf `crowdbike1` kann die IP-Adresse angezeigt werden. Notiert diese und gebt diese statt dem Hostname ein. Sollte die in VNC-Viewer erstellte Verbindung beim nächsten mal nicht funktionieren, kann es sein, dass das Smartphone dem Raspberry Pi eine andere IP-Adresse zugewiesen hat. Kontrolliert dies wie oben beschrieben und versucht es erneut.
 
 1. Namen der Verbindung festlegen z.B. `'crowdbike1'`
 1. Nun funktioniert der Touchscreen des Smartphones wie ein Mousepad am Laptop
@@ -355,7 +360,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 - Die Daten können über den **Upload** Button in der GUI hochgeladen werden. Dazu muss die Messung mit dem **Stop** Button vorher gestoppt werden.
 - Der Upload kann je nach Datenmenge einige Sekunden dauern. In dieser Zeit werden die angezeigten Messwerte nicht aktualisiert, da der Upload Prozess nicht asynchron stattfindet
-- der upload kann auch nach beenden des programms noch mit `crowdbike upload` gestartet werden
+- der Upload kann auch nach Beenden des Programms noch mit `crowdbike upload` gestartet werden
 
 ## Fehler debuggen
 
@@ -379,7 +384,6 @@ optional arguments:
   -V, --version         show program's version number and exit
   --logfile LOGFILE     file to write the system logs to
   --loglevel {DEBUG,INFO,WARNING,ERROR,CRITICAL}
-
 ```
 
 ## Quellen:
