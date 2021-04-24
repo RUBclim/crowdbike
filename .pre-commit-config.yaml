@@ -12,8 +12,8 @@ repos:
     -   id: check-added-large-files
     -   id: requirements-txt-fixer
     -   id: double-quote-string-fixer
--   repo: https://github.com/pycqa/flake8
-    rev: 3.9.0
+-   repo: https://github.com/PyCQA/flake8
+    rev: 3.9.1
     hooks:
     -   id: flake8
         additional_dependencies: [flake8-typing-imports==1.10.0]
@@ -33,7 +33,7 @@ repos:
     -   id: add-trailing-comma
         args: [--py36-plus]
 -   repo: https://github.com/asottile/pyupgrade
-    rev: v2.11.0
+    rev: v2.13.0
     hooks:
     -   id: pyupgrade
         args: [--py36-plus]
