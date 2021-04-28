@@ -18,7 +18,7 @@
 1. Powerbank zur Stromversorgung des Raspberry Pi's
 1. Gehäuse und Tasche zur Montage am Fahrrad
 1. Ansaugschlauch für PM-Sensor (optional)
-1. Adapterplatine (nur bei SH)
+1. Adapterplatine (nur bei SHT 85)
 
 ## Benötigte Software/Hardware zur Einrichtung
 
@@ -99,8 +99,8 @@
 
 ### Kurztipp: Navigation im Linux-Terminal
 
-- Automatisches Ergänzen des Ausdrucks oder Pfads im Terminal immer mit der `TAB-Taste`
-- Bestätigen von Befehlen immer mit `Enter`. Wenn erfolgreich, keine Rückgabe, ansonsten erscheint eine Error-Mitteilung anhand derer festgestellt werden kann, was nicht funktioniert hat.
+- Automatisches Ergänzen des Ausdrucks oder Pfads im Terminal immer mit der <kbd>TAB-Taste</kbd>
+- Bestätigen von Befehlen immer mit <kbd>Enter</kbd>. Wenn erfolgreich, keine Rückgabe, ansonsten erscheint eine Error-Mitteilung anhand derer festgestellt werden kann, was nicht funktioniert hat.
 - Verzeichnis/Ordner wechseln `cd <Ordnername>` (im Stammverzeichnis `'/'` mit `cd /<Ordnername>`)
 - Ordnerinhalt anzeigen `ls` oder `ls -l` (-l für Liste)
 - Order in aktuellem Verzeichnis erstellen `mkdir <Ordnername>`
@@ -120,24 +120,24 @@
 
   1. Eingabe von `sudo raspi-config`
   1. mit Pfeiltasten zu "1 System Options" navigieren und mit `Enter` bestätigen
-  1. Zu "S4 Hostname" navigieren &rarr; `Enter` &rarr; Hinweis mit `<Ok>` bestätigen
+  1. Zu "S4 Hostname" navigieren &rarr; <kbd>Enter</kbd> &rarr; Hinweis mit `<Ok>` bestätigen
   1. Nun den Namen zu `crowdbike13` (Die euch zugewiesene Nummer) ändern
-  1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Ok>` zu springen)
+  1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder <kbd>TAB</kbd> nutzen um zu `<Ok>` zu springen)
 
 - Serielle Schnittstelle und I2C aktivieren
 
-  1. mit Pfeiltasten zu "3 Interface Options" navigieren und mit `Enter` bestätigen
-  1. Zu "P5 I2C" navigieren &rarr; `Enter`
+  1. mit Pfeiltasten zu "3 Interface Options" navigieren und mit <kbd>Enter</kbd> bestätigen
+  1. Zu "P5 I2C" navigieren &rarr; <kbd>Enter</kbd>
      "Would you like the ARM I2C interface to be enabled?" hier `<YES>` auswählen
      "ARM I2C interface is enabled" mit `<OK>` bestätigen
-  1. erneut mit Pfeiltasten zu "3 Interface Options" navigieren und mit `Enter` bestätigen
-  1. Zu "P6 Serial" navigieren &rarr; `Enter`
+  1. erneut mit Pfeiltasten zu "3 Interface Options" navigieren und mit <kbd>Enter</kbd> bestätigen
+  1. Zu "P6 Serial" navigieren &rarr; <kbd>Enter</kbd>
      "Would you like to a login shell to be accessible over serial?" hier `<No>` auswählen
   1. "Would you like the serial port hardware to be enabled?" hier `<Yes>` auswählen
   1. "The serial login shell is disabled"
   1. "The serial interface is enabled"
   1. Mit `<Ok>` bestätigen
-  1. Mit `<Finish>` beenden (Hinweis: Pfeiltasten &larr;/&rarr; oder `TAB` nutzen um zu `<Finish>` zu springen)
+  1. Mit `<Finish>` beenden (Hinweis: Pfeiltasten &larr;/&rarr; oder <kbd>TAB</kbd> nutzen um zu `<Finish>` zu springen)
   1. "Would you like to reboot now?" mit `<yes>` bestätigen
   1. Ca. 1-2 Minuten warten
 
@@ -149,7 +149,7 @@
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
-- `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@WIP`
+- `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@0.6.0`
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
 - Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
   - `sudo shutdown -P now`
@@ -230,7 +230,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - Verbindung wieder über VNC herstellen und erneut den Terminal öffnen
 - Software initialisieren durch Eingabe von `crowdbike init`
 
-- Öffnen des Files durch Eingabe von `nano ~/.config/crowdbike/config.json` und Bestätigen durch `Enter`
+- Öffnen des Files durch Eingabe von `nano ~/.config/crowdbike/config.json` und Bestätigen durch <kbd>Enter</kbd>
 - im Texteditor kann nur mit dem Pfeiltastnavigiert werden, nicht mit der Maus
 
 ```json
@@ -302,7 +302,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 ## Erstes Starten der Logger-Software
 
 1. Ausführen durch Eingabe von `crowdbike run` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben.
-   > ![GUI](docs/crowdbike_GUI.jpg)
+  ![GUI](docs/crowdbike_GUI.jpg)
 
 ### Hinweise:
 
@@ -353,7 +353,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 ## Updates
 
-- sollte eine neue Version verfügbar sein, kann diese mit `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@WIP --upgrade` installiert werden
+- sollte eine neue Version verfügbar sein, kann diese mit `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@master --upgrade` installiert werden
 - die aktuelle Version kann über den Terminal mit `crowdbike --version` abgefragt werden
 
 ## Upload der gemessenen Daten in die Cloud
