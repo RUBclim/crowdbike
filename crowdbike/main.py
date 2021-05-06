@@ -1,33 +1,3 @@
-"""
-Program <crowdbike.py> to read and record GPS data,
-air temperature and humidity
-using Adafruit's Ultimate GPS and a
-DHT22 temperature sensor while riding
-on a bike.
-
-First established at:
-    University of Freiburg
-    Environmental Meteology
-    Version 1.2
-    Written by Heinz Christen Mar 2018
-    Modified by Andreas Christen Apr 2018
-    https://github.com/achristen/Meteobike
-
-Modified Apr 2020:
-    Ruhr-University Bochum
-    Urban Climatology Group
-    Jonas Kittner
-    added a nova PM-sensor to the kit
-    made a non-GUI version to run in background
-    reworked all internals - using adafruit blinka circuitpython library
-
-Buttons:
-    Record:  Start recording in append mode to logfile, but only if gps has fix
-    PM-Sensor: Switch On/Off the pm sensor or deactivate it when
-    no one is connected
-    Stop:  Stop recording (Pause)
-    Exit:  exit program
-"""
 import argparse
 import json
 import os

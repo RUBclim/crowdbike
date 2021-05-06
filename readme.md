@@ -1,10 +1,10 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/theendlessriver13/Meteobike/master.svg)](https://results.pre-commit.ci/latest/github/theendlessriver13/Meteobike/master)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/theendlessriver13/crowdbike/master.svg)](https://results.pre-commit.ci/latest/github/theendlessriver13/crowdbike/master)
 
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
 ### This is a fork: First established at University of Freiburg, Enviromental Meteorology by [Andreas Christen](https://github.com/achristen)
 
-- The original documentation and code can be found [here](https://github.com/achristen/Meteobike)
+- The original documentation and code can be found [here](https://github.com/achristen/crowdbike)
 
 ## Benötigtes Material
 
@@ -149,7 +149,7 @@
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
-- `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@0.6.0`
+- `sudo pip3 install git+https://github.com/theendlessriver13/crowdbike.git@0.6.0`
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
 - Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
   - `sudo shutdown -P now`
@@ -353,7 +353,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 ## Updates
 
-- sollte eine neue Version verfügbar sein, kann diese mit `sudo pip3 install git+https://github.com/theendlessriver13/Meteobike.git@master --upgrade` installiert werden
+- sollte eine neue Version verfügbar sein, kann diese mit `sudo pip3 install git+https://github.com/theendlessriver13/crowdbike.git@master --upgrade` installiert werden
 - die aktuelle Version kann über den Terminal mit `crowdbike --version` abgefragt werden
 
 ## Upload der gemessenen Daten in die Cloud
