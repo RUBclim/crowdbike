@@ -302,7 +302,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 ## Erstes Starten der Logger-Software
 
 1. Ausführen durch Eingabe von `crowdbike run` (Das Starten dauert einen Moment). Es sollte sich nun ein Fenster mit einer grafischen Benutzeroberfläche geöffnet haben.
-  ![GUI](docs/crowdbike_GUI.jpg)
+   ![GUI](docs/crowdbike_GUI.jpg)
 
 ### Hinweise:
 

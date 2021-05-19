@@ -79,7 +79,7 @@ logger = create_logger(logdir=args.logfile, loglevel=args.loglevel)
 logger.info('started crowdbike...')
 logger.info(f'arguments passed: {args}')
 
-# __load config files__
+# load config files
 with open(os.path.join(CONFIG_DIR, 'config.json')) as cfg:
     config = json.load(cfg)
     logger.info(f'configuration loaded: {json.dumps(config, indent=2)}')
@@ -102,7 +102,7 @@ with open(os.path.join(CONFIG_DIR, 'calibration.json')) as cal:
     calib = json.load(cal)
     logger.info(f'calibration loaded: {json.dumps(calib, indent=2)}')
 
-# __calibration params__
+# calibration params
 temperature_cal_a1 = calib['temp_cal_a1']
 temperature_cal_a0 = calib['temp_cal_a0']
 hum_cal_a1 = calib['hum_cal_a1']
@@ -141,7 +141,7 @@ with open(os.path.join(CONFIG_DIR, 'theme.json')) as t:
 recording = False
 
 pm_status = nova_pm.running = config['user']['pm_sensor']
-# switch off sensor if it running prior to starting the app
+# switch off sensor if it is running prior to starting the app
 if pm_status is False:
     try:
         nova_pm.sensor_sleep()
@@ -171,7 +171,6 @@ cnames = [
 ]
 
 
-# __functions__
 def exit_program() -> None:
     logger.info('exiting programm...')
     master.destroy()
@@ -373,7 +372,6 @@ master.configure(background=theme['bg_col'])
 default_font = font.nametofont('TkDefaultFont')
 default_font.configure(size=theme['font_size'], family=theme['f_family'])
 master.title(window_title)
-# master.attributes('-fullscreen', True)
 Label(
     master, text=' Name', fg=theme['fg_header'],
     bg=theme['bg_col'],
