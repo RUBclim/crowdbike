@@ -44,8 +44,8 @@ class PmSensor(threading.Thread):
                 checksum = sum(v for v in data[2:8]) % 256
                 assert checksum == data[8]
 
-                self.pm10 = (data[3] * 256 + data[2]) / 10.0
-                self.pm2_5 = (data[5] * 256 + data[4]) / 10.0
+                self.pm2_5 = (data[3] * 256 + data[2]) / 10.0
+                self.pm10 = (data[5] * 256 + data[4]) / 10.0
                 self.ser.close()
                 update_led(yellow=True)
             except Exception as e:
