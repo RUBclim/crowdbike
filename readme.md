@@ -359,7 +359,8 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 ## Upload der gemessenen Daten in die Cloud
 
 - Die Daten können über den **Upload** Button in der GUI hochgeladen werden. Dazu muss die Messung mit dem **Stop** Button vorher gestoppt werden.
-- Der Upload kann je nach Datenmenge einige Sekunden dauern. In dieser Zeit werden die angezeigten Messwerte nicht aktualisiert, da der Upload Prozess nicht asynchron stattfindet
+- Der Upload kann je nach Datenmenge einige Sekunden dauern. In dieser Zeit werden die angezeigten Messwerte nicht aktualisiert, da der Upload Prozess nicht asynchron stattfindet.
+- Eine Progressbar zeigt den Fortschritt und die hochgeladenen Dateien an
 - der Upload kann auch nach Beenden des Programms noch mit `crowdbike upload` gestartet werden
 
 ## Fehler debuggen
