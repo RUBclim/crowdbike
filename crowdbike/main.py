@@ -538,6 +538,15 @@ start_counting(value_counter)
 Separator(master, orient=HORIZONTAL).grid(
     row=15, columnspan=3, sticky='ew', pady=(10, 0),
 )
+Label(
+    master, text='',
+    bg=theme['bg_col'], font=(theme['f_family'], 10),
+).grid(row=16, pady=(10, 0))
+Label(
+    master, text='',
+    bg=theme['bg_col'], font=(theme['f_family'], 14),
+).grid(row=17, pady=(0, 10))
+
 # define buttons
 b_record = Button(
     master,
@@ -556,7 +565,7 @@ b_record = Button(
     highlightthickness=1,
 
 )
-b_record.grid(row=16, column=0, sticky=W, padx=(20, 0), pady=(20, 20))
+b_record.grid(row=18, column=0, sticky=W, padx=(20, 0), pady=(0, 20))
 
 b_stop = Button(
     master,
@@ -573,7 +582,7 @@ b_stop = Button(
     highlightbackground=theme['b_hl_border'],
     highlightthickness=1,
 )
-b_stop.grid(row=16, column=1, sticky=W, padx=(20, 40), pady=(20, 20))
+b_stop.grid(row=18, column=1, sticky=W, padx=(20, 40), pady=(0, 20))
 
 b_exit = Button(
     master,
@@ -589,7 +598,7 @@ b_exit = Button(
     highlightbackground=theme['b_hl_border'],
     highlightthickness=1,
 )
-b_exit.grid(row=16, column=2, sticky=W, pady=(20, 20))
+b_exit.grid(row=18, column=2, sticky=W, pady=(0, 20))
 
 b_upload = Button(
     master,
@@ -597,7 +606,7 @@ b_upload = Button(
     width=7,
     state=DISABLED,
     command=lambda: upload_to_cloud(
-        verbose=False, config=config, logger=logger,
+        verbose=False, config=config, logger=logger, root=master, theme=theme,
     ),
     fg=theme['fg_col'],
     bg=theme['b_col'],
@@ -609,7 +618,7 @@ b_upload = Button(
     highlightbackground=theme['b_hl_border'],
     highlightthickness=1,
 )
-b_upload.grid(row=16, column=0, sticky=E, padx=(0, 20), pady=(20, 20))
+b_upload.grid(row=18, column=0, sticky=E, padx=(0, 20), pady=(0, 20))
 
 # slider
 pm_slider = Scale(
