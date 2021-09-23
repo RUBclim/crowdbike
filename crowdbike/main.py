@@ -190,6 +190,8 @@ def exit_program() -> None:
 def record_data() -> None:
     global recording
     global logfile
+    global counter
+    counter = 0
     recording = True
     b_stop.config(state=NORMAL)
     b_record.config(state=DISABLED)
@@ -248,11 +250,8 @@ def set_pm_status(value: str) -> None:
 
 
 def start_counting(label: Label) -> None:
-    counter = 0
-
     def count() -> None:
         global counter
-        counter += 1
         computer_time = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
         # get sensor readings from DHT-sensor
@@ -334,7 +333,9 @@ def start_counting(label: Label) -> None:
         label.after(1000 * sampling_rate, count)
 
         if recording and has_fix:
-            with open(logfile, 'a') as f0:
+            with open(logfile, 'a+') as f0:
+                f0.seek(0)
+                counter = len(f0.readlines()) - 1
                 f0.write(f'{pi_id},')
                 f0.write(f'{counter},')
                 f0.write(f'{computer_time},')
