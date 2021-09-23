@@ -198,7 +198,8 @@ def upload_to_cloud(
 
         if files_present:
             files = os.listdir(log_dir)
-            nr_files = len(files)
+            # the archive directory counts here and must be subtracted
+            nr_files = len(files) - 1
             for idx, log in enumerate(files):
                 if os.path.splitext(log)[1].lower() == '.csv':
                     status = f'uploading: {log} to the cloud'
