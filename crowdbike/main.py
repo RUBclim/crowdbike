@@ -51,11 +51,12 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 parser = ArgumentParser()
+version = importlib_metadata.version('crowdbike')
 parser.add_argument('command', choices=['init', 'run', 'upload'])
 parser.add_argument(
     '-V', '--version',
     action='version',
-    version=f'%(prog)s {importlib_metadata.version("crowdbike")}',
+    version=f'%(prog)s {version}',
 )
 parser.add_argument(
     '--logfile',
@@ -108,7 +109,7 @@ temperature_cal_a0 = calib['temp_cal_a0']
 hum_cal_a1 = calib['hum_cal_a1']
 hum_cal_a0 = calib['hum_cal_a0']
 
-window_title = f'Crowdbike {pi_id}'
+window_title = f'Crowdbike {pi_id} - v{version}'
 logfile_path = config['user']['logfile_path']
 os.makedirs(logfile_path, exist_ok=True)
 
@@ -168,6 +169,7 @@ cnames = [
     'pm2_5',
     'mac',
     'sensor_id',
+    'software_version',
 ]
 
 
@@ -361,7 +363,8 @@ def start_counting(label: Label) -> None:
                 f0.write(f'{pm2_5},')
 
                 f0.write(f'{mac},')
-                f0.write(f"{config['user']['sensor_id']}\n")
+                f0.write(f"{config['user']['sensor_id']},")
+                f0.write(f'{version}\n')
 
     count()
 
