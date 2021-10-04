@@ -222,3 +222,20 @@ class GPS(threading.Thread):
         '''close uart port when terminating'''
         self.uart.close()
         self.logger.info('closed GPS UART port')
+
+    def __repr__(self) -> str:
+        return (
+            f'{type(self).__name__}('
+            f'uart={self.uart!r}, '
+            f'gps={self.gps!r}, '
+            f'running={self.running!r}, '
+            f'has_fix={self.has_fix!r}, '
+            f'latitude={self.latitude!r}, '
+            f'longitude={self.longitude!r}, '
+            f'satellites={self.satellites!r}, '
+            f'tiemstamp={self.timestamp!r}, '
+            f'alt={self.alt!r}, '
+            f'speed={self.speed!r}, '
+            f'logger={self.logger!r}'
+            ')'
+        )
