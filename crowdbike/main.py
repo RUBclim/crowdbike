@@ -341,11 +341,8 @@ def start_counting(label: Label) -> None:
                 f0.write(f'{pi_id},')
                 f0.write(f'{counter},')
                 f0.write(f'{computer_time},')
-                if has_fix:
-                    f0.write(f'{gps_time},')
-                else:
-                    f0.write('nan,')
 
+                f0.write(f'{gps_time},')
                 f0.write(f'{gps_altitude:.3f}' + ',')
                 f0.write(f'{gps_latitude:.6f}' + ',')
                 f0.write(f'{gps_longitude:.6f}' + ',')
