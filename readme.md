@@ -149,7 +149,7 @@
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
-- `sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.7.0/crowdbike-0.7.0-py2.py3-none-any.whl`
+- `sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.8.0/crowdbike-0.8.0-py2.py3-none-any.whl`
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
 - Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
   - `sudo shutdown -P now`
