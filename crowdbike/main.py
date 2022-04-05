@@ -174,7 +174,7 @@ cnames = [
 
 
 def exit_program() -> None:
-    logger.info('exiting programm...')
+    logger.info('exiting program...')
     master.destroy()
     gpsp.running = False
     gpsp.stop()
@@ -183,7 +183,7 @@ def exit_program() -> None:
     temp_hum_sensor.join()
     nova_pm.running = False
     # only try joining the thread if it was running
-    if nova_pm.isAlive():
+    if nova_pm.is_alive():
         nova_pm.join()
     GPIO.cleanup()
     exit(0)
