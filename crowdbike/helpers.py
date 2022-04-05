@@ -225,15 +225,16 @@ def upload_to_cloud(
                         print(stderr)
                         err = stderr.split('curl:')
 
-                        if stdoutput == '' and len(err) == 1:
+                        if c.returncode == 0:
                             shutil.move(os.path.join(log_dir, log), archive_dir)  # noqa E501
                         else:
-                            logger.debug(' error '.center(79, '='))
+                            logger.warning(' error '.center(79, '='))
                             print(' error '.center(79, '='))
-                            logger.debug(stdoutput)
+                            logger.warning(stdoutput)
                             print(stdoutput)
-                            logger.debug(err)
+                            logger.warning(err)
                             print(err)
+                            break
 
                     else:
                         c = subprocess.run(args=curl_call, capture_output=True)
@@ -241,27 +242,36 @@ def upload_to_cloud(
                         stderr = c.stderr.decode('utf-8')
                         err = stderr.split('curl:')
 
-                        if stdoutput == '' and len(err) == 1:
+                        if c.returncode == 0:
                             shutil.move(
                                 os.path.join(
                                     log_dir, log,
                                 ), archive_dir,
                             )
                         else:
-                            logger.debug(' error '.center(79, '='))
+                            logger.warning(' error '.center(79, '='))
                             print(' error '.center(79, '='))
-                            logger.debug(stdoutput)
+                            logger.warning(stdoutput)
                             print(stdoutput)
-                            logger.debug(err)
+                            logger.warning(err)
                             print(err)
+                            break
+
             if root is not None:
                 progress_txt.config(text='')
                 pb.stop()
                 pb.grid_forget()
-                messagebox.showinfo(
-                    title='upload successfull',
-                    message=f'successfully uploaded {nr_files} files',
-                )
+                if c.returncode == 0:
+                    messagebox.showinfo(
+                        title='upload successfull',
+                        message=f'successfully uploaded {nr_files} files',
+                    )
+                else:
+                    messagebox.showerror(
+                        title='upload failed',
+                        message=f'failed uploading {nr_files} files',
+                    )
+
         elif not files_present:
             nothing_to_do = (
                 f'Everything up to date. '

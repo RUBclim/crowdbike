@@ -201,7 +201,7 @@ def record_data() -> None:
     log_time = datetime.utcnow().strftime('%Y-%m-%d_%H%M%S')
     logfile_name = f"{pi_id}_{studentname.replace(' ', '_')}_{log_time}.csv"
     logfile = os.path.join(logfile_path, logfile_name)
-    logger.info(f'writing measurement logs to {logfile}')
+    logger.warning(f'writing measurement logs to {logfile}')
 
     if os.path.isfile(logfile):
         return
@@ -216,7 +216,7 @@ def record_data() -> None:
 def stop_data() -> None:
     global recording
     recording = False
-    logger.info('recording stopped')
+    logger.warning('recording stopped')
     b_record.config(state=NORMAL)
     b_stop.config(state=DISABLED)
     b_upload.config(state=NORMAL)
