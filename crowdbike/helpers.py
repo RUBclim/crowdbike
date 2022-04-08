@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import importlib.resources
 import logging
 import math
 import os
@@ -5,23 +8,14 @@ import re
 import shutil
 import socket
 import subprocess
-import sys
 import uuid
 from typing import Any
-from typing import Dict
-from typing import Optional
-from typing import Union
 
 import RPi.GPIO as GPIO
 from tkinter import Label
 from tkinter import messagebox
 from tkinter import Tk
 from tkinter import ttk
-
-if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
-    import importlib_resources
-else:  # pragma: no cover (<py38)
-    import importlib.resources as importlib_resources
 
 
 CONFIG_DIR = os.path.expanduser('~/.config/crowdbike')
@@ -57,7 +51,7 @@ def get_ip() -> str:
     return IP
 
 
-def sat_vappressure(temp: Union[int, float]) -> float:
+def sat_vappressure(temp: int | float) -> float:
     saturation_vappress = (
         0.6113 * math.exp(
             (2501000.0 / 461.5) * ((1.0 / 273.15) - (1.0 / (temp + 273.15))),
@@ -67,17 +61,17 @@ def sat_vappressure(temp: Union[int, float]) -> float:
 
 
 def vappressure(
-        humidity: Union[int, float],
-        saturation_vappress: Union[int, float],
+        humidity: int | float,
+        saturation_vappress: int | float,
 ) -> float:
     vappress = ((humidity / 100.0) * saturation_vappress)
     return vappress
 
 
 def update_led(
-        red: Optional[bool] = None,
-        yellow: Optional[bool] = None,
-        green: Optional[bool] = None,
+        red: bool | None = None,
+        yellow: bool | None = None,
+        green: bool | None = None,
 ) -> None:
     if red is True:
         GPIO.output(23, GPIO.HIGH)
@@ -111,12 +105,12 @@ def setup_config() -> None:
 
 def _make_config_dirs() -> None:
     os.makedirs(CONFIG_DIR, exist_ok=True)
-    cfg = importlib_resources.read_text('crowdbike.resources', 'config.json')
-    calib = importlib_resources.read_text(
+    cfg = importlib.resources.read_text('crowdbike.resources', 'config.json')
+    calib = importlib.resources.read_text(
         'crowdbike.resources',
         'calibration.json',
     )
-    theme = importlib_resources.read_text('crowdbike.resources', 'theme.json')
+    theme = importlib.resources.read_text('crowdbike.resources', 'theme.json')
     with open(os.path.join(CONFIG_DIR, 'config.json'), 'w') as f:
         f.write(cfg)
 
@@ -150,11 +144,11 @@ def create_logger(
 
 def upload_to_cloud(
         verbose: bool,
-        config: Dict[str, Any],
+        config: dict[str, Any],
         logger: logging.Logger,
         *,
-        root: Optional[Tk] = None,
-        theme: Optional[Dict[str, str]] = None,
+        root: Tk | None = None,
+        theme: dict[str, str] | None = None,
 ) -> None:
     if root is not None and theme is not None:
         pb = ttk.Progressbar(
