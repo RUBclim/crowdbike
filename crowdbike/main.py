@@ -1,4 +1,5 @@
 import argparse
+import importlib.metadata
 import json
 import os
 import sys
@@ -36,12 +37,6 @@ from crowdbike.sensors import PmSensor
 from crowdbike.sensors import SHT85
 
 
-if sys.version_info < (3, 8):  # pragma: no cover (>=py38)
-    import importlib_metadata
-else:  # pragma: no cover (<py38)
-    import importlib.metadata as importlib_metadata
-
-
 class ArgumentParser(argparse.ArgumentParser):
     def exit(self, status: int = 0, message: Optional[str] = None) -> NoReturn:
         GPIO.cleanup()
@@ -51,7 +46,7 @@ class ArgumentParser(argparse.ArgumentParser):
 
 
 parser = ArgumentParser()
-version = importlib_metadata.version('crowdbike')
+version = importlib.metadata.version('crowdbike')
 parser.add_argument('command', choices=['init', 'run', 'upload'])
 parser.add_argument(
     '-V', '--version',
