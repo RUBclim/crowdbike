@@ -4,7 +4,7 @@
 
 ### This is a fork: First established at University of Freiburg, Enviromental Meteorology by [Andreas Christen](https://github.com/achristen)
 
-- The original documentation and code can be found [here](https://github.com/achristen/crowdbike)
+- The original documentation and code can be found [here](https://github.com/achristen/Meteobike)
 
 ## Benötigtes Material
 
@@ -23,10 +23,10 @@
 ## Benötigte Software/Hardware zur Einrichtung
 
 1. Laptop/Computer mit VNC Viewer (Download [hier](https://www.realvnc.com/de/connect/download/viewer/))
-1. Raspberry Pi Imager um das Operating System zu installieren. Download hier für:
-   - [Windows](https://downloads.raspberrypi.org/imager/imager.exe)
-   - [macOS](https://downloads.raspberrypi.org/imager/imager.dmg)
-   - [Ubuntu](https://downloads.raspberrypi.org/imager/imager_amd64.deb)
+1. [Raspberry Pi Imager](https://www.raspberrypi.com/software/) um das Operating System zu installieren. Download hier für:
+   - [Windows](https://downloads.raspberrypi.org/imager/imager_latest.exe)
+   - [macOS](https://downloads.raspberrypi.org/imager/imager_latest.dmg)
+   - [Ubuntu](https://downloads.raspberrypi.org/imager/imager_latest_amd64.deb)
 1. WLAN-Netzwerk mit Zugang zum Internet
 1. Smartphone mit VNC-Viewer (Download über Smartphone [Android](https://play.google.com/store/apps/details?id=com.realvnc.viewer.android&hl=de) oder [iOS](https://apps.apple.com/de/app/vnc-viewer-remote-desktop/id352019548))
 
@@ -37,11 +37,13 @@
 1. Operating System Image herunterladen und entpacken (Link siehe moodle)
 1. Die MicroSD-Karte (ggf. mit Adapter) in den Computer einlegen.
 1. Raspberry Pi Imager starten
-1. Bei `CHOOSE OS` &rarr; `Use custom` das eben heruntergeladene Image auswählen.
-1. Bei `CHOOSE SD CARD` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
-1. Mit `WRITE` den Schreibvorgang starten.
+1. Bei `OS WÄHLEN` &rarr; `Eigenes Image` das eben heruntergeladene Image auswählen.
+1. Bei `SD-KARTE WÄHLEN` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
+1. Bei `Hostnamen` Haken setzen und `crowdbike13` (Nummer eures Raspberry Pis) eintragen
+1. Haken bei `SSH aktivieren` setzen und Passwort zur Authentifizierung setzen
+1. Mit `SCHREIBEN` den Schreibvorgang starten.
 1. Wenn der Schreib- und Verify-Vorgang nach einiger Zeit abgeschlossen ist, SD-Karte kurz entnehmen und wieder einstecken. Dann das Laufwerk `boot` im Explorer öffnen.
-1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphone-Bildschirm passend ist.
+1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphone-Bildschirm passend ist (Dies kann auch erst nach der Einrichtung am Computer geschehen).
    ```bash
    # uncomment to force a console size. By default it will be display's size minus
    # overscan.
@@ -89,7 +91,7 @@
 1. Verbinden des Laptops/Computers mit dem gleichem WLAN-Netzwerk wie der Raspberry Pi &rarr; Heim-WLAN wie zuvor eingestellt.
 1. Starten von VNC Viewer am Laptop/Computer
 1. Datei &rarr; Neue Verbindung
-1. VNC Server: `crowdbike` (oder lokale IP-Adresse wenn bekannt)
+1. VNC Server: `crowdbike13` (eure Nummer) (oder lokale IP-Adresse wenn bekannt)
 1. Name: &rarr; Name der Verbindung z.B. `Mein Crowdbike` &rarr; `OK`
 1. Doppelklick auf neue Verbindung und bei Frage nach Identität bestätigen
 1. Verbindung sollte nun hergestellt werden
@@ -116,16 +118,9 @@
 
 - Falls die Schrift sehr klein ist, kann diese im Terminal mit <kbd>ctrl</kbd>+<kbd>+</kbd> vergrößert werden
 
-- Hostnamen setzen
-
-  1. Eingabe von `sudo raspi-config`
-  1. mit Pfeiltasten zu "1 System Options" navigieren und mit `Enter` bestätigen
-  1. Zu "S4 Hostname" navigieren &rarr; <kbd>Enter</kbd> &rarr; Hinweis mit `<Ok>` bestätigen
-  1. Nun den Namen zu `crowdbike13` (Die euch zugewiesene Nummer) ändern
-  1. Mit `<Ok>` bestätigen (Hinweis: Pfeiltasten &larr;/&rarr; oder <kbd>TAB</kbd> nutzen um zu `<Ok>` zu springen)
-
 - Serielle Schnittstelle und I2C aktivieren
 
+  1. Eingabe von `sudo raspi-config`
   1. mit Pfeiltasten zu "3 Interface Options" navigieren und mit <kbd>Enter</kbd> bestätigen
   1. Zu "P5 I2C" navigieren &rarr; <kbd>Enter</kbd>
      "Would you like the ARM I2C interface to be enabled?" hier `<YES>` auswählen
@@ -141,15 +136,16 @@
   1. "Would you like to reboot now?" mit `<yes>` bestätigen
   1. Ca. 1-2 Minuten warten
 
-- Nun muss die Verbindung mit den neu vergebenen Hostnamen hergestellt werden wie in (Herstellen einer Verbindung vom Laptop/Computer) beschrieben.
-- Nun nutzt ihr jedoch nicht mehr den Hostnamen `crowdbike`, sondern den neu vergebenen z.B. `crowdbike13`.
-- Im VNC Viewer &rarr; `Rechtsklick` auf die zuvor erstellte Verbindung &rarr; `Eigenschaften` &rarr; bei `VNC Server` `crowdbike` zu `crowdbike13` ändern &rarr; `OK`
 - Verbindung mit Doppelklick wieder herstellen und Warnung zur Identitätsbestätigung mit `Forsetzen` bestätigen &rarr; ggf. Kennwort erneut eingeben und Haken bei Kennwort speichern setzen.
 
 ### Für die Sensoren benötigte Programme herunterladen und installieren
 
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
-- `sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.8.1/crowdbike-0.8.1-py2.py3-none-any.whl`
+
+```bash
+sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.8.1/crowdbike-0.8.1-py2.py3-none-any.whl
+```
+
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
 - Nun den Raspberry Pi erneut ausschalten, um die Sensoren anzuschließen.
   - `sudo shutdown -P now`
@@ -241,18 +237,19 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
     "logfile_path": "/home/pi/crowdbike/logs/",
     "pm_sensor": false,
     "sampling_rate": 5,
+    "sensor_type": "SHT85",
     "sensor_id": "1"
   },
   "cloud": {
     "folder_token": "abcde1234",
     "passwd": "my_password",
-    "base_url": "https://example.nextcloud.de/"
+    "base_url": "https://example.nextcloud.de"
   }
 }
 ```
 
 - Bei `studentname = `euren Namen eingeben. Ohne Leerzeichen und Umlaute. Der Name muss in doppelten Anführungszeichen stehen z.B. `"vorname_nachname"`. Komma am Ende beachten!
-- Anpassung bei `bike_nr =` eure Nummer zuweisen (Aufkleber auf SD-Karten-Slot)
+- Anpassung bei `bike_nr =` eure Nummer zuweisen (Aufkleber auf SD-Karten-Slot z.B. `06`)
 - Bei `pm_sensor` angeben ob ihr einen angeschlossen habt oder nicht (es ist nur `true` oder `false` erlaubt!)
 - Die `sampling_rate` steuert die Häufigkeit in der eine Messung durchgeführt wird in Sekunden.
 - Die `sensor_id` ist eine eindeutige Identifikation des Temperatur- und Feuchte Sensors (Aufkleber auf der Platine)
@@ -277,7 +274,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 ## Farbgebung der GUI anpassen (optional)
 
-- die Farbgebung der GUI kann in `~/.config/crowdbike/them.json` angepasst werden
+- die Farbgebung der GUI kann in `~/.config/crowdbike/theme.json` angepasst werden
 - diese Keys müssen vorhanden sein
 - Farben könnne hexadezimale Werte sein oder `red`, `green` etc.
 - `b_*` = button
@@ -353,13 +350,18 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 
 ## Updates
 
-- sollte eine neue Version verfügbar sein, kann diese mit `sudo pip3 install git+https://github.com/theendlessriver13/crowdbike.git@master --upgrade` installiert werden
+- sollte eine neue Version verfügbar sein, kann diese mit diesem Befehl installiert werden:
+
+```
+sudo pip3 install git+https://github.com/theendlessriver13/crowdbike.git@master --upgrade
+```
+
 - die aktuelle Version kann über den Terminal mit `crowdbike --version` abgefragt werden
 
 ## Upload der gemessenen Daten in die Cloud
 
 - Die Daten können über den **Upload** Button in der GUI hochgeladen werden. Dazu muss die Messung mit dem **Stop** Button vorher gestoppt werden.
-- Der Upload kann je nach Datenmenge einige Sekunden dauern. In dieser Zeit werden die angezeigten Messwerte nicht aktualisiert, da der Upload Prozess nicht asynchron stattfindet.
+- Der Upload kann je nach Datenmenge einige Sekunden dauern. In dieser Zeit werden die angezeigten Messwerte nicht aktualisiert, da der Upload Prozess nicht asynchron stattfindet (#13).
 - Eine Progressbar zeigt den Fortschritt und die hochgeladenen Dateien an
 - der Upload kann auch nach Beenden des Programms noch mit `crowdbike upload` gestartet werden
 
