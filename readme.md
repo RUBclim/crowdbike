@@ -143,7 +143,7 @@
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
 
 ```bash
-sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.8.1/crowdbike-0.8.1-py2.py3-none-any.whl
+sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.9.0/crowdbike-0.9.0-py2.py3-none-any.whl
 ```
 
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
