@@ -1,4 +1,4 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/theendlessriver13/crowdbike/master.svg)](https://results.pre-commit.ci/latest/github/theendlessriver13/crowdbike/master)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/jkittner/crowdbike/master.svg)](https://results.pre-commit.ci/latest/github/jkittner/crowdbike/master)
 
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
@@ -39,8 +39,10 @@
 1. Raspberry Pi Imager starten
 1. Bei `OS WÄHLEN` &rarr; `Eigenes Image` das eben heruntergeladene Image auswählen.
 1. Bei `SD-KARTE WÄHLEN` die eingeschobene SD-Karte wählen. **Hinweis: genau kontrollieren dass das richtige Laufwerk ausgewählt ist. Es wird im Verlauf formatiert und alle Daten werden überschrieben!**
+1. Auf Zahnrad (Einstellungen) klicken
 1. Bei `Hostnamen` Haken setzen und `crowdbike13` (Nummer eures Raspberry Pis) eintragen
 1. Haken bei `SSH aktivieren` setzen und Passwort zur Authentifizierung setzen
+1. Passwort als `Bike4Climate` setzen, Nutzer `pi` belassen
 1. Mit `SCHREIBEN` den Schreibvorgang starten.
 1. Wenn der Schreib- und Verify-Vorgang nach einiger Zeit abgeschlossen ist, SD-Karte kurz entnehmen und wieder einstecken. Dann das Laufwerk `boot` im Explorer öffnen.
 1. Hier die Datei `config.txt` öffnen und folgende Einträge so verändern wie hier dargestellt. Dies ändert die Bildschirmauflösung, sodass sie hochkant und für den Smartphone-Bildschirm passend ist (Dies kann auch erst nach der Einrichtung am Computer geschehen).
@@ -143,7 +145,7 @@
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
 
 ```bash
-sudo pip3 install https://github.com/theendlessriver13/crowdbike/releases/download/0.9.0/crowdbike-0.9.0-py2.py3-none-any.whl
+sudo pip3 install https://github.com/jkittner/crowdbike/releases/download/0.9.0/crowdbike-0.9.0-py2.py3-none-any.whl
 ```
 
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
@@ -353,7 +355,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - sollte eine neue Version verfügbar sein, kann diese mit diesem Befehl installiert werden:
 
 ```
-sudo pip3 install git+https://github.com/theendlessriver13/crowdbike.git@master --upgrade
+sudo pip3 install git+https://github.com/jkittner/crowdbike.git@master --upgrade
 ```
 
 - die aktuelle Version kann über den Terminal mit `crowdbike --version` abgefragt werden
