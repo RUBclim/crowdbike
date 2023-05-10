@@ -65,6 +65,14 @@ parser.add_argument(
     default='WARNING',
     choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'],
 )
+parser.add_argument(
+    '--stationary',
+    action='store_true',
+    help=(
+        'indicate that this sensor is deployed in a stationary setup. With '
+        'this flag set, no GPS signal is required to log data'
+    ),
+)
 args = parser.parse_args()
 if args.command == 'init':
     setup_config()
@@ -329,7 +337,7 @@ def start_counting(label: Label) -> None:
         label.config(text=str(counter))
         label.after(1000 * sampling_rate, count)
 
-        if recording and has_fix:
+        if recording and (has_fix or args.stationary):
             with open(logfile, 'a+') as f0:
                 f0.seek(0)
                 counter = len(f0.readlines()) - 1
