@@ -24,7 +24,11 @@ class PmSensor(threading.Thread):
     ) -> None:
         threading.Thread.__init__(self)
         self.running = False
-        self.ser = serial.Serial(baudrate=baudrate)
+        self.ser = serial.Serial(
+            baudrate=baudrate,
+            timeout=5,
+            write_timeout=5,
+        )
         # initialize later so no connection is established at initialization
         self.ser.port = dev
         self.pm2_5 = float('nan')
@@ -233,7 +237,7 @@ class GPS(threading.Thread):
             f'latitude={self.latitude!r}, '
             f'longitude={self.longitude!r}, '
             f'satellites={self.satellites!r}, '
-            f'tiemstamp={self.timestamp!r}, '
+            f'timestamp={self.timestamp!r}, '
             f'alt={self.alt!r}, '
             f'speed={self.speed!r}, '
             f'logger={self.logger!r}'

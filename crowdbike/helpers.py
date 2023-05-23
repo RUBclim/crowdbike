@@ -205,9 +205,9 @@ def upload_to_cloud(
                     logger.info(status)
                     print(status)
                     curl_call = [
-                        'curl', first_args, os.path.join(log_dir, log), '-u',
-                        f'{folder_token}:{passwd}', '-H',
-                        'X-Requested-With:XMLHttpRequest',
+                        'curl', first_args, '--max-time', '30',
+                        os.path.join(log_dir, log), '-u', f'{folder_token}:{passwd}',  # noqa: E501
+                        '-H', 'X-Requested-With:XMLHttpRequest',
                         f'{base_url}public.php/webdav/{log}',
                     ]
                     logger.debug(f'curl call sent: {curl_call}')
@@ -238,9 +238,8 @@ def upload_to_cloud(
 
                         if c.returncode == 0:
                             shutil.move(
-                                os.path.join(
-                                    log_dir, log,
-                                ), archive_dir,
+                                os.path.join(log_dir, log),
+                                archive_dir,
                             )
                         else:
                             logger.warning(' error '.center(79, '='))
@@ -285,10 +284,7 @@ def upload_to_cloud(
         err_msg = f'An error occurred while uploading:\n{e}'
         if root is not None:
             pb.grid_forget()
-            messagebox.showerror(
-                title='Error',
-                message=err_msg,
-            )
+            messagebox.showerror(title='Error', message=err_msg)
         else:
             logger.error(err_msg)
             print(err_msg)
