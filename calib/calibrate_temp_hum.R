@@ -5,9 +5,9 @@ library(openair)
 setwd('E:/Documents/gitRep/Meteobike/Calibration/')
 
 file_list <- list.files(
-    'data',
+    'data/calibration',
     full.names = T,
-    pattern = '^calibration_measurements_*')
+    pattern = '^crowdbike_calibration_*')
 
 data_list <- lapply(file_list, fread)
 data <- rbindlist(data_list)
@@ -15,26 +15,13 @@ data <- rbindlist(data_list)
 # convert date to posix
 data$date <- as.POSIXct(data$date, tz = 'UTC')
 
-data_rgs <- fread('data/data_rgsII.csv', skip = 4)
-data_rgs <- data_rgs[, c('V1', 'V9', 'V8')]
-colnames(data_rgs) <- c('date', 'temp', 'hum')
-data_rgs$date <- as.POSIXct(
-    data_rgs$date,
-    format = '%d/%m/%Y %H:%M',
-    tz = 'Etc/GMT-1'
-)
+data_rgs <- fread('data/calibration/rgs_raw_2023-06-07_0000_2023-06-20_0000.csv')
+data_rgs <- data_rgs[, c('date', 'temp_mean', 'relhum_mean')]
+data_rgs$date <- data_rgs$date - 3600
+data_rgs$date <- as.POSIXct(data_rgs$date, tz = 'UTC')
 
 # shift timezone to UTC
 attr(data_rgs$date, "tzone") <- "UTC"
-
-# remove totally wrong values ----
-# temperature
-data[temp > 30, temp := NA]
-data[temp < 5, temp := NA]
-
-# humidity
-data[hum > 150, temp := NA]
-data[hum < -10, temp := NA]
 
 
 RMSE <- function(residuals) {
@@ -45,7 +32,7 @@ RMSE <- function(residuals) {
 plot_uncalibrated <- function(data, results, param) {
     if (param == 'temp') {
         x <- data$temp_rgs
-        y <- data$temp_dht
+        y <- data$temp_sht
         name_x <- 'temperature of RGS II [°C]'
         name_y <- 'temperature of crowdbike-sensor [°C]'
         lim <- c(5, 30)
@@ -55,7 +42,7 @@ plot_uncalibrated <- function(data, results, param) {
     }
     else if (param == 'hum') {
         x <- data$hum_rgs
-        y <- data$hum_dht
+        y <- data$hum_sht
         name_x <- 'rel. humidity of RGS II [%]'
         name_y <- 'rel. humidity of crowdbike-sensor [%]'
         lim <- c(0, 100)
@@ -206,8 +193,9 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     colnames(all_data) <- c(
         'date',
         'sensor_id',
-        'temp_dht',
-        'hum_dht',
+        'temp_sht',
+        'hum_sht',
+        'serial_nr',
         'temp_rgs',
         'hum_rgs'
     )
@@ -216,15 +204,15 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
     if (param == 'temp') {
         lin_mod <- lm(
             all_data[sensor_id == sensor, temp_rgs]
-            ~ all_data[sensor_id == sensor, temp_dht]
+            ~ all_data[sensor_id == sensor, temp_sht]
         )
-        all_data[, dev_pre := temp_dht - temp_rgs]
+        all_data[, dev_pre := temp_sht - temp_rgs]
     } else if (param == 'hum') {
         lin_mod <- lm(
             all_data[sensor_id == sensor, hum_rgs]
-            ~ all_data[sensor_id == sensor, hum_dht]
+            ~ all_data[sensor_id == sensor, hum_sht]
         )
-        all_data[, dev_pre:= hum_dht - hum_rgs]
+        all_data[, dev_pre := hum_sht - hum_rgs]
     } else {
         stop(
             paste(
@@ -277,7 +265,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             results = results,
             param = 'temp'
         )
-        all_data[, 'temp_calib' := temp_dht * slope + y_inter]
+        all_data[, 'temp_calib' := temp_sht * slope + y_inter]
         all_data[, dev_after := temp_calib - temp_rgs]
         results[, rmse_after := RMSE(all_data$dev_after)]
 
@@ -292,7 +280,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
             results = results,
             param = 'hum'
         )
-        all_data[, 'hum_calib' := hum_dht * slope + y_inter]
+        all_data[, 'hum_calib' := hum_sht * slope + y_inter]
         all_data[, dev_after := hum_calib - hum_rgs]
         results[, rmse_after := RMSE(all_data$dev_after)]
         plot_calib <- plot_calibrated(
@@ -315,7 +303,7 @@ calibrate <- function(data, sensor, rgs_data, start, param) {
 save_plot <- function(plot, prefix, trailing) {
     ggsave(
         plot = plot,
-        filename = paste(prefix, '_', trailing, '.png', sep = ''),
+        filename = paste('figs/', prefix, '_', trailing, '.png', sep = ''),
         device = 'png',
         scale = 1.8,
         width = 14,
@@ -338,7 +326,7 @@ for (sensor_id in levels(data$sensor_id)) {
         data = data,
         sensor = sensor_id,
         rgs_data = data_rgs,
-        start = '2020-06-01 15:20:00',
+        start = '2023-06-07 15:30:00',
         param = 'temp'
     )
 
@@ -346,7 +334,7 @@ for (sensor_id in levels(data$sensor_id)) {
         data = data,
         sensor = sensor_id,
         rgs_data = data_rgs,
-        start = '2020-06-01 15:20:00',
+        start = '2023-06-07 15:30:00',
         param = 'hum'
     )
 
