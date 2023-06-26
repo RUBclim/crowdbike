@@ -9,13 +9,13 @@ import shutil
 import socket
 import subprocess
 import uuid
-from typing import Any
-
-import RPi.GPIO as GPIO
 from tkinter import Label
 from tkinter import messagebox
 from tkinter import Tk
 from tkinter import ttk
+from typing import Any
+
+import RPi.GPIO as GPIO
 
 
 CONFIG_DIR = os.path.expanduser('~/.config/crowdbike')

@@ -4,12 +4,6 @@ import json
 import os
 import sys
 from datetime import datetime
-from typing import NoReturn
-from typing import Optional
-from typing import Union
-
-import RPi.GPIO as GPIO
-from serial.serialutil import SerialException
 from tkinter import Button
 from tkinter import DISABLED
 from tkinter import E
@@ -22,6 +16,12 @@ from tkinter import Scale
 from tkinter import Tk
 from tkinter import W
 from tkinter.ttk import Separator
+from typing import NoReturn
+from typing import Optional
+from typing import Union
+
+import RPi.GPIO as GPIO
+from serial.serialutil import SerialException
 
 from crowdbike.helpers import CONFIG_DIR
 from crowdbike.helpers import create_logger
