@@ -220,7 +220,10 @@ def upload_to_cloud(
                         err = stderr.split('curl:')
 
                         if c.returncode == 0:
-                            shutil.move(os.path.join(log_dir, log), archive_dir)  # noqa E501
+                            shutil.move(
+                                os.path.join(log_dir, log),
+                                archive_dir,
+                            )
                         else:
                             logger.warning(' error '.center(79, '='))
                             print(' error '.center(79, '='))
