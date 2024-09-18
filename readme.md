@@ -1,4 +1,4 @@
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/jkittner/crowdbike/master.svg)](https://results.pre-commit.ci/latest/github/jkittner/crowdbike/master)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/RUBclim/crowdbike/master.svg)](https://results.pre-commit.ci/latest/github/RUBclim/crowdbike/master)
 
 # Crowdbike - Mobile Erfassung von Klimadaten mit Low-Cost-Sensoren
 
@@ -57,7 +57,7 @@
 #### WLAN Konfiguration
 
 1. Eine neue Datei mit dem exakten Namen `wpa_supplicant.conf` anlegen
-   1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein `.txt` mehr am Ende steht!))
+   1. Rechtsklick &rarr; Neu &rarr; Textdokument &rarr; `wpa_supplicant.conf` als Dateinamen eingeben (darauf achten, dass kein `.txt` mehr am Ende steht!)
    1. Eventuell müssen in Windows erst die Dateinamenerweiterungen aktiviert werden. Dies geschieht über Ansicht und dann einen Haken bei Dateinamenerweiterungen setzen.
 1. Bei der Frage "Wollen Sie die Dateinamenerweiterung ändern, wird die Datei möglicherweise unbrauchbar" mit `Ja` bestätigen.
 1. Nun mit Rechtsklick &rarr; Öffnen mit den Editor auswählen
@@ -145,7 +145,7 @@
 - wieder den Terminal öffnen und ggf. mit <kbd>ctrl</kbd>+<kbd>+</kbd> wieder die Schriftgröße erhöhen
 
 ```bash
-sudo pip3 install https://github.com/jkittner/crowdbike/releases/download/0.9.0/crowdbike-0.9.0-py2.py3-none-any.whl
+sudo pip3 install https://github.com/RUBclim/crowdbike/releases/download/0.10.0/crowdbike-0.10.0-py2.py3-none-any.whl
 ```
 
 - Das dauert einige Minuten, der Raspberry Pi Zero ist nicht sehr schnell.
@@ -355,7 +355,7 @@ Es müssen im Folgenden noch einige kleinere Anpassungen vorgenommen werden, um 
 - sollte eine neue Version verfügbar sein, kann diese mit diesem Befehl installiert werden:
 
 ```
-sudo pip3 install git+https://github.com/jkittner/crowdbike.git@master --upgrade
+sudo pip3 install git+https://github.com/RUBclim/crowdbike.git@master --upgrade
 ```
 
 - die aktuelle Version kann über den Terminal mit `crowdbike --version` abgefragt werden
